@@ -1,7 +1,7 @@
 import json, math
-P={("720p"):17,("480p"):10}
+PCT=0.35   # 每秒占 grok 每周额度的上限估算（720p 2026-10 实测 0.25–0.35%；480p 没实测，按 720p 估）
 def d(t): return min(15, math.ceil(len(t)/5.4+1))
-# host: tank=白背心(9:16, material:329814)  me=用户本人(16:9, me_polo.jpg)
+# host: tank=白背心(9:16, avatar_ref.jpg)  me=用户本人(16:9, me_polo.jpg)
 NEW=[
  # 冷开场：多语言快闪（也用于「升级一」六宫格）
  ("L_en","冷开场","tank","full","Hi! I'm an AI digital human, and I can speak your language.",5,"English"),
@@ -28,7 +28,7 @@ NEW=[
  ("t5","升级③换角色","tank","pip","做法一样：先生成角色形象，再写台词。提示词里写清楚，是这只猫在说话，嘴巴要跟着动。",None,"Mandarin"),
  ("u12","流程","me","full","最后，把这些串成一条片子。还是那套流程：脚本、Skill、剪辑。",None,"Mandarin"),
 ]
-SCENES=[ # 先 GPT Image 合成开场画面，再 Grok 开口
+SCENES=[ # 先用 grok 的 image_edit 合成开场画面（stills/<id>.jpg），再 Grok 开口
  ("S_shop","tank","9:16",8,"直播间带货","家人们看过来！这瓶精华一滴就能推开，今天直播间下单，再送小样！","Mandarin"),
  ("S_ad","me","16:9",6,"产品广告","Forty hours of battery. Zero cables. Just press play.","English"),
  ("S_travel","tank","9:16",7,"旅游导览（京都）","ここは京都の祇園です。夜の提灯、とてもきれいでしょう？","Japanese"),
@@ -40,16 +40,13 @@ SCENES=[ # 先 GPT Image 合成开场画面，再 Grok 开口
 REUSE=["s1a","s1b","s1c","s1d","s1e","s2a","s2b","s2c","s2d","s2e","s3a","s3b","s4b","s4c","s4d","s6b","s6c","s7b","s7c"]
 rows=[];tot=0
 for i,ch,h,shot,t,dur,lang in NEW:
-    dur=dur or d(t); res="720p" if shot=="full" else "480p"; c=dur*P[res]; tot+=c
+    dur=dur or d(t); res="720p" if shot=="full" else "480p"; c=round(dur*PCT,2); tot+=c
     rows.append(dict(id=i,ch=ch,host=h,shot=shot,t=t,dur=dur,res=res,lang=lang,cost=c))
-img=0
 for i,h,r,dur,name,t,lang in SCENES:
-    c=dur*17; tot+=c; img+=23
+    c=round(dur*PCT,2); tot+=c
     rows.append(dict(id=i,ch="场景" if i!="S_duo" else "结尾",host=h,shot="scene",ratio=r,scene=name,t=t,dur=dur,res="720p",lang=lang,cost=c))
-tot+=img
-json.dump(dict(new=rows,reuse=REUSE,image_cost=img,total=tot),open("plan.json","w"),ensure_ascii=False,indent=1)
+json.dump(dict(new=rows,reuse=REUSE,total=round(tot,2)),open("plan.json","w"),ensure_ascii=False,indent=1)   # cost / total：占每周额度的百分比（上限估算）
 nv=sum(r["dur"] for r in rows)
-print("新生成口播/片段",len(rows),"段",nv,"秒；视频",tot-img,"图片",img,"合计",tot)
-import collections
+print("新生成口播/片段",len(rows),"段",nv,f"秒；视频约占每周额度 {tot:.0f}%（上限估算），另有",len(SCENES),"张场景图（image_edit，额度没实测）")
 for k in ["tank","me","cat","dog","duo"]:
-    print(k, sum(r["cost"] for r in rows if r["host"]==k), sum(r["dur"] for r in rows if r["host"]==k),"s")
+    print(k, f"{sum(r['cost'] for r in rows if r['host']==k):.1f}%", sum(r["dur"] for r in rows if r["host"]==k),"s")

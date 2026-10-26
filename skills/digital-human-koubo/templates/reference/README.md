@@ -11,5 +11,5 @@
 起工程：`bash scripts/new_edit.sh reference/tutorial-169 <工程目录>`（会顺带放好 sfx 和配乐）。
 素材文件名看代码里的 `staticFile("…")`，按同样的路径放进 public/。
 
-multihost-169/pipeline 是第三期从规划到时间轴的脚本（plan → build_tasks → qa → build_tl），换声统一用 `scripts/voicefx/unify.py`。
+multihost-169/pipeline 是第三期从规划到时间轴的脚本（plan → build_tasks → 技能的 `scripts/grok_generate.py tasks.json` → qa → build_tl），换声统一用 `scripts/voicefx/unify.py`。跑 build_tasks 之前，主播参考图放 `refs/`，场景段的开场画面（grok 的 image_edit 合成）放 `stills/<段 id>.jpg`。
 参考工程里用包装：import { PackLayer } from "./kit/registry"，见 references/packaging.md
