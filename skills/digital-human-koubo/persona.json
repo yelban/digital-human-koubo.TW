@@ -8,7 +8,7 @@
  "voice": {
   "engine": "grok-native",
   "desc": "young friendly female voice, clear and patient but lively, natural pace",
-  "preset": null,
+  "preset": "luna",
   "preset_note": "可選：填 grok 內建音色名（如 \"eve\"），每段都用同一個聲音，提示詞改用 <AUDIO_0>、不再用 desc。可用的名字見 references/voice.md。null = 按 desc 由 grok 自己配音",
   "speed_cps": 5.4,
   "alt_clone": "MiMo mimo-v2.5-tts-voiceclone，參照用 3 段 Grok 口播拼的 ≥12 秒乾聲（見 references/voice.md）"
