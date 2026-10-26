@@ -7,8 +7,8 @@ grok 按 desc 配音時，每段的聲音可能有細微差別。要每段固定
 - persona.json 的 `voice.preset` 填音色名（第二位主播填 `other_hosts.me.voice_preset`），例如 `"eve"`。null = 照 desc 配音。
 - build_tasks.py 會在任務裡帶 `"voices": ["eve"]`，提示詞的聲音描述改成 `the voice from <AUDIO_0>`；grok_generate.py 會核對 grok 實際傳的音色。
 - 可用的名字（2026-10-27 用不存在的音色名問 grok 拿到的清單）：ara、eve、leo、rex、sal、carina、zagan、helix、orion、luna、iris、altair、zenith、perseus、helios、lux、kepler、rigel、cosmo、celeste、ursa、sirius、lumen、castor、naksh、atlas。名字填錯時，grok_generate.py 會印出最新清單。
-- xAI 文件說每個音色都能說所有支援的語言，中文只有一個程式碼 `zh`，沒有地區口音的選項；eve、leo 標的是英國腔。官方沒寫性別，中文聽起來怎樣也沒測過：先拍第 1 段給使用者聽，再批次。
-- 自己的聲音：grok 的錯誤訊息說 `/v1/custom-voices` API 建的自定義音色也能用，但要 xAI API 金鑰，這個技能沒接、也沒測過。
+- xAI 文件說每個音色都能說所有支援的語言，中文只有一個語言代碼 `zh`，沒有地區口音的選項；eve、leo 標的是英國腔。官方沒寫性別，中文聽起來怎樣也沒測過：先拍第 1 段給使用者聽，再批次。
+- 自己的聲音：grok 的錯誤訊息說 `/v1/custom-voices` API 建的自訂音色也能用，但要 xAI API 金鑰，這個技能沒接、也沒測過。
 
 ## 換成自己的聲音（MiMo 克隆）
 - 錄 12–20 秒乾淨的朗讀（安靜房間、離嘴 20 公分），發給 Claude Code，說「用我的聲音配這段話」。
