@@ -26,7 +26,7 @@ for i, s in enumerate(S, 1):
         a0, a1 = t['offsets']['from'] / 1000, t['offsets']['to'] / 1000; tx = t['text'].strip()
         if not tx or tx.startswith('['): continue
         for k, ch in enumerate(tx):
-            if ch not in PUNCT: tk.append((ch.lower(), a0 + (a1 - a0) * k / len(tx)))
+            if ch not in PUNCT: tk.append((T2S.get(ch, ch).lower(), a0 + (a1 - a0) * k / len(tx)))   # 两边用同一张表，日文汉字也对得上
     clean = [(j, T2S.get(ch, ch).lower()) for j, ch in enumerate(text) if ch not in PUNCT]
     A = ''.join(c for _, c in clean); B = ''.join(c for c, _ in tk)
     sm = difflib.SequenceMatcher(None, A, B, autojunk=False); st = [None] * len(clean)

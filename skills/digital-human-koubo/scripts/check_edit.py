@@ -59,7 +59,7 @@ spans.sort()
 for (a1, t1, k1), (a2, t2, k2) in zip(spans, spans[1:]):
     if a2 - a1 < 0.8: print(f'提醒：cards[{k1}] {t1} 和 cards[{k2}] {t2} 只隔 {a2 - a1:.2f} 秒，前一张会被挤掉')
 preset = ed.get('preset', '标准')
-if preset not in ('克制', '标准', '热闹'): bad.append(f'preset 只能是 克制 / 标准 / 热闹，现在是 {preset!r}')
+if preset not in ('克制', '标准', '热闹', '標準', '熱鬧'): bad.append(f'preset 只能是 克制 / 标准 / 热闹（繁体版是 克制 / 標準 / 熱鬧），现在是 {preset!r}')
 n = len(ed.get('emojis', [])); mins = tl['total'] / 60
 print(f'{len(S)} 段 · {tl["total"]:.1f} 秒 · 花字强度 {preset} · 关键词 {len(keys)} · 表情 {n}（每分钟 {n / mins:.1f}）· 卡片 {len(spans)} · 推近 {len(ed.get("punch", []))} · 包装组件 {len(ed.get("pack", []))}')
 if bad:

@@ -15,13 +15,12 @@ Q2 = {r['id']: r for r in json.load(open(EP2 + 'cut/qa.json'))}
 S2 = {s['id']: s for s in json.load(open(EP2 + 'script.json'))}
 PUNCT = set('，。、：；！？,.:;!? “”「」"～~')
 def chars_of(sid, text):
-    toks = []
+    T2S = t2s_table(text); toks = []
     for t in json.load(open(f'cut/{sid}.json', errors='replace'))['transcription']:
         s, e = t['offsets']['from'] / 1000, t['offsets']['to'] / 1000; tx = t['text'].strip()
         if not tx or tx.startswith('['): continue
         for k, ch in enumerate(tx):
-            if ch not in PUNCT: toks.append((ch.lower(), s + (e - s) * k / len(tx)))
-    T2S = t2s_table(text)
+            if ch not in PUNCT: toks.append((T2S.get(ch, ch).lower(), s + (e - s) * k / len(tx)))   # 两边用同一张表，日文汉字也对得上
     clean = [(j, T2S.get(ch, ch).lower()) for j, ch in enumerate(text) if ch not in PUNCT]
     a = ''.join(c for _, c in clean); b = ''.join(c for c, _ in toks)
     sm = difflib.SequenceMatcher(None, a, b, autojunk=False); st = [None] * len(clean)
