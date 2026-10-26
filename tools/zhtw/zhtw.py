@@ -145,7 +145,7 @@ def check_timeline(a, b):
     """有 chars 的段落用字元位置記時間，text 長度變了時間就會錯位。"""
     if isinstance(a, dict):
         errs = []
-        if isinstance(a.get("chars"), dict) and isinstance(a.get("text"), str) and len(a["text"]) != len(b["text"]):
+        if "chars" in a and isinstance(a.get("text"), str) and len(a["text"]) != len(b["text"]):   # chars 是物件或陣列都算
             errs.append(f"時間軸段落長度變了：「{a['text']}」→「{b['text']}」，在 phrases.tsv 加一條等長的詞")
         for x, y in zip(a.values(), b.values()): errs += check_timeline(x, y)
         return errs
