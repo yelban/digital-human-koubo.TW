@@ -8,7 +8,7 @@ script.json：[{"id": "s1", "shot": "full|pip|vlog", "t": "这一段要念的台
 - host：tank = 白背心数字人（9:16，默认）；me = 用户本人数字人（16:9，persona.json → other_hosts.me）
 - lang：不写就是普通话；外语段台词直接写目标语言
 - ref：进场景的段落（先用 grok image_edit 合成好的开场画面），不写就用主播的参考图
-- 每段时长 = ceil(字数 / 5.4 + 1.0)，夹在 4–15 秒（Grok 单段上限 15 秒；5.4 字/秒是实测语速）
+- 每段时长 = ceil(汉字和数字 / 5.4 + 英文词数 / 2.6 + 1.0)，夹在 4–15 秒（Grok 单段上限 15 秒；5.4 字/秒是实测语速，中英混杂的句子英文按词算）
 - full 段 720p，pip 段 480p（画中画里看不出差别）；--all-720p 全部 720p
 - 声音：persona.json 的 voice.preset（第二位主播是 other_hosts.me.voice_preset）填了内置音色名，任务就带 "voices"，提示词用 <AUDIO_0>；null 就照 desc 由 grok 配音
 - 超过 15 秒的段会报错：先把台词拆短再跑
@@ -17,6 +17,7 @@ script.json：[{"id": "s1", "shot": "full|pip|vlog", "t": "这一段要念的台
 import json, math, re, sys
 from pathlib import Path
 
+EN_WPS = 2.6   # 英文约 2.6 词/秒
 HERE = Path(__file__).resolve().parent.parent
 P = json.loads((HERE / "persona.json").read_text())
 
@@ -32,11 +33,11 @@ def main():
     for s in S:
         lang = s.get("lang", "Mandarin Chinese")
         if lang.startswith("Mandarin") or lang == "Chinese":
-            d = math.ceil(len(re.sub(r"[\s，。、：；！？,.:;!?“”]", "", s["t"])) / P["voice"]["speed_cps"] + 1.0)
+            d = math.ceil(mandarin_seconds(s["t"]) + 1.0)
         elif re.search(r"[぀-ヿ가-힯]", s["t"]):     # 日文 / 韩文：约 7 字/秒
             d = math.ceil(len(re.sub(r"\s", "", s["t"])) / 7 + 1.0)
-        else:                                                    # 拉丁 / 阿拉伯等按词：约 2.6 词/秒
-            d = math.ceil(len(s["t"].split()) / 2.6 + 1.0)
+        else:                                                    # 拉丁 / 阿拉伯等按词
+            d = math.ceil(len(s["t"].split()) / EN_WPS + 1.0)
         if d > P["model"]["max_seconds"]:
             sys.exit(f"{s['id']} 约 {d} 秒，超过 15 秒：拆成两段再跑")
         d = max(4, d)
@@ -61,6 +62,13 @@ def main():
     Path(dst).write_text(json.dumps(tasks, ensure_ascii=False, indent=1))
     secs = sum(t["duration"] for t in tasks)
     print(f"{len(tasks)} 段 · 口播约 {secs} 秒 · 预估占 grok 每周额度 {lo:.0f}–{hi:.0f}%（720p 实测每秒 0.25–0.35%；480p 未实测，按 720p 估）")
+
+def mandarin_seconds(t):
+    """普通话台词念多久：汉字和数字按 speed_cps 字/秒，夹杂的英文按词算，标点和省略号不算。
+    中英混杂的句子不能把英文字母当汉字逐个算，不然会高估（27 字 + 10 个英文词原本算成 14 秒，实拍念 9.8 秒）"""
+    zh = len(re.findall(r"[一-鿿0-9]", t))
+    en = len(re.findall(r"[A-Za-z]+(?:['’][A-Za-z]+)*", t))
+    return zh / P["voice"]["speed_cps"] + en / EN_WPS
 
 def voice_text(preset, desc):
     """填进提示词「in {voice}」的那段：有内置音色就指向 <AUDIO_0>，没有就用文字描述的声音。"""
