@@ -1,6 +1,6 @@
 ---
 name: digital-human-koubo
-description: 用固定的数字人形象（白背心数字人 / 用户本人数字人 / 猫狗角色）做口播视频，先按内容推荐剪辑风格让用户选（小林式解说 / 网红花字口播 / 发布解读 / 保姆级教程 / 多主播多语言），自动套上从 MrBeast、MKBHD、影视飓风、Johnny Harris、Vox、半佛、差评等头部博主拆出来的 48 个包装组件（开场钩子、数字钉子、文字在人身后的景深字、证据截图、地图路线、弹幕、投票、复盘板…），再写稿 → 按 15 秒切段 → Renoise Grok Video 1.5 分段生成（先报价、用户确认才生成）→ 分片下载校验 → 逐段回听 → 对齐 → Remotion 剪辑出片。触发：用我的数字人讲这段、数字人口播、让白背心数字人说、用数字人 Skill、数字人带货 / 解读 / 教程 / 种草视频、做成小林说那样、加花字、加包装 / 加地图 / 加弹幕 / 开场加预告 / 文字放在人身后、做成 MrBeast 那种节奏、有哪些包装手法。不用于：换一个全新形象（先按 references/new-avatar.md 做形象）、冒充真人。
+description: 用固定的数字人形象（白背心数字人 / 用户本人数字人 / 猫狗角色）做口播视频，先按内容推荐剪辑风格让用户选（小林式解说 / 网红花字口播 / 发布解读 / 保姆级教程 / 多主播多语言），自动套上从 MrBeast、MKBHD、影视飓风、Johnny Harris、Vox、半佛、差评等头部博主拆出来的 48 个包装组件（开场钩子、数字钉子、文字在人身后的景深字、证据截图、地图路线、弹幕、投票、复盘板…），再写稿 → 按 15 秒切段 → grok CLI（reference_to_video，Grok Imagine Video 1.5）分段生成（先报占每周额度多少、用户确认才生成）→ 逐段回听 → 对齐 → Remotion 剪辑出片。触发：用我的数字人讲这段、数字人口播、让白背心数字人说、用数字人 Skill、数字人带货 / 解读 / 教程 / 种草视频、做成小林说那样、加花字、加包装 / 加地图 / 加弹幕 / 开场加预告 / 文字放在人身后、做成 MrBeast 那种节奏、有哪些包装手法。不用于：换一个全新形象（先按 references/new-avatar.md 做形象）、冒充真人。
 ---
 
 # 数字人口播
@@ -8,7 +8,8 @@ description: 用固定的数字人形象（白背心数字人 / 用户本人数�
 形象、声音、提示词、切段规则固定在 `persona.json`；剪辑风格在 `references/style-menu.md`。每次照这里做，出来的就是同一个人、同一种风格。
 
 ## 红线
-- 生成花用户的 Renoise credits：create_tasks 之前先报「段数 · 秒数 · 预估 credits · 余额」，等用户在对话里明确同意。先拍第 1 段给用户确认音色，再批量。重拍也要先报价。
+- 生成用的是用户 grok 账号的每周额度：跑 grok_generate.py 之前先报「段数 · 秒数 · 预估占每周额度 X–Y%」，请用户在 grok 里输入 /usage 看还剩多少，等用户在对话里明确同意。先拍第 1 段给用户确认音色，再批量。重拍也要先报。
+- grok 的视频工具在 ZDR（零数据保留）下不能用：要用户自己在 grok 里 /privacy 改成 Opt in。关着期间 grok 会话记录会上传 xAI，做完提醒用户改回 Opt out。不要替用户改这个设置。
 - 成片标「内容由 AI 数字人演绎」；场景、动物片段角上标「AI 生成」。
 - 用户本人的形象（persona.json → other_hosts.me）只用在用户自己的片子里。
 - 「小林式」只学结构和剪辑手法：不用真实创作者的脸、声音、布景和原句。
@@ -18,12 +19,9 @@ description: 用固定的数字人形象（白背心数字人 / 用户本人数�
 
 ### 准备：先检查，有就跳过，缺才引导安装（每次新对话第一次用时做）
 **原则：已经装好的一句话带过，不让用户重装；缺什么才给装法，装法给多种，先放用户当前用的那种。** 详细装法在 references/install.md。
-1. **Renoise MCP**：直接调 `get_account`。
-   - 成功 → 只说一句「Renoise 已连接，余额 X 积分」，接着干活。
-   - 工具不存在 / 未连接 → 停下引导安装。用户还没有 Renoise 账号时，注册链接一律给 https://renoise.ai/mcp?utm_medium=xcom&utm_source=official（原样给出，保留 utm 追踪参数，不要改写成 renoise.ai 首页）。然后把用户当前客户端的装法放第一个并标「推荐」，下面列出其他方式（Claude 桌面端/网页连接器、Claude Code 插件、Codex `codex mcp add`、OpenClaw、Cursor 等通用远程 MCP 配置、renoise.ai/plugin 官网），让用户自己挑。装完让用户重开对话或重连，再调一次确认。
-   - 报工具被关闭 → 不是没装，让用户去连接器设置里打开；报授权过期 → 重新登录授权，不用重装。
-2. **本机环境**（要剪辑时才需要）：`bash scripts/doctor.sh`。有的打 ✓ 不提；缺的它会按 macOS / Windows / Linux 列出多种装法。系统软件让用户自己装，Python 包可以在用户同意后帮装。
-3. **数字人形象**：persona.json 的 reference_material 能用就直接用；当前账号用不了（换了账号、素材过期、别人的包）→ 按 references/new-avatar.md 用用户自己的照片重做。
+1. **本机环境 + grok CLI**：`bash scripts/doctor.sh`。它查 grok 装了没、登录了没，以及 ffmpeg、Python、Node、whisper。有的打 ✓ 不提；缺的它会按 macOS / Windows / Linux 列出多种装法（详见 references/install.md）。系统软件让用户自己装，Python 包可以在用户同意后帮装。
+2. **grok 里的两项设置**（只能用户自己在 grok 交互界面看）：`/privacy` 要是 Opt in（ZDR 关着）；`/usage` 看本周额度还剩多少。请用户确认后再往下。
+3. **数字人形象**：persona.json 的 grok.reference_image（默认 assets/avatar_ref.jpg）在就直接用；要换形象 → 按 references/new-avatar.md 用用户自己的照片。
 
 ### 0. 看内容 → 推荐风格 → 让用户选
 按 `references/style-menu.md`：
@@ -45,21 +43,22 @@ description: 用固定的数字人形象（白背心数字人 / 用户本人数�
 
 ### 2. 切段 + 报价
 `python3 scripts/build_tasks.py script.json tasks.json --purpose "teaching a beginner tutorial step by step"`
-→ 打印段数、秒数、预估 credits。full 段 720p（17/秒），pip 段 480p（10/秒）。拿 `estimate_cost` 核一次，报给用户等确认。用户本人或动物主播用 persona.json → other_hosts 里的提示词模板。
+→ 打印段数、秒数、预估占 grok 每周额度的百分比（720p 实测每秒 0.25–0.35%）。full 段 720p，pip 段 480p（480p 没实测，按 720p 估，偏高）。报给用户等确认。用户本人或动物主播用 persona.json → other_hosts 里的提示词模板和参考图。
 
 ### 3. 生成
-tasks.json 每 10 个一批 create_tasks → wait_tasks。要进场景（直播间、门店、街景）时先用 GPT Image 2.5 合成开场画面（人物参考图 + 场景描述，2k 约 23 积分），再把这张图当 Grok 的参考图。
+`python3 scripts/grok_generate.py tasks.json`：逐段调 grok CLI 的 reference_to_video，存成 `gen/<段 id>.mp4`，每段约 1–1.5 分钟。已经存在的段跳过；重拍就删掉那个文件再跑，`--only s3` 只跑某段。
+- 它只开放 reference_to_video 一个工具；grok 升级后多出新工具会在生成前中止，照提示把工具名补进脚本的 DISALLOWED。
+- 报 ZDR 开着 → 请用户在 grok 里 /privacy 改成 Opt in 再跑。
+- 标 ⚠ 的段是 grok 实际传的参数和任务不一致，先看那段再决定要不要重拍。
+- 要进场景（直播间、门店、街景）时，先用 grok 的 image_edit 合成开场画面（人物参考图 + 场景描述），存进工程后在 script.json 那几段写 `"ref": "图片路径"`，build_tasks.py 就会拿它当参考图。
 
-### 4. 下载（Renoise 美国 CDN 很慢，必须这样下）
-download_results 拿链接 → 整理成 `urls.txt`（每行 `<taskId>.<ext> <url>`）→ `python3 scripts/rangedl.py`：每个文件 6 段 Range 并发、断点续传、下完 ffmpeg 解码校验。
-
-### 5. 回听 + 抽帧 + 拼接
-`python3 scripts/assemble.py script.json ids.json --out 成片_完整版.mp4`（ids.json = {段 id: taskId}）：whisper 逐段转写比对文稿、只保留到说完后 0.25 秒、拼接、loudnorm -16。
+### 4. 回听 + 抽帧 + 拼接
+`python3 scripts/assemble.py script.json --out 成片_完整版.mp4`（读 gen/<段 id>.mp4）：whisper 逐段转写比对文稿、只保留到说完后 0.25 秒、拼接、loudnorm -16。
 - whisper `--prompt 原文` 会让个别段漏掉前半句，用中性提示「以下是普通话的句子。」。外语段按语言转写；日韩阿拉伯语不要加 `-ml 1`（会把多字节字符截断成乱码）。
 - **每段抽 4 帧看一眼**：Grok 横屏口播偶尔自己烧字幕（提示词写了也挡不住），有就重拍那段。
 - Grok 有时漏念开头的语气词：没影响意思就按实际口播改字幕，别为这个重拍。
 
-### 6. 对齐 + 剪辑
+### 5. 对齐 + 剪辑
 `python3 scripts/align.py script.json --out <工程>/src/tl.json` 出逐字时间轴，然后按 brief.json 的风格剪：
 - **B 花字口播**：`bash scripts/new_edit.sh huazi-916 <工程>` → 写 `src/edit.json`（关键词、表情、卡片、作品展示、号召，字段见 references/huazi.md）→ `python3 scripts/check_edit.py <工程>/src` → 抽帧 → 渲染。
 - **A 小林式**：`bash ~/.claude/skills/finance-explainer/scripts/setup_engine.sh <工程>`，按那边的拍表和画面语法做；数字人口播片段放进 host.json。
@@ -69,7 +68,7 @@ download_results 拿链接 → 整理成 `urls.txt`（每行 `<taskId>.<ext> <ur
 - 抽帧检查一定看过渡的中间帧和零间隔衔接处（上一条的尾巴会盖住下一条）。
 
 ## 参考
-- references/install.md：Renoise MCP 和本机环境的多种装法（只在缺的时候用）
+- references/install.md：grok CLI 和本机环境的多种装法（只在缺的时候用）
 - references/style-menu.md：五种风格、内容诊断、怎么问用户、brief.json
 - references/packaging.md：47 个包装组件的用法和参数（pack 写法、9:16 自动适配）
 - references/packaging-playbook.md：头部博主实测结论（节奏、开场公式、字幕、声音、号召、红线），完整报告在 references/research/

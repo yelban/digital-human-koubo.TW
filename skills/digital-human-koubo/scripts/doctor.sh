@@ -11,6 +11,12 @@ need(){ # need 名称 用途 mac装法 win装法 linux装法 其他装法
   for kv in "macOS|$3" "Windows|$4" "Linux|$5" "其他|$6"; do n=${kv%%|*}; v=${kv#*|}; [ "$v" = "$first" ] || [ -z "$v" ] || printf "      %s：%s\n" "$n" "$v"; done
 }
 echo "数字人口播 · 本机环境检查（$OS）"
+GROK=$(command -v grok || { [ -x ~/.grok/bin/grok ] && echo ~/.grok/bin/grok; })
+if [ -n "$GROK" ]; then
+  ok "grok CLI $("$GROK" --version 2>/dev/null | awk '{print $2}')"
+  [ -f ~/.grok/auth.json ] && ok "grok 已登录" || need "grok 登录" "生成数字人片段" "grok login" "grok login" "grok login" "grok login"
+  echo "  · grok 里的 /privacy 要是 Opt in（ZDR 关着）视频工具才能用；/usage 看本周额度。这两项只能在 grok 里看。"
+else need "grok CLI" "生成数字人片段（reference_to_video）" "curl -fsSL https://x.ai/cli/install.sh | bash" "irm https://x.ai/cli/install.ps1 | iex" "curl -fsSL https://x.ai/cli/install.sh | bash" "见 docs.x.ai 的 Grok Build 安装说明"; fi
 command -v ffmpeg >/dev/null && ok "ffmpeg $(ffmpeg -version | head -1 | awk '{print $3}')" || need "ffmpeg" "抽帧、拼接、响度" "brew install ffmpeg" "winget install Gyan.FFmpeg  或  choco install ffmpeg" "sudo apt install ffmpeg  （或 dnf / pacman）" "ffmpeg.org 下载安装包"
 PY=$(command -v python3.14 || command -v python3 || command -v python)
 if [ -n "$PY" ]; then
@@ -27,6 +33,7 @@ if command -v whisper-cli >/dev/null; then
   M=$(ls "${WHISPER_MODEL:-/nonexistent}" ~/Library/Application\ Support/Murmur/models/ggml-medium*.bin ~/models/ggml-medium*.bin ~/.cache/whisper/ggml-medium*.bin 2>/dev/null | head -1)
   [ -n "$M" ] && ok "whisper 模型 $(basename "$M")" || need "whisper 模型 ggml-medium-q5_0.bin" "逐段回听、逐字对齐" "下载到 ~/models/：curl -L -o ~/models/ggml-medium-q5_0.bin https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium-q5_0.bin" "浏览器打开 huggingface.co/ggerganov/whisper.cpp 下载 ggml-medium-q5_0.bin 放到 %USERPROFILE%\\models\\" "同 macOS 的 curl 命令" "放在任意位置后 export WHISPER_MODEL=模型路径"
 else need "whisper-cli（whisper.cpp）" "逐段回听、逐字对齐" "brew install whisper-cpp" "github.com/ggerganov/whisper.cpp → Releases 下载 Windows 版" "git clone https://github.com/ggerganov/whisper.cpp && cd whisper.cpp && cmake -B build && cmake --build build -j" "源码编译，见 whisper.cpp README"; fi
+command -v opencc >/dev/null && ok "opencc" || echo "  · 没装 opencc（可选）：稿子写繁体时回听准确率会偏低。要用繁体稿就装：brew install opencc 或 sudo apt install opencc"
 echo
 if [ $MISS = 0 ]; then echo "本机环境齐了，不用装任何东西。"; else echo "装好上面 ✗ 的项（任选一种方式），再跑一次 bash doctor.sh 确认。"; fi
 exit $MISS

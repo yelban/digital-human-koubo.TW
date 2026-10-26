@@ -2,29 +2,23 @@
 
 原则：**已经有的一句话带过，不提安装**；缺什么才给装法。装法给多种：先放用户当前在用的那种（标「推荐」），其余列在下面让用户挑。装完再检查一次确认。
 
-## 1. Renoise MCP
+## 1. grok CLI（生成数字人片段）
 
 ### 怎么判断有没有
-直接调 Renoise 的 `get_account`：
-- 成功 → 「Renoise 已连接，余额 X 积分」，继续干活。
-- 工具不存在 / 调用报未连接 → 缺，按下面引导。
-- 报「disabled in connector settings」→ 不是没装，是某个工具被关了：让用户在连接器设置里把它打开。
-- 报未登录 / 授权过期 → 不用重装，重新登录授权就行（Claude 连接器点「Connect」；Codex `codex mcp login renoise`）。
+`bash scripts/doctor.sh` 会查 grok 装了没、登录了没。另外两项只能请用户在 grok 交互界面里看：
+- `/privacy`：要是 **Opt in**（ZDR 关着），由用户自己在 grok 里改，不要替用户改。ZDR 开着时视频工具直接报「unavailable under zero data retention」。关着期间 grok 会话记录会上传 xAI，做完提醒用户改回 Opt out。
+- `/usage`：本周额度还剩多少。720p 实测每秒约占 0.25–0.35%（2026-10-26，X Premium+）。
 
-### 装法（先有 Renoise 账号；全部走浏览器登录授权，不用复制 API key）
-
-还没有账号 → 先去注册：**[https://renoise.ai/mcp?utm_medium=xcom&utm_source=official](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official)**（给用户时原样给这条链接，保留 utm 追踪参数，不要改写成 renoise.ai 首页）。
-
-| 用的是 | 怎么装 |
+### 装法
+| 系统 | 命令 |
 |---|---|
-| **Claude 桌面端 / claude.ai 网页** | 设置 → 连接器（Connectors）→ Add custom connector → 名称 `Renoise`，地址 `https://renoise.ai/api/public/mcp` → 继续 → 登录 renoise.ai 点同意 |
-| **Claude Code** | 依次输入 `/plugin marketplace add ArcoCodes/renoise-plugins-official`、`/plugin install renoise@renoise-plugins-official`，首次调用时会打开浏览器登录 |
-| **Codex（CLI / 桌面）** | 终端运行 `codex mcp add renoise --url https://renoise.ai/api/public/mcp`，再 `codex mcp login renoise` |
-| **OpenClaw** | `openclaw plugins install renoise --marketplace ArcoCodes/renoise-plugins-official` |
-| **其他支持远程 MCP 的客户端**（Cursor、Windsurf、Cline 等） | 在它的 MCP 配置里加一个远程服务器，地址 `https://renoise.ai/api/public/mcp`。常见写法：`{"mcpServers": {"renoise": {"url": "https://renoise.ai/api/public/mcp"}}}`（字段名以客户端文档为准） |
-| **不确定 / 想看最新** | 打开 renoise.ai/plugin，官网列了各客户端的最新装法 |
+| **macOS / Linux / WSL** | `curl -fsSL https://x.ai/cli/install.sh \| bash` |
+| **Windows（PowerShell）** | `irm https://x.ai/cli/install.ps1 \| iex` |
 
-装完：Claude 系要重开对话（或在连接器里点重连）才能看到工具；Codex 重开会话。然后再调一次 `get_account`。
+装完运行 `grok login`，在浏览器登录 grok 账号。2026-10-26 实测 X Premium+ 账号能用视频工具，其他方案没测过。
+
+### 想让 ZDR 一直开着？
+官方文档写可以在 `managed_config.toml` 配一个 S3 储存桶（`tools.zdr_video_output_s3`），让 ZDR 开着也能生成。但 2026-10-26 用个人账号（grok 1.0.70）实测都不生效：`~/.grok/managed_config.toml` 每次启动被 grok 删掉，写在 `~/.grok/config.toml` 或 `/etc/grok/managed_config.toml` 也照样报 ZDR 错误。目前只能生成时关掉 ZDR。
 
 ## 2. 本机环境（剪辑时才需要）
 `bash scripts/doctor.sh` 会逐项检查：有的打 ✓ 跳过，缺的才列出多种装法。**系统软件让用户自己装，不要替用户执行安装命令**（Python 包可以在用户同意后帮装）。
@@ -37,8 +31,9 @@
 | Node 18+ | `brew install node` | `winget install OpenJS.NodeJS.LTS` | `sudo apt install nodejs npm` 或 nvm | nodejs.org 下载；`nvm install --lts` |
 | whisper-cli | `brew install whisper-cpp` | 从 github.com/ggerganov/whisper.cpp Releases 下载 | 源码编译（`cmake -B build && cmake --build build`） | — |
 | whisper 模型 | 下载 `ggml-medium-q5_0.bin`（huggingface.co/ggerganov/whisper.cpp）放到 `~/models/` | 同左 | 同左 | 或 `export WHISPER_MODEL=模型路径` |
+| opencc（可选，稿子写繁体时 assemble.py 比对用） | `brew install opencc` | 见 github.com/BYVoid/OpenCC | `sudo apt install opencc` | — |
 
 Remotion 不用单独装：`scripts/new_edit.sh` 起工程时会先从本机已有的 Remotion 工程克隆，没有才 `npm install`；npm 源连不上时换镜像 `npm config set registry https://registry.npmmirror.com`。
 
 ## 3. 数字人形象
-persona.json 的 reference_material 在当前账号能用（`view_image` 能打开）→ 直接用。用不了（换了账号、素材过期、别人的包）→ 按 references/new-avatar.md 用用户自己的照片重做。
+persona.json 的 grok.reference_image（默认 assets/avatar_ref.jpg）文件在 → 直接用。要换形象 → 按 references/new-avatar.md 用用户自己的照片。

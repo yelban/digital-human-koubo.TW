@@ -1,9 +1,8 @@
 {
  "name": "白背心数字人",
- "renoise": {
-  "reference_material": "material:329814",
-  "multiview_task": "task:357546",
-  "note": "参考图是用户自己 Grok 视频里的一帧（正脸、闭嘴、头发不挡脸）。换账号或素材过期时，用 assets/avatar_ref.jpg 重新 upload_files 拿新 material id。"
+ "grok": {
+  "reference_image": "assets/avatar_ref.jpg",
+  "note": "参考图是用户自己 Grok 视频里的一帧（正脸、闭嘴、头发不挡脸）。路径相对技能目录；换形象就换这张图（见 references/new-avatar.md）。"
  },
  "look": "年轻东亚女性，黑色长发带脸侧碎发，白色罗纹背心，竖屏自拍构图，室内自然光",
  "voice": {
@@ -13,15 +12,17 @@
   "alt_clone": "MiMo mimo-v2.5-tts-voiceclone，参照用 3 段 Grok 口播拼的 ≥12 秒干声（见 references/voice.md）"
  },
  "model": {
-  "name": "grok-video-1.5",
+  "name": "grok-imagine-video-1.5",
+  "backend": "grok CLI reference_to_video（scripts/grok_generate.py）",
   "ratio": "9:16",
   "full_shot_resolution": "720p",
   "pip_shot_resolution": "480p",
   "max_seconds": 15,
-  "price_per_second": {
-   "720p": 17,
-   "480p": 10
-  }
+  "allowance_pct_per_second": {
+   "720p": [0.25, 0.35],
+   "480p": null
+  },
+  "allowance_note": "占 grok 每周额度的百分比。2026-10-26 实测（X Premium+）：3 段共 28 秒 720p 用掉 7–9%（/usage 只显示整数）。480p 未实测。"
  },
  "acts": {
   "full": "warm eye contact, expressive face, natural hand gestures",
@@ -34,25 +35,25 @@
  "other_hosts": {
   "me": {
    "name": "用户本人数字人（藏青 polo）",
-   "reference_material": "material:338484",
-   "asset": "assets/host_me_polo.jpg",
+   "reference_image": "assets/host_me_polo.jpg",
    "ratio": "16:9",
-   "note": "用户本人照片，只给用户自己的片子用；横屏照直接出横屏口播",
+   "note": "用户本人照片，只给用户自己的片子用；横屏照直接出横屏口播。仓库里没有这张图，用前放入你本人的照片。",
    "voice": "warm, steady, confident male voice around 35 years old, natural pace",
    "prompt_template": "The man in {ref} talks straight to the camera, same framing, gray studio backdrop, navy polo shirt, glasses and soft lighting as the reference, like a friendly tech blogger {purpose}: {act}. Locked-off camera, no zoom. He speaks {language}, clearly lip-synced, in a {voice}:\n“{line}”\nSound: only his voice and quiet room tone, no music, no subtitles, no captions, no on-screen text of any kind."
   },
   "cat": {
    "name": "橘猫店长",
-   "still_task": "task:360205",
+   "reference_image": null,
    "ratio": "9:16",
    "voice": "cute, playful small high-pitched voice",
-   "note": "提示词要写 its mouth clearly opens and closes in sync with the words"
+   "note": "提示词要写 its mouth clearly opens and closes in sync with the words。原静帧在作者的 Renoise 账号里；用 grok 的 image_gen 生成一张静帧存进 assets/，再填路径。"
   },
   "dog": {
    "name": "柴犬新闻主播",
-   "still_task": "task:360206",
+   "reference_image": null,
    "ratio": "16:9",
-   "voice": "deep, serious male TV news-anchor voice"
+   "voice": "deep, serious male TV news-anchor voice",
+   "note": "原静帧在作者的 Renoise 账号里；用 grok 的 image_gen 生成一张静帧存进 assets/，再填路径。"
   }
  },
  "languages_tested": {

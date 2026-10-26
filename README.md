@@ -9,7 +9,7 @@ Script, lip-synced AI presenter, voice clean-up, captions, and pro-YouTuber-styl
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-black.svg)](LICENSE)
 ![Agent Skill](https://img.shields.io/badge/Agent%20Skill-SKILL.md-orange)
-[![Renoise MCP](https://img.shields.io/badge/video-Renoise%20MCP-ff7a1a)](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official)
+![grok CLI](https://img.shields.io/badge/video-grok%20CLI-000000)
 ![Remotion](https://img.shields.io/badge/edit-Remotion%204-0b84f3)
 
 <img src="docs/images/cover.jpg" width="820" alt="One photo + one sentence → a 27-second livestream sales ad">
@@ -18,7 +18,7 @@ Script, lip-synced AI presenter, voice clean-up, captions, and pro-YouTuber-styl
 
 > This 27-second livestream ad has no real presenter. Face, voice, studio, captions and the price animation are all AI.
 > The only input was one sentence: *"Use this digital human to make a 30-second livestream ad for the WorkBuddy course — 10 lessons, ¥99, was ¥999."*
-> Total cost: **482 [Renoise](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official) credits**.
+> This demo was generated with Renoise (482 credits). The current pipeline uses the grok CLI instead and spends the weekly allowance of your grok account. See *Cost reference*.
 
 ---
 
@@ -49,25 +49,25 @@ Click a GIF (or "Watch") to play the full video. Every demo below was produced w
 
 ## What it does
 
-- **Digital human from one photo** — a fixed presenter (face, outfit, voice description, prompt template) stored in `persona.json`, so every video is the same person. Composite her into any scene (livestream studio, shop, classroom, Kyoto street) with GPT Image first, then make her talk.
-- **Lip-synced talking clips** — the script is split into ≤ 15-second segments and generated with **Grok Video 1.5** through **[Renoise MCP](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official)**. Other models (Wan 3.0, OmniHuman for your own recording) are documented.
-- **Cost gate** — the agent always quotes *segments · seconds · credits · balance* first and waits for your "yes". It generates segment 1 for you to check before batching the rest.
+- **Digital human from one photo** — a fixed presenter (face, outfit, voice description, prompt template) stored in `persona.json`, so every video is the same person. Composite her into any scene (livestream studio, shop, classroom, Kyoto street) with grok `image_edit` first, then make her talk.
+- **Lip-synced talking clips** — the script is split into ≤ 15-second segments and generated with **Grok Imagine Video 1.5** through the **grok CLI** tool `reference_to_video`. The grok CLI has no audio-driven lip-sync. For lip-sync to your own recording, connect a separate service such as Wan 3.0 or OmniHuman.
+- **Usage gate** — the agent always quotes *segments · seconds · estimated share of your grok weekly allowance* first and waits for your "yes". It generates segment 1 for you to check before batching the rest.
 - **Quality control** — every segment is transcribed with whisper and compared with the script, and 4 frames per segment are inspected (Grok sometimes burns subtitles into the picture; those segments get re-shot).
 - **Voice unification** — 1/3-octave spectral matching, de-essing, one shared small-room reverb and loudness normalisation, so 30 separately-generated clips sound like one recording (sibilance spread 13.2 dB → 5.9 dB in our tests).
 - **5 editing styles, chosen for your content** — the agent diagnoses your content, recommends 2 styles with preview images and asks you everything in one go (style · ratio & length · caption intensity · presenter).
 - **48 packaging components** — measured frame-by-frame from 25 videos by top creators (MrBeast, Mark Rober, Ryan Trahan, MKBHD, MediaStorm/影视飓风, 何同学, Johnny Harris, Vox, Kurzgesagt, 回形针, 半佛仙人, 差评, 毕导). Each style has a default packaging recipe; add or remove techniques by just asking.
 - **Text behind the presenter** — big words / numbers between the background and the person (macOS Vision person segmentation → transparent video → 3-layer composite).
 - **Multi-language** — English, Japanese, Korean, French, Spanish, Arabic tested (whisper back-check 94–100 %).
-- **Works with your agent** — a standard `SKILL.md` Agent Skill plus scripts; any agent that can load skills, connect a remote MCP server and run local commands can drive it.
+- **Works with your agent** — a standard `SKILL.md` Agent Skill plus scripts; any agent that can load skills and run local commands (including the grok CLI) can drive it.
 
 ## How it works
 
 ```
-your content ──► 0. setup check (Renoise MCP / ffmpeg / whisper — skip what you already have)
+your content ──► 0. setup check (grok CLI / ffmpeg / whisper — skip what you already have)
                  1. diagnose content → recommend 2 of 5 styles → ask once → brief.json
                  2. script.json (≤15 s per segment, ~5.4 Chinese chars/s)
-                 3. quote credits → wait for "yes" → generate segment 1 → you check → batch
-                 4. range-download (CDN-safe) → whisper back-check → frame check
+                 3. quote weekly allowance → wait for "yes" → generate segment 1 → you check → batch
+                 4. grok CLI generation → whisper back-check → frame check
                  5. voice unification (spectral match + de-ess + shared room)
                  6. word-level timeline (tl.json)
                  7. edit in Remotion: style template + default packaging (+ your requests)
@@ -80,22 +80,21 @@ your content ──► 0. setup check (Renoise MCP / ffmpeg / whisper — skip w
 
 ## Supported agents
 
-The skill is a folder with a `SKILL.md` (the open Agent Skills format) plus Python / shell / Remotion scripts. To run the **whole** pipeline an agent needs three things:
+The skill is a folder with a `SKILL.md` (the open Agent Skills format) plus Python / shell / Remotion scripts. To run the **whole** pipeline, an agent needs two things:
 
 1. **Load Agent Skills** (a skills folder or skill upload),
-2. **Connect a remote MCP server** (Renoise — streamable HTTP, browser login, no API key),
-3. **Run commands on your computer** (ffmpeg, Python, Node — for downloading, QA and editing).
+2. **Run commands on your computer** (the grok CLI for generation; ffmpeg, Python and Node for QA and editing).
 
-| Agent | Skills | Renoise MCP | Local commands | Status |
-|---|---|---|---|---|
-| **Claude Code** | `~/.claude/skills/` | `/plugin` (below) | ✅ | ✅ Tested — this repo was built with it |
-| **Codex** (CLI / desktop) | `~/.codex/skills/` | `codex mcp add` | ✅ | ✅ Expected to work (same scripts) |
-| **OpenClaw** | skills folder per OpenClaw docs | `openclaw plugins install` | ✅ | ⚙️ Should work |
-| **WorkBuddy** | Skills → import the folder / zip | Connectors → add custom MCP | ✅ desktop agent | ⚙️ Should work — menu names may differ by version |
-| **豆包 (Doubao)** · **千问办公 (Qwen Office)** · **纳米Work (NamiWork)** and other agent products | import if the product supports Agent Skills | add as a custom / remote MCP server if supported | needed for editing | ⚙️ Works if the product supports the 3 requirements above; check its docs |
-| **Claude desktop / claude.ai** | upload the skill zip in Settings | Connectors → Add custom connector | ⚠️ sandbox only | Script writing, scene design, generation & quoting work; local editing needs a shell agent |
+| Agent | Skills | Local commands | Status |
+|---|---|---|---|
+| **Claude Code** | `~/.claude/skills/` | ✅ | ✅ Tested — this repo was built with it. The grok CLI pipeline was tested on 2026-10-26. |
+| **Codex** (CLI / desktop) | `~/.codex/skills/` | ✅ | ✅ Expected to work (same scripts) |
+| **OpenClaw** | skills folder per OpenClaw docs | ✅ | ⚙️ Should work |
+| **WorkBuddy** | Skills → import the folder / zip | ✅ desktop agent | ⚙️ Should work — menu names can differ by version |
+| **豆包 (Doubao)** · **千问办公 (Qwen Office)** · **纳米Work (NamiWork)** and other agent products | import if the product supports Agent Skills | needed for generation and editing | ⚙️ Works if the product supports the 2 requirements above; check its docs |
+| **Claude desktop / claude.ai** | upload the skill zip in Settings | ⚠️ sandbox only | Script writing and scene design work. Generation and editing need an agent that runs local commands. |
 
-> If your agent can only do MCP + chat (no local commands), you can still use it to **plan, quote and generate** the clips through Renoise; then run the editing steps with Claude Code / Codex, or by hand with the commands in [`SKILL.md`](skills/digital-human-koubo/SKILL.md).
+> If your agent can only chat and cannot run local commands, use it to **write the script and design the scenes**. Then run generation and editing with Claude Code / Codex, or by hand with the commands in [`SKILL.md`](skills/digital-human-koubo/SKILL.md).
 
 ---
 
@@ -125,21 +124,23 @@ mkdir -p ~/.codex/skills && cp -R skills/digital-human-koubo skills/finance-expl
 cd skills && zip -r ../digital-human-skills.zip digital-human-koubo finance-explainer && cd ..
 ```
 
-### 3 · Connect Renoise MCP (AI video / image generation)
+### 3 · Install the grok CLI (AI video generation)
 
-Create an account at **[renoise.ai](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official)** first. Login is in the browser — you never paste an API key.
+The grok CLI tool `reference_to_video` (Grok Imagine Video 1.5) generates the talking clips. Generation uses the weekly allowance of your grok account. We tested it with an X Premium+ account. We did not test other plans.
 
-| Agent | How |
+| System | Command |
 |---|---|
-| Claude Code | `/plugin marketplace add ArcoCodes/renoise-plugins-official` then `/plugin install renoise@renoise-plugins-official` |
-| Codex | `codex mcp add renoise --url https://renoise.ai/api/public/mcp` then `codex mcp login renoise` |
-| OpenClaw | `openclaw plugins install renoise --marketplace ArcoCodes/renoise-plugins-official` |
-| Claude desktop / claude.ai | Settings → Connectors → **Add custom connector** → name `Renoise`, URL `https://renoise.ai/api/public/mcp` |
-| WorkBuddy, Cursor, Windsurf, Cline, 豆包, 千问, 纳米Work, … | add a remote MCP server with URL `https://renoise.ai/api/public/mcp` (typical config: `{"mcpServers":{"renoise":{"url":"https://renoise.ai/api/public/mcp"}}}`) |
+| macOS / Linux / WSL | `curl -fsSL https://x.ai/cli/install.sh \| bash` |
+| Windows (PowerShell) | `irm https://x.ai/cli/install.ps1 \| iex` |
 
-Latest official instructions: **[renoise.ai/plugin](https://renoise.ai/plugin)**. Check it worked by asking your agent: *"查一下我的 Renoise 余额 / check my Renoise balance."*
+Then run `grok login` and sign in in the browser. Before you generate, check two settings in grok:
 
-### 4 · Local tools (for downloading, QA and editing)
+- `/privacy` must be **Opt in** (zero data retention off). With ZDR on, the video tools refuse to run. While ZDR is off, grok uploads session data to xAI, so set it back to **Opt out** when you finish. Change this setting yourself. The agent does not change it for you.
+- `/usage` shows how much of the weekly allowance is left.
+
+> The xAI docs describe an S3 bucket setting (`tools.zdr_video_output_s3`) that keeps ZDR on during generation. In our test on 2026-10-26 (personal account, grok 1.0.70), it had no effect in any location.
+
+### 4 · Local tools (for QA and editing)
 
 | Tool | macOS | Windows | Linux |
 |---|---|---|---|
@@ -148,8 +149,9 @@ Latest official instructions: **[renoise.ai/plugin](https://renoise.ai/plugin)**
 | Node.js 18+ (Remotion) | `brew install node` | `winget install OpenJS.NodeJS.LTS` | `nvm install --lts` |
 | whisper.cpp (`whisper-cli`) | `brew install whisper-cpp` | [Releases](https://github.com/ggerganov/whisper.cpp/releases) | build from [source](https://github.com/ggerganov/whisper.cpp) |
 | whisper model | [`ggml-medium-q5_0.bin`](https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium-q5_0.bin) → `~/models/` (or `export WHISPER_MODEL=/path/to/model.bin`) | same | same |
+| OpenCC (optional, for QA of Traditional Chinese scripts) | `brew install opencc` | [OpenCC](https://github.com/BYVoid/OpenCC) | `sudo apt install opencc` |
 
-One-command check — it skips what you have and lists install options for what's missing:
+One-command check — it skips what you have and lists install options for what's missing. It also checks that the grok CLI is installed and signed in:
 ```bash
 bash ~/.claude/skills/digital-human-koubo/scripts/doctor.sh
 ```
@@ -179,7 +181,7 @@ The default voice is Grok's native voice (best lip-sync). For a designed voice, 
    ```
 3. Only clone **your own** voice or a voice you have explicit permission to use.
 
-> Note: Grok generates lip movement from its own voice. Swapping in a different voice afterwards leaves ~100 ms lip offset (fine in picture-in-picture, visible in full-screen close-ups). For your own recording with exact lip-sync, use an audio-driven model such as OmniHuman (documented in the skill).
+> Note: Grok generates lip movement from its own voice. Swapping in a different voice afterwards leaves ~100 ms lip offset (fine in picture-in-picture, visible in full-screen close-ups). For your own recording with exact lip-sync, use an audio-driven model such as OmniHuman. The skill does not connect one yet.
 
 ---
 
@@ -198,7 +200,7 @@ Add a map route when she mentions these countries. / Put "¥99" behind her. / Ad
 What happens next:
 1. Setup check — anything already installed is skipped.
 2. A one-line diagnosis + 2 recommended styles with preview images, and one round of questions.
-3. Script + scene design + **credit quote** → you approve → segment 1 → you approve → the rest.
+3. Script + scene design + **allowance quote** → you approve → segment 1 → you approve → the rest.
 4. QA, voice clean-up, editing with the style's default packaging → the finished MP4.
 
 ---
@@ -206,11 +208,12 @@ What happens next:
 ## Make your own digital human
 
 1. Pick a photo: frontal face, even light, hair off the face, mouth closed. **Only your own photo or one you have permission to use.**
-2. Ask the agent to generate a 4-view sheet (front, both sides, back) — GPT Image 2.5, 2k, ~23 credits — so the face stays the same from every angle.
-3. Compare models with the same image and line (Grok Video 1.5 vs Wan 3.0, 8 s each) and pick one.
-4. Upload the reference to Renoise and put its `material:<id>` into `skills/digital-human-koubo/persona.json` (`renoise.reference_material`, or `other_hosts.me` for a second presenter).
+2. Save it in `skills/digital-human-koubo/assets/` (for example `assets/my_host.jpg`). You do not need to upload it.
+3. Optional: ask the agent to make a 4-view sheet (front, both sides, back) with grok `image_edit`, so the face stays the same from every angle.
+4. Put the path into `skills/digital-human-koubo/persona.json` (`grok.reference_image`, or `other_hosts.me.reference_image` for a second presenter).
+5. Generate one segment of about 8 s. Check the face, lip-sync and voice before you batch.
 
-Details: [`references/new-avatar.md`](skills/digital-human-koubo/references/new-avatar.md). The `material:` IDs in this repo belong to the author's account and won't work on yours — that's expected.
+Details: [`references/new-avatar.md`](skills/digital-human-koubo/references/new-avatar.md). The repo does not include the author's own photo (`host_me_polo.jpg`). Add your own before you use the second presenter.
 
 <p align="center"><img src="docs/images/scene-composite.jpg" width="720" alt="Reference photo → composited livestream studio"></p>
 
@@ -284,13 +287,15 @@ It works on **medium shots with headroom**. In a selfie close-up the person fill
 
 ## Cost reference (real runs)
 
-| Video | Generation | Credits |
-|---|---|---|
-| Livestream ad, 9:16, 27 s | 1 scene image + 5 Grok segments (720p) | **482** |
-| Tutorial Ep2, 16:9, 4:36 | 32 segments (full 720p / PiP 480p) + demos | ~3,250 |
-| Tutorial Ep3, 16:9, 5:54 | 30 new segments + 7 scene images, 17 segments reused | ~3,409 |
+Generation uses the weekly allowance of your grok account, not credits. `/usage` in grok shows whole percentages only, so the numbers below are ranges.
 
-Prices at the time of writing: Grok Video 1.5 — 720p 17 credits/s, 480p 10 credits/s; GPT Image 2.5 2k — 23 credits. Always confirm with the agent's live quote.
+| Measured on 2026-10-26 (X Premium+) | Result |
+|---|---|
+| 4 segments, 36 s of 720p in total | 10–12 % of the weekly allowance |
+| Per second of 720p | about 0.25–0.35 % |
+| 480p | not measured yet |
+
+Estimate: the 27-second livestream ad above (5 segments at 720p) needs about 7–9 % of a weekly allowance, without the scene image. Other grok usage shares the same weekly allowance. The demo videos above were made with Renoise credits.
 
 ## Repository structure
 
@@ -300,7 +305,7 @@ skills/
     SKILL.md                      workflow the agent follows
     persona.json                  presenters, voice descriptions, prompt templates
     references/                   style menu · packaging · playbook · install · research reports
-    scripts/                      build_tasks · rangedl · assemble · align · check_edit · cutout_video
+    scripts/                      build_tasks · grok_generate · assemble · align · check_edit · cutout_video
                                   voicefx/unify · doctor · new_edit · make_assets
     templates/
       huazi-916/                  9:16 data-driven talking-head template (edit.json)
@@ -314,8 +319,9 @@ docs/                             README images, GIF previews, posters
 ## Known pitfalls (all handled by the skill)
 
 - Grok occasionally **burns subtitles** into landscape clips even when told not to → frame check + re-shoot that segment.
-- whisper writes Chinese numbers as digits (九百九十九 → 999), so accuracy drops but the line is correct → listen before re-shooting.
-- Renoise's US CDN can truncate parallel downloads → `rangedl.py` downloads in 6 ranges with resume + decode check.
+- whisper writes Chinese numbers as digits (九百九十九 → 999) and outputs only Simplified Chinese, so accuracy drops although the line is correct → before the comparison, `assemble.py` converts Chinese numbers to digits and Traditional to Simplified on both sides (needs OpenCC). Nobody has tested yet how well grok reads a Traditional Chinese script.
+- The grok mp4 carries an extra cover-image video stream → the scripts read only the first video stream (`v:0`). Otherwise ffprobe returns two width/height pairs.
+- grok video tools refuse to run with ZDR on → set `/privacy` to Opt in before generation, and back to Opt out after.
 - Grok 9:16 720p is **720×1280** — never stretch it to another ratio.
 - Expo easing never quite reaches the target (99.9 → rounds to 100) → counters snap to the exact value at the end.
 - Always mute the presenter video track; doubled audio a few ms apart sounds harsh (comb filtering).
@@ -326,7 +332,7 @@ docs/                             README images, GIF previews, posters
 - Every video carries an "AI digital human" label; scene and animal clips are marked "AI generated".
 - No made-up numbers, prices, offers or reviews — sample data on screen must be labelled as such.
 - Don't use web memes, film/TV stills or celebrity images — the meme components use original stickers generated from your own presenter.
-- Credits are spent only after you approve the quote.
+- The grok allowance is used only after you approve the quote.
 
 ## License & third-party
 
@@ -334,7 +340,7 @@ docs/                             README images, GIF previews, posters
 - **[Remotion](https://www.remotion.dev/)** is used for rendering and has its own license: free for individuals and companies of up to 3 people; larger companies need a [company license](https://www.remotion.pro/).
 - Animated emoji: [Google Noto Emoji Animation](https://googlefonts.github.io/noto-emoji-animation/) (CC BY 4.0) — credit "Animated emoji: Google Noto" in your videos.
 - Maps: [world-atlas](https://github.com/topojson/world-atlas) (ISC; data from Natural Earth, public domain) · [d3-geo](https://github.com/d3/d3-geo), [topojson-client](https://github.com/topojson/topojson-client) (ISC). For maps involving China's borders in formally published content, check against applicable local standards.
-- Speech recognition: [whisper.cpp](https://github.com/ggerganov/whisper.cpp) (MIT). Generation runs on [Renoise](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official) (your account, your credits); optional TTS by [Xiaomi MiMo](https://platform.xiaomimimo.com/).
+- Speech recognition: [whisper.cpp](https://github.com/ggerganov/whisper.cpp) (MIT). Generation runs on the grok CLI by xAI (your grok account, your weekly allowance); optional TTS by [Xiaomi MiMo](https://platform.xiaomimimo.com/).
 - Course screenshots in the WorkBuddy demo come from the author's own course. Demo videos are the author's own work; please don't re-upload them as your own.
 
 See [THIRD_PARTY.md](THIRD_PARTY.md) for details.

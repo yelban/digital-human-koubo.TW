@@ -1,6 +1,6 @@
 """新生成片段：按语言转写 → 与文稿比对 → 裁到说话结束 +0.3s → cut/<id>.mp4（竖 720×1280 / 横 1280×720，30fps，48k 立体声）"""
 import json, subprocess, difflib, re, os, sys
-P = json.load(open('plan.json')); IDS = json.load(open('task_ids.json'))
+P = json.load(open('plan.json'))
 WM = os.environ.get('WHISPER_MODEL') or next((p for p in map(os.path.expanduser, ['~/Library/Application Support/Murmur/models/ggml-medium-q5_0.bin', '~/models/ggml-medium-q5_0.bin', '~/.cache/whisper/ggml-medium-q5_0.bin', '~/models/ggml-medium.bin']) if os.path.exists(p)), '~/models/ggml-medium-q5_0.bin')   # 也可以用环境变量 WHISPER_MODEL 指定
 LANG = {"Mandarin": "zh", "English": "en", "Japanese": "ja", "Korean": "ko", "French": "fr", "Spanish": "es", "Arabic": "ar"}
 PROMPT = {"zh": "以下是普通话的句子。"}
@@ -13,7 +13,7 @@ rep = [r for r in rep if only and r['id'] not in only]
 for r in P['new']:
     sid = r['id']
     if only and sid not in only: continue
-    src = f"gen/renoise-{IDS[sid]}.mp4"; wav = f"cut/{sid}.wav"; lg = LANG[r['lang']]
+    src = f"gen/{sid}.mp4"; wav = f"cut/{sid}.wav"; lg = LANG[r['lang']]
     subprocess.run(['ffmpeg','-loglevel','error','-y','-i',src,'-ar','16000','-ac','1',wav], check=True)
     cmd = ['whisper-cli','-m',WM,'-l',lg] + (['-ml','1'] if lg == 'zh' else []) + ['-oj','-of',f'cut/{sid}','-f',wav]
     if lg in PROMPT: cmd[5:5] = ['--prompt', PROMPT[lg]]
@@ -21,7 +21,7 @@ for r in P['new']:
     d = [t for t in json.load(open(f'cut/{sid}.json', errors='replace'))['transcription'] if t['text'].strip() and not t['text'].strip().startswith('[')]
     heard = ''.join(t['text'] for t in d) if lg in ('zh','ja','ko') else ' '.join(t['text'].strip() for t in d)
     st = min(t['offsets']['from'] for t in d)/1000 if d else 0; en = max(t['offsets']['to'] for t in d)/1000 if d else 0
-    w, h = map(int, subprocess.run(['ffprobe','-v','error','-select_streams','v','-show_entries','stream=width,height','-of','csv=p=0',src],capture_output=True,text=True).stdout.split(','))
+    w, h = map(int, subprocess.run(['ffprobe','-v','error','-select_streams','v:0','-show_entries','stream=width,height','-of','csv=p=0',src],capture_output=True,text=True).stdout.split(','))
     dur = float(subprocess.run(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',src],capture_output=True,text=True).stdout)
     acc = difflib.SequenceMatcher(None, clean(r['t']), clean(heard)).ratio()
     keep = min(dur, en + 0.35, MAXKEEP.get(sid, 99))

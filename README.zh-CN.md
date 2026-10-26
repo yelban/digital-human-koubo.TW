@@ -9,7 +9,7 @@
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-black.svg)](LICENSE)
 ![Agent Skill](https://img.shields.io/badge/Agent%20Skill-SKILL.md-orange)
-[![Renoise MCP](https://img.shields.io/badge/video-Renoise%20MCP-ff7a1a)](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official)
+![grok CLI](https://img.shields.io/badge/video-grok%20CLI-000000)
 ![Remotion](https://img.shields.io/badge/edit-Remotion%204-0b84f3)
 
 <img src="docs/images/cover.jpg" width="820" alt="一张照片 + 一句话，27 秒直播带货广告">
@@ -18,7 +18,7 @@
 
 > 这条 27 秒的直播间广告里，主播不存在。脸、声音、直播间、花字、价格动画，全是 AI 做的。
 > 输入只有一句话：「用这个数字人做一条 30 秒直播间广告，卖 WorkBuddy 上手课，10 节课 99 元，原价 999。」
-> 总共花了 **482 [Renoise](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official) 积分**。
+> 这条示例当时是用 Renoise 生成的（482 积分）。现在的流程改用 grok CLI，用的是你 grok 账号的每周额度，见「成本参考」。
 
 ---
 
@@ -49,25 +49,25 @@
 
 ## 能做什么
 
-- **一张照片做出固定的数字人**：脸、服装、声音描述、提示词模板都存在 `persona.json`，每条片子都是同一个人。想进什么场景（直播间、门店、教室、京都街头），先用 GPT Image 合成开场画面，再让她开口。
-- **对口型的口播片段**：稿子切成 ≤ 15 秒一段，通过 **[Renoise MCP](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official)** 用 **Grok Video 1.5** 生成。也写了 Wan 3.0、OmniHuman（用你自己的录音驱动口型）的用法。
-- **先报价，再花钱**：每次生成前，Agent 先报「段数 · 秒数 · 积分 · 余额」，你点头才开始；先拍第 1 段给你看，满意再批量。
+- **一张照片做出固定的数字人**：脸、服装、声音描述、提示词模板都存在 `persona.json`，每条片子都是同一个人。想进什么场景（直播间、门店、教室、京都街头），先用 grok 的 `image_edit` 合成开场画面，再让她开口。
+- **对口型的口播片段**：稿子切成 ≤ 15 秒一段，通过 **grok CLI** 的 `reference_to_video` 用 **Grok Imagine Video 1.5** 生成。grok CLI 没有音频驱动口型；想用自己的录音对口型，要另接 Wan 3.0、OmniHuman 等服务。
+- **先报额度，再生成**：每次生成前，Agent 先报「段数 · 秒数 · 预估占 grok 每周额度多少」，你点头才开始；先拍第 1 段给你看，满意再批量。
 - **两道质检**：每段用 whisper 回听、和稿子比对；每段抽 4 帧检查（Grok 偶尔会自己往画面里烧字幕，有就重拍那段）。
 - **声音统一**：1/3 倍频程频谱匹配 + 去齿音 + 同一个小房间混响 + 响度统一，30 段分开生成的口播听起来像一次录完（实测齿音段间差 13.2 dB → 5.9 dB）。
 - **按内容推荐剪辑风格**：Agent 先诊断内容，推荐 2 种风格并附预览图，一次问完（风格 · 比例时长 · 花字强度 · 主播）。
 - **48 个包装组件**：逐帧拆了 25 支头部博主视频（MrBeast、Mark Rober、Ryan Trahan、MKBHD、影视飓风、何同学、Johnny Harris、Vox、Kurzgesagt、回形针、半佛仙人、差评、毕导）。每种风格自带默认包装，想加减直接说。
 - **景深字**：大字 / 数字放在背景和人之间（macOS Vision 人像分割 → 透明视频 → 三层合成）。
 - **多语言**：英、日、韩、法、西、阿拉伯语实测，whisper 回听准确率 94–100%。
-- **多种 Agent 都能用**：标准 `SKILL.md` Agent Skill + 脚本，只要能装 Skill、能接远程 MCP、能在本机跑命令，就能驱动整条流程。
+- **多种 Agent 都能用**：标准 `SKILL.md` Agent Skill + 脚本，只要能装 Skill、能在本机跑命令（包括 grok CLI），就能驱动整条流程。
 
 ## 工作流程
 
 ```
-你的内容 ──► 0. 环境检查（Renoise MCP / ffmpeg / whisper，已经有的直接跳过）
+你的内容 ──► 0. 环境检查（grok CLI / ffmpeg / whisper，已经有的直接跳过）
               1. 诊断内容 → 5 种风格里推荐 2 种 → 一次问完 → brief.json
               2. 写稿 script.json（每段 ≤15 秒，中文约 5.4 字/秒）
-              3. 报价 → 等你确认 → 先拍第 1 段 → 你看过 → 批量
-              4. 分片下载（防 CDN 截断）→ whisper 回听 → 抽帧检查
+              3. 报额度（占 grok 每周额度）→ 等你确认 → 先拍第 1 段 → 你看过 → 批量
+              4. grok CLI 逐段生成 → whisper 回听 → 抽帧检查
               5. 声音统一（频谱匹配 + 去齿音 + 同一房间混响）
               6. 逐字时间轴（tl.json）
               7. Remotion 剪辑：风格模板 + 默认包装（+ 你点名的手法）
@@ -80,22 +80,21 @@
 
 ## 支持哪些 Agent
 
-这个 Skill 是一个带 `SKILL.md`（开放的 Agent Skills 格式）的文件夹，加上 Python / Shell / Remotion 脚本。要跑通**完整**流程，Agent 需要三样能力：
+这个 Skill 是一个带 `SKILL.md`（开放的 Agent Skills 格式）的文件夹，加上 Python / Shell / Remotion 脚本。要跑通**完整**流程，Agent 需要两样能力：
 
 1. **能装 Agent Skills**（技能目录或上传技能包）；
-2. **能接远程 MCP 服务器**（Renoise：Streamable HTTP，浏览器登录授权，不用复制 API key）；
-3. **能在你电脑上执行命令**（ffmpeg、Python、Node，用来下载、质检、剪辑）。
+2. **能在你电脑上执行命令**（grok CLI 生成片段；ffmpeg、Python、Node 用来质检、剪辑）。
 
-| Agent | 装 Skill | 接 Renoise MCP | 本机执行命令 | 状态 |
-|---|---|---|---|---|
-| **Claude Code** | `~/.claude/skills/` | `/plugin`（见下文） | ✅ | ✅ 已实测，这个仓库就是用它做的 |
-| **Codex**（CLI / 桌面） | `~/.codex/skills/` | `codex mcp add` | ✅ | ✅ 预期可用（同一套脚本） |
-| **OpenClaw** | 放进 OpenClaw 的技能目录（见其文档） | `openclaw plugins install` | ✅ | ⚙️ 应可用 |
-| **WorkBuddy** | 技能 → 导入文件夹 / 压缩包 | 连接器 → 添加自定义 MCP | ✅ 桌面端 Agent | ⚙️ 应可用，菜单名以 App 当前版本为准 |
-| **豆包** · **千问办公** · **纳米Work** 等 Agent 产品 | 产品支持 Agent Skills 就导入 | 支持自定义 / 远程 MCP 就添加 | 剪辑需要 | ⚙️ 满足上面三样能力即可，具体入口以各产品文档为准 |
-| **Claude 桌面端 / claude.ai** | 设置里上传技能包 | 连接器 → Add custom connector | ⚠️ 只有沙盒 | 写稿、设计场景、报价、生成都能做；本机剪辑需要能跑命令的 Agent |
+| Agent | 装 Skill | 本机执行命令 | 状态 |
+|---|---|---|---|
+| **Claude Code** | `~/.claude/skills/` | ✅ | ✅ 已实测，这个仓库就是用它做的；grok CLI 流程 2026-10-26 实测跑通 |
+| **Codex**（CLI / 桌面） | `~/.codex/skills/` | ✅ | ✅ 预期可用（同一套脚本） |
+| **OpenClaw** | 放进 OpenClaw 的技能目录（见其文档） | ✅ | ⚙️ 应可用 |
+| **WorkBuddy** | 技能 → 导入文件夹 / 压缩包 | ✅ 桌面端 Agent | ⚙️ 应可用，菜单名以 App 当前版本为准 |
+| **豆包** · **千问办公** · **纳米Work** 等 Agent 产品 | 产品支持 Agent Skills 就导入 | 生成和剪辑都需要 | ⚙️ 满足上面两样能力即可，具体入口以各产品文档为准 |
+| **Claude 桌面端 / claude.ai** | 设置里上传技能包 | ⚠️ 只有沙盒 | 能写稿、设计场景；生成和剪辑需要能在本机跑命令的 Agent |
 
-> 如果你的 Agent 只能「MCP + 聊天」、不能跑本机命令，也可以先用它**写稿、报价、生成**片段；剪辑这几步再交给 Claude Code / Codex，或者照 [`SKILL.md`](skills/digital-human-koubo/SKILL.md) 里的命令手动跑。
+> 如果你的 Agent 只能聊天、不能跑本机命令，可以先用它**写稿、设计场景**；生成和剪辑交给 Claude Code / Codex，或者照 [`SKILL.md`](skills/digital-human-koubo/SKILL.md) 里的命令手动跑。
 
 ---
 
@@ -125,21 +124,23 @@ mkdir -p ~/.codex/skills && cp -R skills/digital-human-koubo skills/finance-expl
 cd skills && zip -r ../digital-human-skills.zip digital-human-koubo finance-explainer && cd ..
 ```
 
-### 3 · 接入 Renoise MCP（AI 视频 / 图片生成）
+### 3 · 安装 grok CLI（AI 视频生成）
 
-先去 **[renoise.ai](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official)** 注册账号。登录都在浏览器里完成，不用复制任何 API key。
+口播片段由 grok CLI 的 `reference_to_video` 工具生成（Grok Imagine Video 1.5），用的是你 grok 账号的每周额度。实测 X Premium+ 账号可用，其他方案没测过。
 
-| Agent | 怎么接 |
+| 系统 | 命令 |
 |---|---|
-| Claude Code | `/plugin marketplace add ArcoCodes/renoise-plugins-official`，再 `/plugin install renoise@renoise-plugins-official` |
-| Codex | `codex mcp add renoise --url https://renoise.ai/api/public/mcp`，再 `codex mcp login renoise` |
-| OpenClaw | `openclaw plugins install renoise --marketplace ArcoCodes/renoise-plugins-official` |
-| Claude 桌面端 / claude.ai | 设置 → 连接器 → **Add custom connector** → 名称 `Renoise`，地址 `https://renoise.ai/api/public/mcp` |
-| WorkBuddy、Cursor、Windsurf、Cline、豆包、千问、纳米Work…… | 添加远程 MCP 服务器，地址 `https://renoise.ai/api/public/mcp`（常见配置：`{"mcpServers":{"renoise":{"url":"https://renoise.ai/api/public/mcp"}}}`） |
+| macOS / Linux / WSL | `curl -fsSL https://x.ai/cli/install.sh \| bash` |
+| Windows（PowerShell） | `irm https://x.ai/cli/install.ps1 \| iex` |
 
-官方最新装法：**[renoise.ai/plugin](https://renoise.ai/plugin)**。装好后问 Agent 一句「查一下我的 Renoise 余额」，能查到就连上了。
+装完运行 `grok login`，在浏览器登录。生成前在 grok 里确认两项：
 
-### 4 · 本机工具（下载、质检、剪辑要用）
+- `/privacy` 要是 **Opt in**（ZDR 零数据保留关着）。ZDR 开着时视频工具会直接拒绝。关着期间 grok 会把会话记录上传 xAI，做完改回 **Opt out**。这个设置由你自己改，Agent 不会替你改。
+- `/usage` 看本周额度还剩多少。
+
+> xAI 文档写可以配 S3 储存桶（`tools.zdr_video_output_s3`）让 ZDR 开着也能生成，但 2026-10-26 用个人账号（grok 1.0.70）实测，放在哪个位置都不生效。
+
+### 4 · 本机工具（质检、剪辑要用）
 
 | 工具 | macOS | Windows | Linux |
 |---|---|---|---|
@@ -148,8 +149,9 @@ cd skills && zip -r ../digital-human-skills.zip digital-human-koubo finance-expl
 | Node.js 18+（Remotion） | `brew install node` | `winget install OpenJS.NodeJS.LTS` | `nvm install --lts` |
 | whisper.cpp（`whisper-cli`） | `brew install whisper-cpp` | [Releases 下载](https://github.com/ggerganov/whisper.cpp/releases) | [源码编译](https://github.com/ggerganov/whisper.cpp) |
 | whisper 模型 | 下载 [`ggml-medium-q5_0.bin`](https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium-q5_0.bin) 放到 `~/models/`（或 `export WHISPER_MODEL=模型路径`） | 同左 | 同左 |
+| OpenCC（可选，稿子写繁体时回听比对用） | `brew install opencc` | [OpenCC](https://github.com/BYVoid/OpenCC) | `sudo apt install opencc` |
 
-一条命令检查：已经装好的打勾跳过，缺什么列出多种装法：
+一条命令检查（也会查 grok CLI 装了没、登录了没）：已经装好的打勾跳过，缺什么列出多种装法：
 ```bash
 bash ~/.claude/skills/digital-human-koubo/scripts/doctor.sh
 ```
@@ -179,7 +181,7 @@ python3 ~/.claude/skills/digital-human-koubo/scripts/make_assets.py
    ```
 3. 只克隆**你本人**的声音，或明确授权给你的声音。
 
-> 注意：Grok 的口型跟的是它自己生成的声音。事后换成别的声音，口型会差约 100 毫秒（画中画看不出，全屏特写看得出）。想用自己的录音又要口型准，换「音频驱动口型」的模型，比如 OmniHuman（Skill 里有写法）。
+> 注意：Grok 的口型跟的是它自己生成的声音。事后换成别的声音，口型会差约 100 毫秒（画中画看不出，全屏特写看得出）。想用自己的录音又要口型准，换「音频驱动口型」的模型，比如 OmniHuman（这个 Skill 目前没接）。
 
 ---
 
@@ -198,7 +200,7 @@ python3 ~/.claude/skills/digital-human-koubo/scripts/make_assets.py
 接下来会发生：
 1. 环境检查：已经装好的直接跳过。
 2. 一行诊断 + 推荐 2 种风格（附预览图），一次问完。
-3. 稿子 + 场景设计 + **积分报价** → 你确认 → 先拍第 1 段 → 你确认 → 批量。
+3. 稿子 + 场景设计 + **额度报价** → 你确认 → 先拍第 1 段 → 你确认 → 批量。
 4. 质检、修音，按风格默认包装剪辑 → 出成片 MP4。
 
 ---
@@ -206,11 +208,12 @@ python3 ~/.claude/skills/digital-human-koubo/scripts/make_assets.py
 ## 做你自己的数字人
 
 1. 选一张照片：正脸、光线均匀、头发不挡脸、嘴闭着。**只用你本人或明确授权的照片。**
-2. 让 Agent 生成四视图（正面、两个侧面、背面）：GPT Image 2.5，2k，约 23 积分，保证换角度不变脸。
-3. 同一张图、同一句台词做多模型对比（Grok Video 1.5 vs Wan 3.0，各 8 秒），选一个。
-4. 把参考图上传到 Renoise，把 `material:<id>` 写进 `skills/digital-human-koubo/persona.json`（`renoise.reference_material`；第二位主播写在 `other_hosts.me`）。
+2. 存进 `skills/digital-human-koubo/assets/`（例如 `assets/my_host.jpg`），不用上传。
+3. 可选：让 Agent 用 grok 的 `image_edit` 生成四视图（正面、两个侧面、背面），保证换角度不变脸。
+4. 把路径写进 `skills/digital-human-koubo/persona.json`（`grok.reference_image`；第二位主播写在 `other_hosts.me.reference_image`）。
+5. 先生成 1 段 8 秒左右的片段，看脸、口型、声音满意了再批量。
 
-详细步骤见 [`references/new-avatar.md`](skills/digital-human-koubo/references/new-avatar.md)。仓库里的 `material:` ID 属于作者的账号，你的账号用不了，这是正常的。
+详细步骤见 [`references/new-avatar.md`](skills/digital-human-koubo/references/new-avatar.md)。仓库里没有作者本人的照片（`host_me_polo.jpg`），用第二位主播前请放入你自己的。
 
 <p align="center"><img src="docs/images/scene-composite.jpg" width="720" alt="参考照 → 合成直播间"></p>
 
@@ -284,13 +287,15 @@ python3 scripts/cutout_video.py public/main.mp4 public/main_cut_s4.webm --from 1
 
 ## 成本参考（真实跑过的数）
 
-| 视频 | 生成内容 | 积分 |
-|---|---|---|
-| 直播间广告 9:16 27 秒 | 1 张场景图 + 5 段 Grok 口播（720p） | **482** |
-| 教程第二期 16:9 4 分 36 秒 | 32 段口播（全屏 720p / 画中画 480p）+ 演示素材 | 约 3250 |
-| 数字人升级版 16:9 5 分 55 秒 | 30 段新片段 + 7 张场景图，复用 17 段 | 约 3409 |
+生成用的是你 grok 账号的每周额度，不是积分。grok 里的 `/usage` 只显示整数百分比，所以下面是范围。
 
-写文档时的价格：Grok Video 1.5 720p 17 积分/秒、480p 10 积分/秒；GPT Image 2.5 2k 23 积分/张。以 Agent 实时报价为准。
+| 2026-10-26 实测（X Premium+） | 结果 |
+|---|---|
+| 4 段共 36 秒 720p | 用掉每周额度 10–12% |
+| 每秒 720p | 约 0.25–0.35% |
+| 480p | 还没实测 |
+
+估算：上面 27 秒的直播间广告（5 段 720p）约占每周额度 7–9%，不含场景图。每周额度和 grok 的其他用途共用。上面的示例片当时是用 Renoise 积分做的。
 
 ## 目录结构
 
@@ -300,7 +305,7 @@ skills/
     SKILL.md                      Agent 照着执行的流程
     persona.json                  主播形象、声音描述、提示词模板
     references/                   风格菜单 · 包装组件 · 手法库 · 安装 · 拆解报告
-    scripts/                      build_tasks · rangedl · assemble · align · check_edit · cutout_video
+    scripts/                      build_tasks · grok_generate · assemble · align · check_edit · cutout_video
                                   voicefx/unify · doctor · new_edit · make_assets
     templates/
       huazi-916/                  9:16 数据驱动花字口播模板（edit.json）
@@ -314,8 +319,9 @@ docs/                             README 用的图片、GIF 预览、封面帧
 ## 踩过的坑（Skill 里都处理了）
 
 - Grok 横屏口播偶尔**自己烧字幕**，提示词写了也挡不住 → 抽帧检查，重拍那段。
-- whisper 会把中文数字写成阿拉伯数字（九百九十九 → 999），准确率会掉，但其实没念错 → 先听再决定重拍。
-- Renoise 美国 CDN 并行下载会断成半截 → `rangedl.py` 6 段 Range 续传 + 解码校验。
+- whisper 会把中文数字写成阿拉伯数字（九百九十九 → 999），而且只输出简体，准确率会掉，但其实没念错 → `assemble.py` 比对前两边都把中文数字转成阿拉伯数字、繁转简（要装 OpenCC）。grok 念繁体稿的效果还没测过。
+- grok 的 mp4 多带一条封面图视频流 → 脚本只读第一条视频流（`v:0`），不然会读到两组宽高。
+- ZDR 开着时 grok 视频工具不能用 → 生成前 `/privacy` 改成 Opt in，做完改回 Opt out。
 - Grok 9:16 720p 是 **720×1280**，别拉成别的比例。
 - expo 缓动到不了终点（99.9 四舍五入成 100）→ 计数动画结束时强制落在精确值。
 - 主播视频轨一定要静音；两条声音差几毫秒叠在一起会刺耳（梳状滤波）。
@@ -326,7 +332,7 @@ docs/                             README 用的图片、GIF 预览、封面帧
 - 每条片子标「内容由 AI 数字人演绎」，场景和动物片段标「AI 生成」。
 - 不编数字、价格、优惠、评价；画面上的示意数据要标「示意」。
 - 不用网络梗图、影视剧截图、明星照片；梗图类组件用你自己数字人生成的原创贴纸。
-- 积分只在你确认报价之后才花。
+- grok 额度只在你确认报价之后才用。
 
 ## 许可与第三方
 
@@ -334,7 +340,7 @@ docs/                             README 用的图片、GIF 预览、封面帧
 - 渲染用的 **[Remotion](https://www.remotion.dev/)** 有自己的许可：个人和 3 人以内的公司免费，更大的公司需要购买[公司授权](https://www.remotion.pro/)。
 - 动态表情：[Google Noto Emoji Animation](https://googlefonts.github.io/noto-emoji-animation/)（CC BY 4.0），视频里请署名「Animated emoji: Google Noto」。
 - 地图：[world-atlas](https://github.com/topojson/world-atlas)（ISC，数据来自 Natural Earth，公有领域）、[d3-geo](https://github.com/d3/d3-geo)、[topojson-client](https://github.com/topojson/topojson-client)（ISC）。涉及中国边界的正式发布内容，请按国内相关规范另行核对。
-- 语音识别：[whisper.cpp](https://github.com/ggerganov/whisper.cpp)（MIT）。生成走 [Renoise](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official)（用你自己的账号和积分）；可选 TTS 用 [小米 MiMo](https://platform.xiaomimimo.com/)。
+- 语音识别：[whisper.cpp](https://github.com/ggerganov/whisper.cpp)（MIT）。生成走 xAI 的 grok CLI（用你自己 grok 账号的每周额度）；可选 TTS 用 [小米 MiMo](https://platform.xiaomimimo.com/)。
 - WorkBuddy 示例里的课程截图来自作者自己的课程。示例视频是作者的作品，请不要当成自己的作品二次上传。
 
 详见 [THIRD_PARTY.md](THIRD_PARTY.md)。

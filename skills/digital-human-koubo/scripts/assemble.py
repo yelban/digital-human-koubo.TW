@@ -1,22 +1,43 @@
 #!/usr/bin/env python3
 """逐段回听 → 剪掉段尾空白 → 统一规格 → 拼接。
-用法：python3 assemble.py script.json ids.json [--out 成片_完整版.mp4] [--lang zh] [--size 宽x高（默认保持源尺寸）]
-- script.json：[{"id","t",...}]（和 build_tasks.py 同一份）；ids.json：{"s1": 363509, ...}（段 id → Renoise taskId）；下载的文件在 gen/renoise-<taskId>.mp4
+用法：python3 assemble.py script.json [--out 成片_完整版.mp4] [--lang zh] [--size 宽x高（默认保持源尺寸）]
+- script.json：[{"id","t",...}]（和 build_tasks.py 同一份）；生成的片段在 gen/<段 id>.mp4（grok_generate.py 的输出）
 - 每段：whisper 转写（中性提示，不用 --prompt 原文，免得漏前半句）→ 和文稿比准确率 → 只保留到说完后 0.25 秒
+- 比准确率前两边都繁转简（要装 opencc）、中文数字转阿拉伯数字，所以繁体稿、「八秒」和「8 秒」都不会被误判
 - 输出 cut/<id>.mp4（30fps、48k 立体声）、cut/<id>.json（逐字时间，align.py 用）、cut/qa.json、拼接好的 --out（-16 LUFS）
 - 准确率 < 85% 的段打 ⚠，先人工听；真念错就单独重拍那段"""
-import json, subprocess, difflib, re, os, sys
+import json, subprocess, difflib, re, os, shutil, sys
 from pathlib import Path
 a = sys.argv[1:]
-if len(a) < 2: sys.exit(__doc__)
-S = json.load(open(a[0])); IDS = json.load(open(a[1]))
+if len(a) < 1: sys.exit(__doc__)
+S = json.load(open(a[0]))
 opt = lambda k, d: a[a.index(k) + 1] if k in a else d
 out_name, lang, size = opt('--out', '成片_完整版.mp4'), opt('--lang', 'zh'), opt('--size', '')
 WM = os.environ.get('WHISPER_MODEL') or next((p for p in map(os.path.expanduser, ['~/Library/Application Support/Murmur/models/ggml-medium-q5_0.bin', '~/models/ggml-medium-q5_0.bin', '~/.cache/whisper/ggml-medium-q5_0.bin', '~/models/ggml-medium.bin']) if os.path.exists(p)), '~/models/ggml-medium-q5_0.bin')
-clean = lambda s: re.sub(r'[\s，。、：；！？,.:;!?“”]', '', s).lower()
+OPENCC = shutil.which('opencc')   # 可选：没装就不做繁转简，繁体稿的准确率会偏低
+DIGIT = dict(zip('零〇一二两三四五六七八九', (0, 0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9)))
+UNIT = {'十': 10, '百': 100, '千': 1000}
+
+def cn_int(run):
+    """二零二六 → 2026（逐位）；两千零二十六 → 2026（带单位）。万、亿留原字，所以「三千万」和「3000万」都变成 3000万"""
+    if not set(run) & set(UNIT): return ''.join(str(DIGIT[c]) for c in run)
+    n = cur = 0
+    for c in run:
+        if c in UNIT: n += (cur or 1) * UNIT[c]; cur = 0
+        else: cur = DIGIT[c]
+    return str(n + cur)
+
+def clean(s):
+    """文稿和 whisper 结果都过一遍：繁转简、中文数字转阿拉伯数字（whisper 习惯写 8秒、1.5版），再去标点。
+    「一下」「统一」也会变成「1下」「统1」，两边一样所以不影响比对"""
+    if OPENCC: s = subprocess.run([OPENCC, '-c', 't2s'], input=s, capture_output=True, text=True, check=True).stdout   # 失败时两边都成空字串会全判 100%，所以不吞错
+    s = re.sub('[零〇一二两三四五六七八九十百千]+', lambda m: cn_int(m[0]), s)
+    s = re.sub(r'(\d)点(\d)', r'\1.\2', s)
+    return re.sub(r'[\s，。、：；！？,.:;!?“”「」]', '', s).lower()
+
 Path('cut').mkdir(exist_ok=True); rep = []
 for s in S:
-    sid = s['id']; src = f"gen/renoise-{IDS[sid]}.mp4"; wav = f'cut/{sid}.wav'
+    sid = s['id']; src = f"gen/{sid}.mp4"; wav = f'cut/{sid}.wav'
     lg = s.get('lang_code', lang)
     subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', src, '-ar', '16000', '-ac', '1', wav], check=True)
     cmd = ['whisper-cli', '-m', WM, '-l', lg] + (['--prompt', '以下是普通话的句子。', '-ml', '1'] if lg == 'zh' else []) + ['-oj', '-of', f'cut/{sid}', '-f', wav]
@@ -25,7 +46,7 @@ for s in S:
     heard = ''.join(t['text'] for t in d)
     st = min(t['offsets']['from'] for t in d) / 1000 if d else 0; en = max(t['offsets']['to'] for t in d) / 1000 if d else 0
     dur = float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', src], capture_output=True, text=True).stdout)
-    w, h = map(int, subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', src], capture_output=True, text=True).stdout.split(','))
+    w, h = map(int, subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', src], capture_output=True, text=True).stdout.split(','))
     sz = size or f'{w - w % 2}x{h - h % 2}'          # 保持源尺寸（Grok 9:16 720p 是 720×1280，别拉成 720×1440）
     acc = difflib.SequenceMatcher(None, clean(s['t']), clean(heard)).ratio()
     keep = min(dur, en + 0.25)
