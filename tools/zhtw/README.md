@@ -18,14 +18,16 @@
 | `python3 tools/zhtw/zhtw.py terms` | 列出 opencc 用台灣詞彙換掉的詞，預設只看上次 build 之後改過的檔案。換錯的就加進 `phrases.tsv` |
 | `python3 tools/zhtw/zhtw.py convert <目錄>` | 只轉換一個目錄，不碰 git，試轉換用 |
 
-產生完用 `git push origin simplified main` 推上去。
+產生完用 `git push origin simplified main` 一起推上去。要分開推的話先推 `simplified`，`main` 的第二個 parent 才會在遠端。
 
 ## 上游更新時
 
 1. `git switch simplified`，再跑 `python3 tools/zhtw/zhtw.py sync`。
 2. 有衝突時，衝突只會出現在本 fork 改過的地方（grok 後端那些檔案），照簡體解決。
 3. 跑 `python3 tools/zhtw/zhtw.py terms`，看新加的文字有沒有被轉錯的詞，有就補 `phrases.tsv`、commit，再 `build`。
-4. `git diff main^1 main` 看這次產生的差異，沒問題就 push。
+4. 檢查差異，沒問題就 push：
+   - 繁體結果：`build` 最後印出的那行 `git diff <舊 main> main`。
+   - 這輪的功能改動（簡體）：`git diff <上一個 Zhtw-Source> simplified`。`Zhtw-Source` 寫在 `main` 每個產生的 commit 訊息裡。
 
 ## 轉換規則
 
