@@ -7,7 +7,7 @@ grok 按 desc 配音时，每段的声音可能有细微差别。要每段固定
 - persona.json 的 `voice.preset` 填音色名（第二位主播填 `other_hosts.me.voice_preset`），例如 `"eve"`。null = 照 desc 配音。
 - build_tasks.py 会在任务里带 `"voices": ["eve"]`，提示词的声音描述改成 `the voice from <AUDIO_0>`；grok_generate.py 会核对 grok 实际传的音色。
 - 可用的名字（2026-10-27 用不存在的音色名问 grok 拿到的清单）：ara、eve、leo、rex、sal、carina、zagan、helix、orion、luna、iris、altair、zenith、perseus、helios、lux、kepler、rigel、cosmo、celeste、ursa、sirius、lumen、castor、naksh、atlas。名字填错时，grok_generate.py 会印出最新清单。
-- xAI 文档说每个音色都能说所有支持的语言，中文只有一个代码 `zh`，没有地区口音的选项；eve、leo 标的是英国腔。官方没写性别，中文听起来怎样也没测过：先拍第 1 段给用户听，再批量。
+- xAI 文档说每个音色都能说所有支持的语言，中文只有一个语言代码 `zh`，没有地区口音的选项；eve、leo 标的是英国腔。官方没写性别，中文听起来怎样也没测过：先拍第 1 段给用户听，再批量。
 - 自己的声音：grok 的错误消息说 `/v1/custom-voices` API 建的自定义音色也能用，但要 xAI API 密钥，这个技能没接、也没测过。
 
 ## 换成自己的声音（MiMo 克隆）
