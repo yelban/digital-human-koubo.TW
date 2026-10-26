@@ -8,6 +8,8 @@
  "voice": {
   "engine": "grok-native",
   "desc": "young friendly female voice, clear and patient but lively, natural pace",
+  "preset": null,
+  "preset_note": "可選：填 grok 內建音色名（如 \"eve\"），每段都用同一個聲音，提示詞改用 <AUDIO_0>、不再用 desc。可用的名字見 references/voice.md。null = 按 desc 由 grok 自己配音",
   "speed_cps": 5.4,
   "alt_clone": "MiMo mimo-v2.5-tts-voiceclone，參照用 3 段 Grok 口播拼的 ≥12 秒乾聲（見 references/voice.md）"
  },
@@ -30,7 +32,7 @@
   "vlog": "relaxed lifestyle vlogger sharing a favorite tool, natural small head tilts and nods, one hand comes up briefly in a casual gesture",
   "depth": "medium shot with generous headroom and plain background visible on both sides of the head and shoulders (for text-behind-subject graphics), calm confident delivery"
  },
- "prompt_template": "The young woman in {ref} talks straight into her phone's front camera, same selfie framing, lighting and outfit as the reference, like a friendly Chinese tech vlogger {purpose}: {act}. Handheld selfie feel with only a very slight natural sway. She speaks Mandarin Chinese, clearly lip-synced, in a {voice}:\n“{line}”\nSound: only her voice and quiet room tone, no music, no subtitles, no on-screen text.",
+ "prompt_template": "The young woman in {ref} talks straight into her phone's front camera, same selfie framing, lighting and outfit as the reference, like a friendly Chinese tech vlogger {purpose}: {act}. Handheld selfie feel with only a very slight natural sway. She speaks Mandarin Chinese, clearly lip-synced, in {voice}:\n“{line}”\nSound: only her voice and quiet room tone, no music, no subtitles, no on-screen text.",
  "disclosure": "內容由 AI 數位人演繹",
  "other_hosts": {
   "me": {
@@ -39,7 +41,8 @@
    "ratio": "16:9",
    "note": "使用者本人照片，只給使用者自己的片子用；橫式照直接出橫式口播。倉庫裡沒有這張圖，用前放入你本人的照片。",
    "voice": "warm, steady, confident male voice around 35 years old, natural pace",
-   "prompt_template": "The man in {ref} talks straight to the camera, same framing, gray studio backdrop, navy polo shirt, glasses and soft lighting as the reference, like a friendly tech blogger {purpose}: {act}. Locked-off camera, no zoom. He speaks {language}, clearly lip-synced, in a {voice}:\n“{line}”\nSound: only his voice and quiet room tone, no music, no subtitles, no captions, no on-screen text of any kind."
+   "voice_preset": null,
+   "prompt_template": "The man in {ref} talks straight to the camera, same framing, gray studio backdrop, navy polo shirt, glasses and soft lighting as the reference, like a friendly tech blogger {purpose}: {act}. Locked-off camera, no zoom. He speaks {language}, clearly lip-synced, in {voice}:\n“{line}”\nSound: only his voice and quiet room tone, no music, no subtitles, no captions, no on-screen text of any kind."
   },
   "cat": {
    "name": "橘貓店長",

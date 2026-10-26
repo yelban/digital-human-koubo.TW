@@ -10,6 +10,7 @@ script.json：[{"id": "s1", "shot": "full|pip|vlog", "t": "这一段要念的台
 - ref：进场景的段落（先用 grok image_edit 合成好的开场画面），不写就用主播的参考图
 - 每段时长 = ceil(字数 / 5.4 + 1.0)，夹在 4–15 秒（Grok 单段上限 15 秒；5.4 字/秒是实测语速）
 - full 段 720p，pip 段 480p（画中画里看不出差别）；--all-720p 全部 720p
+- 声音：persona.json 的 voice.preset（第二位主播是 other_hosts.me.voice_preset）填了内置音色名，任务就带 "voices"，提示词用 <AUDIO_0>；null 就照 desc 由 grok 配音
 - 超过 15 秒的段会报错：先把台词拆短再跑
 提交前一定先把段数、秒数和预估占每周额度报给用户，等用户确认。
 """
@@ -45,19 +46,25 @@ def main():
         lo += d * pct[0]; hi += d * pct[1]
         act = P["acts"].get(shot, P["acts"]["full"])
         if s.get("host", "tank") == "me":
-            H = P["other_hosts"]["me"]; img = H["reference_image"]; ratio = H["ratio"]
-            prompt = H["prompt_template"].format(ref="<IMAGE_0>", purpose=purpose, act=act, voice=H["voice"], language=lang, line=s["t"])
+            H = P["other_hosts"]["me"]; img = H["reference_image"]; ratio = H["ratio"]; preset = H.get("voice_preset")
+            prompt = H["prompt_template"].format(ref="<IMAGE_0>", purpose=purpose, act=act, voice=voice_text(preset, H["voice"]), language=lang, line=s["t"])
         else:
-            img = P["grok"]["reference_image"]; ratio = P["model"]["ratio"]
-            prompt = P["prompt_template"].format(ref="<IMAGE_0>", purpose=purpose, act=act, voice=P["voice"]["desc"], line=s["t"]).replace("Mandarin Chinese", lang)
+            img = P["grok"]["reference_image"]; ratio = P["model"]["ratio"]; preset = P["voice"].get("preset")
+            prompt = P["prompt_template"].format(ref="<IMAGE_0>", purpose=purpose, act=act, voice=voice_text(preset, P["voice"]["desc"]), line=s["t"]).replace("Mandarin Chinese", lang)
         img = Path(s.get("ref") or img)
         img = (img if img.is_absolute() else (Path(src).parent / img if s.get("ref") else HERE / img)).resolve()
         if not img.exists():
             sys.exit(f"{s['id']} 的参考图不存在：{img}（换形象见 references/new-avatar.md）")
-        tasks.append({"id": s["id"], "prompt": prompt, "images": [str(img)], "aspect_ratio": ratio, "duration": d, "resolution_name": res})
+        task = {"id": s["id"], "prompt": prompt, "images": [str(img)], "aspect_ratio": ratio, "duration": d, "resolution_name": res}
+        if preset: task["voices"] = [preset]
+        tasks.append(task)
     Path(dst).write_text(json.dumps(tasks, ensure_ascii=False, indent=1))
     secs = sum(t["duration"] for t in tasks)
     print(f"{len(tasks)} 段 · 口播约 {secs} 秒 · 预估占 grok 每周额度 {lo:.0f}–{hi:.0f}%（720p 实测每秒 0.25–0.35%；480p 未实测，按 720p 估）")
+
+def voice_text(preset, desc):
+    """填进提示词「in {voice}」的那段：有内置音色就指向 <AUDIO_0>，没有就用文字描述的声音。"""
+    return "the voice from <AUDIO_0>" if preset else f"a {desc}"
 
 if __name__ == "__main__":
     main()

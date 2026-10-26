@@ -75,7 +75,7 @@ description: 用固定的數位人形象（白背心數位人 / 使用者本人�
 - references/packaging-presets.json：五種風格各自的預設包裝
 - references/huazi.md：花字模板 edit.json 欄位、九種卡片、三檔強度、寫法習慣
 - persona.json：白背心數位人 + 其他主播（使用者本人、橘貓店長、柴犬主播）、提示詞模板、動作庫、多語言實測
-- references/voice.md：換聲音（MiMo 克隆 / 音色設計）
+- references/voice.md：換聲音（grok 內建音色 / MiMo 克隆 / 音色設計）
 - references/new-avatar.md：從一張照片做新形象
 - references/edit-styles.md：各剪輯工程的入口檔案和聲音統一做法
 - assets/styles/：五種風格的預覽圖（給使用者選的時候發）

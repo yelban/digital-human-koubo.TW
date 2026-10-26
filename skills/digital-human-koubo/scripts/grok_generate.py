@@ -2,7 +2,7 @@
 """tasks.json → grok CLI 逐段生成口播片段（reference_to_video，Grok Imagine Video 1.5）→ gen/<段 id>.mp4。
 
 用法：python3 grok_generate.py tasks.json [--out gen] [--only s1,s3] [--timeout 600]
-- tasks.json 由 build_tasks.py 生成：[{"id","prompt","images":[绝对路径],"aspect_ratio","duration","resolution_name"}, ...]
+- tasks.json 由 build_tasks.py 生成：[{"id","prompt","images":[绝对路径],"aspect_ratio","duration","resolution_name","voices":[内置音色名，可选]}, ...]
 - 前提：grok 已登录；grok 里 /privacy 是 Opt in（ZDR 关着），否则视频工具直接报错
 - 串行生成，每段约 1–1.5 分钟；gen/<id>.mp4 已存在且能解码就跳过，要重拍就删掉那个文件
 - grok 以 gen/.grok/ 为工作目录，里面只放参考图，不把整个工程暴露给 grok
@@ -59,7 +59,8 @@ def instruction(t):
             f"aspect_ratio: {json.dumps(t['aspect_ratio'])}\n"
             f"duration: {t['duration']}\n"
             f"resolution_name: {json.dumps(t['resolution_name'])}\n"
-            f"prompt:\n{t['prompt']}")
+            + (f"voices: {json.dumps(t['voices'])}\n" if t.get("voices") else "")
+            + f"prompt:\n{t['prompt']}")
 
 def run_grok(t, work, timeout):
     """跑一段，回传 (视频路径, grok 实际传的参数, 错误说明)。"""
@@ -92,11 +93,12 @@ def run_grok(t, work, timeout):
     msg = r.get("message") or str(r)
     if "zero data retention" in msg.lower():
         sys.exit("grok 的 ZDR（零数据保留）开着，视频工具不可用。请用户在 grok 里输入 /privacy 改成 Opt in 再跑；做完提醒改回 Opt out。")
-    return None, used, msg[:300]
+    return None, used, msg if "voice" in msg.lower() else msg[:300]   # 音色名错误时，可用清单在错误消息后半段
 
 def mismatches(t, used):
     if not used: return ["没看到 grok 的工具调用记录"]
     bad = [k for k in ("aspect_ratio", "duration", "resolution_name", "images") if used.get(k) != t[k]]
+    if (used.get("voices") or []) != (t.get("voices") or []): bad.append("voices")
     if (used.get("prompt") or "").strip() != t["prompt"].strip(): bad.append("prompt")
     return bad
 
