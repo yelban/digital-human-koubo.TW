@@ -20,4 +20,4 @@ if [ ! -f "$DST/public/sfx/pop.wav" ]; then
   PY=""; for p in python3 python3.14 python3.13 python3.12 python3.11; do command -v $p >/dev/null 2>&1 && $p -c "import numpy" 2>/dev/null && PY=$p && break; done
   if [ -f "$MA" ] && [ -n "$PY" ]; then "$PY" "$MA" "$DST/public"; else echo "⚠ 缺音效：装好 numpy 后运行 python3 $MA $DST/public，或自己放 public/sfx/*.wav 与 public/music/bgm.mp3"; fi
 fi
-cd "$DST" && npx tsc --noEmit -p . && echo "引擎就绪：$DST（素材放 public/，timeline.json 由 build_timeline.py 写入）"
+cd "$DST" && npx tsc --noEmit -p . && echo "引擎就绪：${DST}（素材放 public/，timeline.json 由 build_timeline.py 写入）"

@@ -7,7 +7,7 @@ set -e
 TPL="$1"; DST="$2"
 [ -z "$TPL" ] || [ -z "$DST" ] && { echo "用法：bash new_edit.sh huazi-916 <工程目录>"; exit 1; }
 SRC="$(cd "$(dirname "$0")/.." && pwd)/templates/$TPL"
-[ -d "$SRC" ] || { echo "没有模板 $TPL（可用：huazi-916、reference/launch-169、reference/tutorial-169、reference/multihost-169）"; exit 1; }
+[ -d "$SRC" ] || { echo "没有模板 ${TPL}（可用：huazi-916、reference/launch-169、reference/tutorial-169、reference/multihost-169）"; exit 1; }
 [ -e "$DST/src" ] && { echo "$DST 里已经有 src/，不覆盖"; exit 1; }
 mkdir -p "$DST" && cp -R "$SRC/." "$DST/"
 # 参考实现不带素材：音效和配乐从花字模板拿

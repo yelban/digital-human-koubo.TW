@@ -10,7 +10,7 @@ need(){ # need 名称 用途 mac装法 win装法 linux装法 其他装法
   printf "      推荐：%s\n" "$first"
   for kv in "macOS|$3" "Windows|$4" "Linux|$5" "其他|$6"; do n=${kv%%|*}; v=${kv#*|}; [ "$v" = "$first" ] || [ -z "$v" ] || printf "      %s：%s\n" "$n" "$v"; done
 }
-echo "数字人口播 · 本机环境检查（$OS）"
+echo "数字人口播 · 本机环境检查（${OS}）"
 GROK=$(command -v grok || { [ -x ~/.grok/bin/grok ] && echo ~/.grok/bin/grok; })
 if [ -n "$GROK" ]; then
   ok "grok CLI $("$GROK" --version 2>/dev/null | awk '{print $2}')"
