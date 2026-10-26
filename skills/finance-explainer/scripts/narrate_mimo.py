@@ -27,6 +27,7 @@ import difflib
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -141,6 +142,15 @@ def whisper_chars(wav, prompt="", model=None):
     return out
 
 
+def t2s_table(text):
+    """剧本里繁体字 → 简体字的逐字对照（whisper 只输出简体），比对时换字、下标不变。没装 opencc 就是空表"""
+    cs = sorted({c for c in text if not c.isspace()}); oc = shutil.which("opencc")
+    if not oc:
+        return {}
+    out = subprocess.run([oc, "-c", "t2s"], input="\n".join(cs), capture_output=True, text=True, check=True).stdout.split("\n")
+    return {a: b for a, b in zip(cs, out) if len(b) == 1 and a != b}
+
+
 def norm(ch):
     return ch.lower()
 
@@ -148,7 +158,8 @@ def norm(ch):
 def align(text, wch, dur):
     """原文每个字的开始时刻（相对本拍）。能对上的用 whisper 时间，对不上的在前后已知点之间按位置插值。"""
     idx = [i for i, c in enumerate(text) if c not in PUNCT and not c.isspace()]
-    a = [norm(text[i]) for i in idx]
+    t2s = t2s_table(text)
+    a = [norm(t2s.get(text[i], text[i])) for i in idx]
     b = [norm(c) for c, _, _ in wch if c not in PUNCT]
     bt = [t0 for c, t0, _ in wch if c not in PUNCT]
     known = {}

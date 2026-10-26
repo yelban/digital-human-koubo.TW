@@ -1,5 +1,13 @@
 """第三期时间轴：冷开场（多语言快闪 + 猫狗）→ 字卡 → 她开场 → 基础三步（复用第二期）→ 交棒 → 你讲多语言/进场景（插 4 段场景）→ 她讲换角色（插猫狗）→ 成片流程（复用）→ 结尾快闪 + 两人同框 + 片尾"""
-import json, difflib
+import json, difflib, shutil, subprocess
+
+def t2s_table(text):
+    """文稿里繁体字 → 简体字的逐字对照（whisper 只输出简体），比对时换字、下标不变。没装 opencc 就是空表"""
+    cs = sorted({c for c in text if not c.isspace()}); oc = shutil.which('opencc')
+    if not oc: return {}
+    out = subprocess.run([oc, '-c', 't2s'], input='\n'.join(cs), capture_output=True, text=True, check=True).stdout.split('\n')
+    return {a: b for a, b in zip(cs, out) if len(b) == 1 and a != b}
+
 EP2 = '../renoise-academy-ep2/'
 P = json.load(open('plan.json')); NEW = {r['id']: r for r in P['new']}
 Q = {r['id']: r for r in json.load(open('cut/qa.json'))}
@@ -13,7 +21,8 @@ def chars_of(sid, text):
         if not tx or tx.startswith('['): continue
         for k, ch in enumerate(tx):
             if ch not in PUNCT: toks.append((ch.lower(), s + (e - s) * k / len(tx)))
-    clean = [(j, ch.lower()) for j, ch in enumerate(text) if ch not in PUNCT]
+    T2S = t2s_table(text)
+    clean = [(j, T2S.get(ch, ch).lower()) for j, ch in enumerate(text) if ch not in PUNCT]
     a = ''.join(c for _, c in clean); b = ''.join(c for c, _ in toks)
     sm = difflib.SequenceMatcher(None, a, b, autojunk=False); st = [None] * len(clean)
     for bl in sm.get_matching_blocks():
