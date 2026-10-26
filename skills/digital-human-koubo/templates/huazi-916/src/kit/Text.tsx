@@ -1,12 +1,12 @@
-// 文字类：留存大字幕（逐词砸出）、人名条、出处角标、数字滚动 / 赌注计数、倒计时、章节卡、参数卡。
+// 文字類：留存大字幕（逐詞砸出）、人名條、出處角標、數字滾動 / 賭注計數、倒計時、章節卡、參數卡。
 import React from "react";
 import { AbsoluteFill, interpolate } from "remotion";
 import { C, F, FONT, clamp, ease, lerp, sp, stroke, useT } from "./core";
 
-/** 留存大字幕：一次 1–3 个词居中砸出，关键词换色放大，轻微上下弹。words = [{t, at, key?}] */
+/** 留存大字幕：一次 1–3 個詞居中砸出，關鍵詞換色放大，輕微上下彈。words = [{t, at, key?}] */
 export const RetentionCaption: React.FC<{ words: Array<{ t: string; at: number; key?: boolean }>; y?: number; size?: number; color?: string; keyColor?: string; group?: number }> = ({ words, y = 760, size = 96, color = "#fff", keyColor = C.yellow, group = 2 }) => {
   const { f, t } = useT();
-  // 找当前组：按 group 个词一组，组的结束 = 下一组开始
+  // 找當前組：按 group 個詞一組，組的結束 = 下一組開始
   const groups: Array<typeof words> = [];
   for (let i = 0; i < words.length; i += group) groups.push(words.slice(i, i + group));
   const gi = groups.findIndex((g, k) => t >= g[0].at - 0.03 && (k + 1 >= groups.length || t < groups[k + 1][0].at - 0.03));
@@ -29,7 +29,7 @@ export const RetentionCaption: React.FC<{ words: Array<{ t: string; at: number; 
   );
 };
 
-/** 人名条 / 身份条：左下角，色块先滑出、文字跟着进。 */
+/** 人名條 / 身份條：左下角，色塊先滑出、文字跟著進。 */
 export const LowerThird: React.FC<{ at: number; until: number; name: string; title?: string; color?: string; x?: number; y?: number }> = ({ at, until, name, title, color = C.orange, x = 90, y = 820 }) => {
   const { f } = useT();
   if (f < F(at) || f > F(until)) return null;
@@ -49,18 +49,18 @@ export const LowerThird: React.FC<{ at: number; until: number; name: string; tit
   );
 };
 
-/** 出处角标：「来源：xxx · 2026-10」小字，右下 / 左下，淡入。说法有出处时一定挂。 */
+/** 出處角標：「來源：xxx · 2026-10」小字，右下 / 左下，淡入。說法有出處時一定掛。 */
 export const SourceTag: React.FC<{ at: number; until: number; text: string; side?: "l" | "r"; y?: number; dark?: boolean }> = ({ at, until, text, side = "r", y = 1010, dark }) => {
   const { f } = useT();
   const o = interpolate(f, [F(at), F(at) + 8, F(until) - 8, F(until)], [0, 1, 1, 0], clamp);
   return <div style={{ position: "absolute", [side === "r" ? "right" : "left"]: 40, top: y, opacity: o, fontFamily: FONT.zh, fontSize: 22, color: dark ? "rgba(20,20,20,.7)" : "rgba(255,255,255,.85)", background: dark ? "rgba(255,255,255,.7)" : "rgba(0,0,0,.45)", padding: "4px 12px", borderRadius: 6 }}>{text}</div>;
 };
 
-/** 数字滚动 / 赌注计数：大数字从 from 滚到 to，到达时弹一下；money=true 用 $ 和千分位。 */
+/** 數字滾動 / 賭注計數：大數字從 from 滾到 to，到達時彈一下；money=true 用 $ 和千分位。 */
 export const Counter: React.FC<{ at: number; dur?: number; from?: number; to: number; prefix?: string; unit?: string; label?: string; x?: number; y?: number; size?: number; color?: string; align?: "center" | "left" }> = ({ at, dur = 1.1, from = 0, to, prefix = "", unit = "", label, x = 0, y = 380, size = 200, color = C.green, align = "center" }) => {
   const { f } = useT();
   if (f < F(at) - 2) return null;
-  const v = f >= F(at + dur) ? to : lerp(f, at, at + dur, from, to, ease.expo);   // 落地必须是精确值
+  const v = f >= F(at + dur) ? to : lerp(f, at, at + dur, from, to, ease.expo);   // 落地必須是精確值
   const land = sp(f, at + dur, 7, 300, 0.5);
   const sc = f >= F(at + dur) ? 1 + 0.12 * (1 - land) : 1;
   return (
@@ -73,8 +73,8 @@ export const Counter: React.FC<{ at: number; dur?: number; from?: number; to: nu
   );
 };
 
-/** 倒计时 / 计时器：右上角药丸，最后 3 秒变红并跳动。 */
-export const Countdown: React.FC<{ at: number; seconds: number; label?: string; x?: number; y?: number }> = ({ at, seconds, label = "剩余", x = 1560, y = 60 }) => {
+/** 倒計時 / 計時器：右上角藥丸，最後 3 秒變紅並跳動。 */
+export const Countdown: React.FC<{ at: number; seconds: number; label?: string; x?: number; y?: number }> = ({ at, seconds, label = "剩餘", x = 1560, y = 60 }) => {
   const { f, t } = useT();
   if (t < at || t > at + seconds + 0.6) return null;
   const left = Math.max(0, seconds - (t - at));
@@ -89,7 +89,7 @@ export const Countdown: React.FC<{ at: number; seconds: number; label?: string; 
   );
 };
 
-/** 章节卡：大号序号 + 标题，左侧色条扫入，0.9–1.4 秒内完成，背景可透明叠在画面上。 */
+/** 章節卡：大號序號 + 標題，左側色條掃入，0.9–1.4 秒內完成，背景可透明疊在畫面上。 */
 export const ChapterCard: React.FC<{ at: number; until: number; n: string; title: string; sub?: string; color?: string; solid?: boolean }> = ({ at, until, n, title, sub, color = C.orange, solid = true }) => {
   const { f } = useT();
   if (f < F(at) || f > F(until)) return null;
@@ -107,7 +107,7 @@ export const ChapterCard: React.FC<{ at: number; until: number; n: string; title
   );
 };
 
-/** 参数卡（质感派）：大数字 + 小单位 + 细标签，逐行淡入、左对齐、留白多，叠在产品画面旁。 */
+/** 參數卡（質感派）：大數字 + 小單位 + 細標籤，逐行淡入、左對齊、留白多，疊在產品畫面旁。 */
 export const SpecCard: React.FC<{ at: number; until: number; rows: Array<{ k: string; v: string; u?: string; at?: number }>; x?: number; y?: number; dark?: boolean; accent?: string }> = ({ at, until, rows, x = 1180, y = 300, dark = true, accent = C.orange }) => {
   const { f } = useT();
   if (f < F(at) || f > F(until)) return null;

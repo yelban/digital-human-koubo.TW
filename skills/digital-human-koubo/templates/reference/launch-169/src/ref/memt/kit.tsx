@@ -1,4 +1,4 @@
-// MemT 1.0 宣传片的共用：配色、字体、旁白时间、背景、玻璃窗、动态字。
+// MemT 1.0 宣傳片的共用：配色、字型、旁白時間、背景、玻璃窗、動態字。
 import React from "react";
 import { AbsoluteFill, Img, random, staticFile } from "remotion";
 import { clamp01, E, mix, seg } from "../cinematic/motion";
@@ -17,31 +17,31 @@ export const C = {
   green: "#3EDC9B",
 };
 export const GRAD = `linear-gradient(95deg, ${C.cyan} 0%, ${C.blue} 52%, ${C.violet} 100%)`;
-export const CN = '"PingFang SC", "SF Pro Display", -apple-system, sans-serif';
-export const EN = '"SF Pro Display", "PingFang SC", -apple-system, sans-serif';
+export const CN = '"PingFang TC", "SF Pro Display", -apple-system, sans-serif';
+export const EN = '"SF Pro Display", "PingFang TC", -apple-system, sans-serif';
 export const MONO = '"SF Mono", Menlo, Monaco, monospace';
 
-// ── 旁白时间（vo.json 来自 narrate_mimo.py；vo.wav 从第 0 帧开始播） ──
+// ── 旁白時間（vo.json 來自 narrate_mimo.py；vo.wav 從第 0 幀開始播） ──
 export type BeatId = keyof typeof vo;
 export const T = (id: BeatId) => Math.round(vo[id].start * FPS);
 export const TE = (id: BeatId) => Math.round(vo[id].end * FPS);
 export const Wd = (id: BeatId, w: string) => {
   const i = vo[id].text.indexOf(w);
-  if (i < 0) throw new Error(`旁白 ${id} 里找不到「${w}」`);
+  if (i < 0) throw new Error(`旁白 ${id} 裡找不到「${w}」`);
   return Math.round(vo[id].chars[i] * FPS);
 };
 export const SPEECH: [number, number][] = (Object.keys(vo) as BeatId[]).map((k) => [vo[k].start * FPS, vo[k].end * FPS]);
 
-/** 0→1 入场（expo out）。 */
+/** 0→1 入場（expo out）。 */
 export const ap = (f: number, at: number, dur = 12) => seg(f, at, dur);
-/** 1→0 离场。 */
+/** 1→0 離場。 */
 export const out = (f: number, at: number, dur = 10) => 1 - seg(f, at, dur, E.in2);
 
 export const GradText: React.FC<{ children: React.ReactNode; style?: React.CSSProperties }> = ({ children, style }) => (
   <span style={{ background: GRAD, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", ...style }}>{children}</span>
 );
 
-/** 深色底：径向光 + 点阵 + 一团缓慢漂移的品牌色光。 */
+/** 深色底：徑向光 + 點陣 + 一團緩慢漂移的品牌色光。 */
 export const Backdrop: React.FC<{ f: number; glow?: number; gx?: number; gy?: number }> = ({ f, glow = 1, gx = 960, gy = 540 }) => (
   <AbsoluteFill style={{ background: C.bg, overflow: "hidden" }}>
     <AbsoluteFill
@@ -59,7 +59,7 @@ export const Backdrop: React.FC<{ f: number; glow?: number; gx?: number; gy?: nu
   </AbsoluteFill>
 );
 
-/** 逐字升起的标题；parts 里 accent 的字用品牌渐变。 */
+/** 逐字升起的標題；parts 裡 accent 的字用品牌漸變。 */
 export const Rise: React.FC<{ f: number; at: number; parts: { t: string; accent?: boolean; color?: string }[]; size: number; weight?: number; font?: string; step?: number; align?: "center" | "left" }> = ({
   f,
   at,
@@ -99,13 +99,13 @@ export const Rise: React.FC<{ f: number; at: number; parts: { t: string; accent?
   );
 };
 
-/** 砸入：1.6→1 缩放 + 模糊 + 一圈光晕。 */
+/** 砸入：1.6→1 縮放 + 模糊 + 一圈光暈。 */
 export const slamStyle = (f: number, at: number): React.CSSProperties => {
   const q = seg(f, at, 10, E.out);
   return { opacity: f < at ? 0 : clamp01(q * 2), transform: `scale(${mix(1.6, 1, q)})`, filter: q < 1 ? `blur(${(1 - q) * 14}px)` : undefined };
 };
 
-/** 玻璃窗口（macOS 风交通灯 + 标题）。 */
+/** 玻璃視窗（macOS 風交通燈 + 標題）。 */
 export const Win: React.FC<{ x: number; y: number; w: number; h: number; title?: string; children?: React.ReactNode; style?: React.CSSProperties }> = ({ x, y, w, h, title, children, style }) => (
   <div
     style={{
@@ -136,7 +136,7 @@ export const Mark: React.FC<{ w: number; style?: React.CSSProperties }> = ({ w, 
   <Img src={staticFile("brand/mark.png")} style={{ width: w, height: w * (834 / 1233), display: "block", ...style }} />
 );
 
-/** 碎片化：把一个矩形炸成小方块飘散（点击「新对话」时用）。 */
+/** 碎片化：把一個矩形炸成小方塊飄散（點選「新對話」時用）。 */
 export const Shatter: React.FC<{ f: number; at: number; x: number; y: number; w: number; h: number; color: string; seed: string }> = ({ f, at, x, y, w, h, color, seed }) => {
   const t = f - at;
   if (t < 0 || t > 26) return null;

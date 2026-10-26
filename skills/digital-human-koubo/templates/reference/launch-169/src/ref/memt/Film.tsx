@@ -1,4 +1,4 @@
-// MemT 1.0 发布宣传片（约 1:35，16:9，暗场科技 · 旁白驱动）。旁白为用户本人克隆音色，时间轴全部来自 vo.json。
+// MemT 1.0 發布宣傳片（約 1:35，16:9，暗場科技 · 旁白驅動）。旁白為使用者本人克隆音色，時間軸全部來自 vo.json。
 import React from "react";
 import { AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame } from "remotion";
 import { HitCam } from "../cinematic/AudioReactive";
@@ -19,7 +19,7 @@ const B11 = T("b13") - 6;
 const LAND = BURST + 2;
 export const MEMT_FRAMES = TE("b14") + 90;
 
-const BRAND: CineBrand = { name: "MemT 1.0", display: '"SF Pro Display", "PingFang SC", sans-serif', body: '"PingFang SC", sans-serif', accent: "#3D6BF5", accent2: "#6A3BF0", ink: "#03050D", paper: "#EEF2FF" };
+const BRAND: CineBrand = { name: "MemT 1.0", display: '"SF Pro Display", "PingFang TC", sans-serif', body: '"PingFang TC", sans-serif', accent: "#3D6BF5", accent2: "#6A3BF0", ink: "#03050D", paper: "#EEF2FF" };
 
 const win = (f: number, a: number, b: number) => f >= a && f < b;
 
@@ -70,8 +70,8 @@ export const MemTFilm: React.FC = () => {
           <ParticleLayer />
         </Sequence>
         {f >= BURST - 2 && <S12End f={f} land={LAND} />}
-        {win(f, CH1S, CH1E + 6) && <Chapter f={f} start={CH1S} end={CH1E} num="看点一" title={[{ t: "记忆，进入" }, { t: "计算本身", accent: true }]} en="Memory inside the forward pass" />}
-        {win(f, CH2S, CH2E + 6) && <Chapter f={f} start={CH2S} end={CH2E} num="看点二" title={[{ t: "经验" }, { t: "复用", accent: true }]} en="Experience reuse" />}
+        {win(f, CH1S, CH1E + 6) && <Chapter f={f} start={CH1S} end={CH1E} num="看點一" title={[{ t: "記憶，進入" }, { t: "計算本身", accent: true }]} en="Memory inside the forward pass" />}
+        {win(f, CH2S, CH2E + 6) && <Chapter f={f} start={CH2S} end={CH2E} num="看點二" title={[{ t: "經驗" }, { t: "複用", accent: true }]} en="Experience reuse" />}
       </HitCam>
       <Audio src={staticFile("vo.wav")} volume={1} />
       <Audio src={staticFile("music/bgm.wav")} volume={(fr) => bgmVolume(fr)} />

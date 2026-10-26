@@ -1,53 +1,53 @@
 {
-  "_说明": "每种剪辑风格的默认包装。写 edit.json / 时间轴时先按 open 排开场，正文按 rhythm 保证刺激间隔，recurring 里的组件全片挂着或按章节出现，per_beat 是「讲到这类内容就用它」。用户说要加 / 去掉某个手法时在这个基础上改。组件参数见 references/packaging.md。",
+  "_說明": "每種剪輯風格的預設包裝。寫 edit.json / 時間軸時先按 open 排開場，正文按 rhythm 保證刺激間隔，recurring 裡的元件全片掛著或按章節出現，per_beat 是「講到這類內容就用它」。使用者說要加 / 去掉某個手法時在這個基礎上改。元件參數見 references/packaging.md。",
   "A": {
-    "name": "小林式解说（财经 / 科技事件）",
+    "name": "小林式解說（財經 / 科技事件）",
     "rhythm": { "visual_change_per_min": [10, 14], "max_host_full_s": 12, "stimulus_every_s": 5, "punch_in": { "levels": [{ "s": 1 }, { "s": 1.25 }] } },
-    "open": ["TextBehind 景深字 / SlamText / SearchTyping（0–3 秒命题）", "EvidenceCard / DocFocus（3–15 秒证据）", "TiltLine 主问题（15–30 秒）", "ChapterCard 第一章（22–60 秒）"],
-    "recurring": ["ProgressChapters", "SourceTag（每个数字都挂）", "ChapterCard（每 2–5 分钟）", "RecapBoard（每章结束）"],
-    "per_beat": { "数字 / 金额": "Counter 或 NumberSpike", "公告 / 财报 / 新闻原文": "DocFocus 或 EvidenceCard", "地点 / 国家": "MapRoute", "人物 / 机构": "NamePlate 或 TypedNameTag", "趋势": "LineDraw", "两方对比": "BarCompare / CompareWipe", "吐槽 / 情绪": "ReactionPop（每分钟 1–2 个）或 MemeWindow 插段", "揭晓前": "PollPop + 0.6–1.0 秒静音" },
-    "captions": "底部字幕 50–54px，单行 12–18 字",
+    "open": ["TextBehind 景深字 / SlamText / SearchTyping（0–3 秒命題）", "EvidenceCard / DocFocus（3–15 秒證據）", "TiltLine 主問題（15–30 秒）", "ChapterCard 第一章（22–60 秒）"],
+    "recurring": ["ProgressChapters", "SourceTag（每個數字都掛）", "ChapterCard（每 2–5 分鐘）", "RecapBoard（每章結束）"],
+    "per_beat": { "數字 / 金額": "Counter 或 NumberSpike", "公告 / 財報 / 新聞原文": "DocFocus 或 EvidenceCard", "地點 / 國家": "MapRoute", "人物 / 機構": "NamePlate 或 TypedNameTag", "趨勢": "LineDraw", "兩方對比": "BarCompare / CompareWipe", "吐槽 / 情緒": "ReactionPop（每分鐘 1–2 個）或 MemeWindow 插段", "揭曉前": "PollPop + 0.6–1.0 秒靜音" },
+    "captions": "底部字幕 50–54px，單行 12–18 字",
     "sound": { "bgm_bed": true, "duck_db": -18, "sfx_per_min": [1, 3], "loudness": -16 },
-    "cta": ["前 15 秒或揭晓前一次 PollPop", "结尾回扣开场 + 复盘板"]
+    "cta": ["前 15 秒或揭曉前一次 PollPop", "結尾回扣開場 + 復盤板"]
   },
   "B": {
-    "name": "网红花字口播（竖屏）",
-    "rhythm": { "stimulus_every_s": 3, "punch_in": "huazi 模板自带（跳切交替推近 + 重点词推镜）" },
-    "open": ["TextBehind 景深数字 / NumberSpike / TiltLine（0–2 秒钩子：反问 / 反常识 / 数字）", "Danmaku 2–3 条替观众质疑（3–8 秒）", "KeywordStack 点题（8–15 秒）"],
-    "recurring": ["花字字幕（模板自带）", "表情（每分钟 6–10 个）"],
-    "per_beat": { "价格 / 数字": "NumberSpike 或 Counter", "截图 / 界面": "ZoomFocus（竖屏框）", "卖点三连": "KeywordStack", "对比": "CompareWipe（竖屏框）", "互动": "PollPop", "中段号召": "GlitchInterstitial 0.5 秒", "结论": "TiltLine 或卡片 slam" },
-    "captions": "逐字弹跳花字（克制 / 标准 / 热闹 三档）",
+    "name": "網紅花字口播（直式）",
+    "rhythm": { "stimulus_every_s": 3, "punch_in": "huazi 模板自帶（跳切交替推近 + 重點詞推鏡）" },
+    "open": ["TextBehind 景深數字 / NumberSpike / TiltLine（0–2 秒鉤子：反問 / 反常識 / 數字）", "Danmaku 2–3 條替觀眾質疑（3–8 秒）", "KeywordStack 點題（8–15 秒）"],
+    "recurring": ["花字字幕（模板自帶）", "表情（每分鐘 6–10 個）"],
+    "per_beat": { "價格 / 數字": "NumberSpike 或 Counter", "截圖 / 介面": "ZoomFocus（直式框）", "賣點三連": "KeywordStack", "對比": "CompareWipe（直式框）", "互動": "PollPop", "中段號召": "GlitchInterstitial 0.5 秒", "結論": "TiltLine 或卡片 slam" },
+    "captions": "逐字彈跳花字（克制 / 標準 / 熱鬧 三檔）",
     "sound": { "bgm_bed": true, "duck_db": -18, "sfx_per_min": [4, 8], "loudness": -14 },
-    "cta": ["中段 GlitchInterstitial", "结尾 cta 大字"]
+    "cta": ["中段 GlitchInterstitial", "結尾 cta 大字"]
   },
   "C": {
-    "name": "发布解读（横屏）",
+    "name": "發布解讀（橫式）",
     "rhythm": { "visual_change_per_min": [12, 17], "stimulus_every_s": 4, "punch_in": { "levels": [{ "s": 1 }, { "s": 1.18, "dx": -0.05 }, { "s": 1.32, "dx": 0.04 }] } },
-    "open": ["产品 / 主题冷镜头 + 主题句，或 TextBehind 把主题词放在主播身后（0–2 秒）", "KeywordStack 3 个关键词（2–12 秒）", "Odometer / GlassPanel / SourceDoc 一个可视化证据（12–20 秒）", "反转句（20–25 秒）", "4–8 秒片头 sting（音乐 +4 LU）"],
-    "recurring": ["SourceTag", "PunchInHost 多档景别"],
-    "per_beat": { "参数 / 跑分": "SpecCard 或 GlassPanel", "官方文档 / 公告": "SourceDoc 或 EvidenceCard", "价格": "Odometer", "新旧对比": "CompareWipe", "功能演示": "ZoomFocus + CalloutPill", "产品部件": "LeaderLabel" },
-    "captions": "可以不烧录字幕，屏幕留给证据卡（平台 CC 兜底）；竖屏版保留",
+    "open": ["產品 / 主題冷鏡頭 + 主題句，或 TextBehind 把主題詞放在主播身後（0–2 秒）", "KeywordStack 3 個關鍵詞（2–12 秒）", "Odometer / GlassPanel / SourceDoc 一個視覺化證據（12–20 秒）", "反轉句（20–25 秒）", "4–8 秒片頭 sting（音樂 +4 LU）"],
+    "recurring": ["SourceTag", "PunchInHost 多檔景別"],
+    "per_beat": { "參數 / 跑分": "SpecCard 或 GlassPanel", "官方文件 / 公告": "SourceDoc 或 EvidenceCard", "價格": "Odometer", "新舊對比": "CompareWipe", "功能演示": "ZoomFocus + CalloutPill", "產品部件": "LeaderLabel" },
+    "captions": "可以不燒錄字幕，螢幕留給證據卡（平台 CC 兜底）；直式版保留",
     "sound": { "bgm_bed": true, "duck_db": -18, "sfx_per_min": [1, 3], "loudness": -16, "sting_plus_lu": 4 },
-    "cta": ["结尾一句话结论 + 链接"]
+    "cta": ["結尾一句話結論 + 連結"]
   },
   "D": {
-    "name": "保姆级教程（横屏）",
+    "name": "保姆級教學（橫式）",
     "rhythm": { "visual_change_per_min": [10, 14], "stimulus_every_s": 5 },
-    "open": ["SearchTyping「怎么用一张照片做数字人」（0–4 秒）", "TeaserColdOpen 成品快闪（4–8 秒）", "ProgressTracker 步骤徽章亮出全部步骤"],
-    "recurring": ["ProgressTracker（steps，常驻顶部）", "SourceTag（价格 / 积分）", "RecapBoard（每个大步骤后）"],
-    "per_beat": { "点哪里": "ZoomFocus + HandDraw 圈注", "命令": "终端 Typed（模板自带）", "注意事项": "CalloutPill 或 FreezeFrame「等等！」", "成本": "Counter", "常见坑": "ReviewCards 或 RecapBoard「为什么难 / 怎么办」" },
-    "captions": "底部字幕，关键词高亮",
+    "open": ["SearchTyping「怎麼用一張照片做數位人」（0–4 秒）", "TeaserColdOpen 成品快閃（4–8 秒）", "ProgressTracker 步驟徽章亮出全部步驟"],
+    "recurring": ["ProgressTracker（steps，常駐頂部）", "SourceTag（價格 / 積分）", "RecapBoard（每個大步驟後）"],
+    "per_beat": { "點哪裡": "ZoomFocus + HandDraw 圈注", "命令": "終端 Typed（模板自帶）", "注意事項": "CalloutPill 或 FreezeFrame「等等！」", "成本": "Counter", "常見坑": "ReviewCards 或 RecapBoard「為什麼難 / 怎麼辦」" },
+    "captions": "底部字幕，關鍵詞高亮",
     "sound": { "bgm_bed": true, "duck_db": -20, "sfx_per_min": [2, 4], "loudness": -16 },
-    "cta": ["结尾复盘板 + 下期预告"]
+    "cta": ["結尾復盤板 + 下期預告"]
   },
   "E": {
-    "name": "多主播 · 多语言 · 多场景",
+    "name": "多主播 · 多語言 · 多場景",
     "rhythm": { "visual_change_per_min": [14, 20], "stimulus_every_s": 3.5 },
-    "open": ["TeaserColdOpen 或多语言快闪（整句 + 五语各 1 秒）", "WordStack「一张照片 / 六种语言 / 四个场景 / 0 拍摄」", "标题卡"],
-    "recurring": ["LowerThird / NamePlate（换主播时）", "语言标签 + 中文翻译（模板自带）"],
-    "per_beat": { "去了哪些地方": "MapRoute", "同一人换场景": "CompareWipe 或 PaperCollage", "数字": "NumberSpike", "主播交接": "TypedNameTag 指向新主播" },
-    "captions": "原文 + 中文翻译双行",
+    "open": ["TeaserColdOpen 或多語言快閃（整句 + 五語各 1 秒）", "WordStack「一張照片 / 六種語言 / 四個場景 / 0 拍攝」", "標題卡"],
+    "recurring": ["LowerThird / NamePlate（換主播時）", "語言標籤 + 中文翻譯（模板自帶）"],
+    "per_beat": { "去了哪些地方": "MapRoute", "同一人換場景": "CompareWipe 或 PaperCollage", "數字": "NumberSpike", "主播交接": "TypedNameTag 指向新主播" },
+    "captions": "原文 + 中文翻譯雙行",
     "sound": { "bgm_bed": true, "duck_db": -18, "sfx_per_min": [3, 6], "loudness": -16 },
-    "cta": ["结尾两位主播同框"]
+    "cta": ["結尾兩位主播同框"]
   }
 }

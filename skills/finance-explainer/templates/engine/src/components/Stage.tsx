@@ -3,7 +3,7 @@ import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } fr
 import type { Beat, Timeline } from "../lib/types";
 import type { Theme } from "../lib/theme";
 
-// 舞台内容：主播缩成小窗后，右侧大卡片里放的图表 / 文件 / 竞猜 / 步骤
+// 舞台內容：主播縮成小窗後，右側大卡片裡放的圖表 / 檔案 / 競猜 / 步驟
 const useT = () => { const f = useCurrentFrame(); const { fps } = useVideoConfig(); return { f, fps, t: f / fps }; };
 const pop = (t: number, at: number, fps: number) => spring({ frame: Math.round((t - at) * fps), fps, config: { damping: 15, stiffness: 160 } });
 
@@ -12,11 +12,11 @@ export const StageBg: React.FC<{ theme: Theme }> = ({ theme }) => {
   return (
     <AbsoluteFill style={{ background: theme.stageBg, overflow: "hidden" }}>
       {theme.name === "v1-purple"
-        ? [0, 1, 2, 3, 4, 5].map((i) => (   // v1：漂移的几何三角
+        ? [0, 1, 2, 3, 4, 5].map((i) => (   // v1：漂移的幾何三角
             <div key={i} style={{ position: "absolute", left: `${(i * 19 + 7) % 100}%`, top: `${(i * 37 + (f * 0.04 * (i % 2 ? 1 : -1))) % 110 - 5}%`,
               width: 0, height: 0, borderLeft: "70px solid transparent", borderRight: "70px solid transparent",
               borderBottom: `120px solid rgba(${i % 2 ? "255,255,255" : "120,200,255"},.10)`, transform: `rotate(${i * 40 + f * 0.1}deg)` }} />))
-        : [0, 1, 2].map((i) => (            // v2：缓慢漂移的玻璃光斑
+        : [0, 1, 2].map((i) => (            // v2：緩慢漂移的玻璃光斑
             <div key={i} style={{ position: "absolute", width: 700, height: 700, borderRadius: "50%",
               left: 200 + i * 520 + Math.sin(f / 90 + i) * 60, top: 120 + (i % 2) * 380 + Math.cos(f / 110 + i) * 50,
               background: `radial-gradient(circle, ${["rgba(60,200,193,.20)", "rgba(44,123,229,.16)", "rgba(255,181,71,.10)"][i]}, transparent 65%)` }} />))}
@@ -30,7 +30,7 @@ const Card: React.FC<{ theme: Theme; title?: string; source?: string; inP: numbe
     {title ? <div style={{ alignSelf: "center", background: theme.name === "v1-purple" ? theme.accent : "rgba(60,200,193,.16)", color: theme.name === "v1-purple" ? "#fff" : theme.accent,
                            border: theme.name === "v1-purple" ? "none" : `1.5px solid ${theme.accent}`, fontSize: 38, fontWeight: 800, padding: "10px 30px", borderRadius: 12 }}>{title}</div> : null}
     <div style={{ flex: 1, position: "relative", marginTop: 30 }}>{children}</div>
-    {source ? <div style={{ fontSize: 22, color: theme.cardMute, textAlign: "right" }}>数据来源：{source}</div> : null}
+    {source ? <div style={{ fontSize: 22, color: theme.cardMute, textAlign: "right" }}>資料來源：{source}</div> : null}
   </div>
 );
 
@@ -113,7 +113,7 @@ const Doc: React.FC<{ s: any; theme: Theme; inP: number }> = ({ s, theme, inP })
   const { t } = useT();
   return (
     <div style={{ position: "absolute", left: 600, top: 150, width: 1200, minHeight: 600, background: "#FBFBF6", borderRadius: 6, boxShadow: "0 30px 80px rgba(0,0,0,.45)",
-                  padding: "70px 80px", transform: `translateY(${(1 - inP) * 80}px) rotate(${(1 - inP) * 2 - 0.6}deg)`, opacity: inP, fontFamily: '"Songti SC",Georgia,serif', color: "#222" }}>
+                  padding: "70px 80px", transform: `translateY(${(1 - inP) * 80}px) rotate(${(1 - inP) * 2 - 0.6}deg)`, opacity: inP, fontFamily: '"Songti TC",Georgia,serif', color: "#222" }}>
       <div style={{ fontSize: 24, color: "#888", fontFamily: theme.font }}>{s.source}</div>
       <div style={{ fontSize: 46, fontWeight: 700, margin: "18px 0 40px", borderBottom: "2px solid #222", paddingBottom: 20, fontFamily: "Georgia,serif" }}>{s.title}</div>
       {s.lines.map((l: any, i: number) => {

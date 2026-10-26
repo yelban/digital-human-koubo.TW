@@ -1,13 +1,13 @@
-// 知识解说派（Johnny Harris / Vox / Kurzgesagt / 回形针 实测参数，见 packaging-research/reports/3）：
-// 句子聚焦荧光笔、打字名牌、主持人跳切推近、复盘板、搜索框打字、指针胶囊、引线双语标注、折线/条形图、砸字 + 年份角标、鬼影大字、撕纸标题条、档案卡快切。
+// 知識解說派（Johnny Harris / Vox / Kurzgesagt / 回形針 實測參數，見 packaging-research/reports/3）：
+// 句子聚焦熒光筆、打字名牌、主持人跳切推近、復盤板、搜尋框打字、指標膠囊、引線雙語標註、折線/條形圖、砸字 + 年份角標、鬼影大字、撕紙標題條、檔案卡快切。
 import React from "react";
 import { AbsoluteFill, Img, OffthreadVideo, interpolate, random, staticFile } from "remotion";
 import { C, F, FONT, clamp, ease, lerp, sp, stroke, useT } from "./core";
 
 const VOX_Y = "#EAF130";
-const SERIF_BLACK = '"Songti SC","Noto Serif SC","Times New Roman",serif';
+const SERIF_BLACK = '"Songti TC","Noto Serif TC","Times New Roman",serif';
 
-/** 句子聚焦：重建的文档（标题 + 段落），非目标句压到 35%，目标句里的关键词黄块从左往右扫（0.4 秒），整页缓慢推近 1.00→1.05。 */
+/** 句子聚焦：重建的文件（標題 + 段落），非目標句壓到 35%，目標句裡的關鍵詞黃塊從左往右掃（0.4 秒），整頁緩慢推近 1.00→1.05。 */
 export const DocFocus: React.FC<{ at: number; until: number; source?: string; title?: string; paras: Array<Array<{ t: string; focus?: boolean; hl?: boolean; hlAt?: number }>>; dark?: boolean }> = ({ at, until, source, title, paras, dark }) => {
   const { f, t, W, H } = useT();
   if (t < at || t > until) return null;
@@ -38,7 +38,7 @@ export const DocFocus: React.FC<{ at: number; until: number; source?: string; ti
   );
 };
 
-/** 打字名牌：手绘黄箭头 0.3 秒画出指向人物 → 粗衬线黄色名字逐字打出（每字 0.12 秒，带光标）→ 白色小字头衔。 */
+/** 打字名牌：手繪黃箭頭 0.3 秒畫出指向人物 → 粗襯線黃色名字逐字打出（每字 0.12 秒，帶游標）→ 白色小字頭銜。 */
 export const TypedNameTag: React.FC<{ at: number; until: number; name: string; title?: string; x: number; y: number; target?: [number, number]; color?: string; cps?: number }> = ({ at, until, name, title, x, y, target, color = "#EFF01B", cps = 8 }) => {
   const { f, t, H } = useT();
   if (t < at || t > until) return null;
@@ -64,8 +64,8 @@ export const TypedNameTag: React.FC<{ at: number; until: number; name: string; t
   );
 };
 
-/** 主持人跳切推近：同一条数字人视频在切点（句子边界）之间硬切景别，不做缓动。
- *  默认 1.0× / 1.3× 交替（Johnny Harris）；levels 可给多档景别 + 左右偏置（MKBHD / 影视飓风：1.0 / 1.18 / 1.32）。 */
+/** 主持人跳切推近：同一條數位人影片在切點（句子邊界）之間硬切景別，不做緩動。
+ *  預設 1.0× / 1.3× 交替（Johnny Harris）；levels 可給多檔景別 + 左右偏置（MKBHD / 影視颶風：1.0 / 1.18 / 1.32）。 */
 export const PunchInHost: React.FC<{ src: string; cuts: number[]; scale?: number; levels?: Array<{ s: number; dx?: number }>; anchor?: [number, number]; offset?: number }> = ({ src, cuts, scale = 1.3, levels, anchor = [0.5, 0.36], offset = 0 }) => {
   const { t, W } = useT();
   const k = cuts.filter((c) => t >= c).length;
@@ -80,7 +80,7 @@ export const PunchInHost: React.FC<{ src: string; cuts: number[]; scale?: number
   );
 };
 
-/** 复盘板：两栏（为什么 / 怎么办），每章回来亮一条新的，旧条目暗白；可留「?」吊胃口。 */
+/** 復盤板：兩欄（為什麼 / 怎麼辦），每章回來亮一條新的，舊條目暗白；可留「?」吊胃口。 */
 export const RecapBoard: React.FC<{ at: number; until: number; columns: Array<{ title: string; color: string; items: string[] }>; reveal: number[]; newAt?: number }> = ({ at, until, columns, reveal, newAt }) => {
   const { f, t, W, H } = useT();
   if (t < at || t > until) return null;
@@ -103,7 +103,7 @@ export const RecapBoard: React.FC<{ at: number; until: number; columns: Array<{ 
   );
 };
 
-/** 搜索框打字冷开场：中性搜索框逐字打出（每秒 9 字），打到一半弹联想词，镜头 3 秒推近 1.6 倍。 */
+/** 搜尋框打字冷開場：中性搜尋框逐字打出（每秒 9 字），打到一半彈聯想詞，鏡頭 3 秒推近 1.6 倍。 */
 export const SearchTyping: React.FC<{ at: number; until: number; query: string; suggestions?: string[]; cps?: number; zoomTo?: number }> = ({ at, until, query, suggestions = [], cps = 9, zoomTo = 1.6 }) => {
   const { f, t, W, H } = useT();
   if (t < at || t > until) return null;
@@ -134,7 +134,7 @@ export const SearchTyping: React.FC<{ at: number; until: number; query: string; 
   );
 };
 
-/** 指针胶囊：实色胶囊 + 小尖指向目标，弹簧 8 帧弹出，可带第二行小字。 */
+/** 指標膠囊：實色膠囊 + 小尖指向目標，彈簧 8 幀彈出，可帶第二行小字。 */
 export const CalloutPill: React.FC<{ at: number; until: number; text: string; sub?: string; x: number; y: number; color?: string; pointer?: "down" | "left" | "up" | "right" }> = ({ at, until, text, sub, x, y, color = "#00C20D", pointer = "down" }) => {
   const { f, t, H } = useT();
   if (t < at || t > until) return null;
@@ -156,7 +156,7 @@ export const CalloutPill: React.FC<{ at: number; until: number; text: string; su
   );
 };
 
-/** 引线双语标注：从物体点拉出细白线，末端中文粗体 + 英文小斜体（回形针式），8 帧画线。 */
+/** 引線雙語標註：從物體點拉出細白線，末端中文粗體 + 英文小斜體（回形針式），8 幀畫線。 */
 export const LeaderLabel: React.FC<{ at: number; until: number; target: [number, number]; zh: string; en?: string; dir?: "r" | "l"; len?: number; tag?: string }> = ({ at, until, target, zh, en, dir = "r", len = 260, tag }) => {
   const { f, t, H } = useT();
   if (t < at || t > until) return null;
@@ -177,7 +177,7 @@ export const LeaderLabel: React.FC<{ at: number; until: number; target: [number,
   );
 };
 
-/** 折线图：多条线从左往右画出，末端挂同色胶囊标签；黑底网格。 */
+/** 折線圖：多條線從左往右畫出，末端掛同色膠囊標籤；黑底網格。 */
 export const LineDraw: React.FC<{ at: number; until: number; series: Array<{ label: string; color: string; data: number[] }>; title?: string; xLabels?: string[]; drawDur?: number; max?: number; source?: string }> = ({ at, until, series, title, xLabels = [], drawDur = 1.4, max, source }) => {
   const { f, t, W, H } = useT();
   if (t < at || t > until) return null;
@@ -210,7 +210,7 @@ export const LineDraw: React.FC<{ at: number; until: number; series: Array<{ lab
   );
 };
 
-/** 横向对比条：图标/名字 + 长条从左长出 + 数值，背后压鬼影大字。 */
+/** 橫向對比條：圖示/名字 + 長條從左長出 + 數值，背後壓鬼影大字。 */
 export const BarCompare: React.FC<{ at: number; until: number; rows: Array<{ label: string; value: number; text?: string; color?: string }>; title?: string; ghost?: string; max?: number }> = ({ at, until, rows, title, ghost, max }) => {
   const { f, t, W, H } = useT();
   if (t < at || t > until) return null;
@@ -235,7 +235,7 @@ export const BarCompare: React.FC<{ at: number; until: number; rows: Array<{ lab
   );
 };
 
-/** 鬼影大字：背后一个巨大的英文/中文词，6% 不透明或描边，缓慢横移。 */
+/** 鬼影大字：背後一個巨大的英文/中文詞，6% 不透明或描邊，緩慢橫移。 */
 export const GhostWord: React.FC<{ text: string; at: number; until: number; outline?: boolean; opacity?: number; drift?: number }> = ({ text, at, until, outline, opacity = 0.07, drift = 0.02 }) => {
   const { t, W, H } = useT();
   if (t < at || t > until) return null;
@@ -245,7 +245,7 @@ export const GhostWord: React.FC<{ text: string; at: number; until: number; outl
   );
 };
 
-/** 砸字：两行大字先后砸进主持人画面上下（间隔 0.5 秒），低频 hit；可选年份角标。 */
+/** 砸字：兩行大字先後砸進主持人畫面上下（間隔 0.5 秒），低頻 hit；可選年份角標。 */
 export const SlamText: React.FC<{ at: number; until: number; lines: string[]; stagger?: number; color?: string; year?: string }> = ({ at, until, lines, stagger = 0.5, color = "#fff", year }) => {
   const { f, t, W, H } = useT();
   if (t < at || t > until) return null;
@@ -261,7 +261,7 @@ export const SlamText: React.FC<{ at: number; until: number; lines: string[]; st
   );
 };
 
-/** 撕纸标题条：深灰撕口横条横穿画面，白色宋黑大标题 + 红杠小字期号；背后画面轻微推近。 */
+/** 撕紙標題條：深灰撕口橫條橫穿畫面，白色宋黑大標題 + 紅槓小字期號；背後畫面輕微推近。 */
 export const TornStrip: React.FC<{ at: number; until: number; title: string; sub?: string; seed?: string }> = ({ at, until, title, sub, seed = "t" }) => {
   const { f, t, W, H } = useT();
   if (t < at || t > until) return null;
@@ -281,7 +281,7 @@ export const TornStrip: React.FC<{ at: number; until: number; title: string; sub
   );
 };
 
-/** 档案卡快切：黑底暗角，中间米灰圆角卡，每 0.6 秒换一张图，顶部红色大写标签。 */
+/** 檔案卡快切：黑底暗角，中間米灰圓角卡，每 0.6 秒換一張圖，頂部紅色大寫標籤。 */
 export const ArchiveCards: React.FC<{ at: number; images: Array<{ src: string; label?: string }>; per?: number }> = ({ at, images, per = 0.6 }) => {
   const { t, W, H } = useT();
   const k = Math.floor((t - at) / per);

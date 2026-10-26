@@ -1,15 +1,15 @@
 {
- "name": "白背心数字人",
+ "name": "白背心數位人",
  "grok": {
   "reference_image": "assets/avatar_ref.jpg",
-  "note": "参考图是用户自己 Grok 视频里的一帧（正脸、闭嘴、头发不挡脸）。路径相对技能目录；换形象就换这张图（见 references/new-avatar.md）。"
+  "note": "參考圖是使用者自己 Grok 影片裡的一幀（正臉、閉嘴、頭髮不擋臉）。路徑相對技能目錄；換形象就換這張圖（見 references/new-avatar.md）。"
  },
- "look": "年轻东亚女性，黑色长发带脸侧碎发，白色罗纹背心，竖屏自拍构图，室内自然光",
+ "look": "年輕東亞女性，黑色長髮帶臉側碎髮，白色羅紋背心，直式自拍構圖，室內自然光",
  "voice": {
   "engine": "grok-native",
   "desc": "young friendly female voice, clear and patient but lively, natural pace",
   "speed_cps": 5.4,
-  "alt_clone": "MiMo mimo-v2.5-tts-voiceclone，参照用 3 段 Grok 口播拼的 ≥12 秒干声（见 references/voice.md）"
+  "alt_clone": "MiMo mimo-v2.5-tts-voiceclone，參照用 3 段 Grok 口播拼的 ≥12 秒乾聲（見 references/voice.md）"
  },
  "model": {
   "name": "grok-imagine-video-1.5",
@@ -22,7 +22,7 @@
    "720p": [0.25, 0.35],
    "480p": null
   },
-  "allowance_note": "占 grok 每周额度的百分比。2026-10-26 实测（X Premium+）：3 段共 28 秒 720p 用掉 7–9%（/usage 只显示整数）。480p 未实测。"
+  "allowance_note": "佔 grok 每週額度的百分比。2026-10-26 實測（X Premium+）：3 段共 28 秒 720p 用掉 7–9%（/usage 只顯示整數）。480p 未實測。"
  },
  "acts": {
   "full": "warm eye contact, expressive face, natural hand gestures",
@@ -31,29 +31,29 @@
   "depth": "medium shot with generous headroom and plain background visible on both sides of the head and shoulders (for text-behind-subject graphics), calm confident delivery"
  },
  "prompt_template": "The young woman in {ref} talks straight into her phone's front camera, same selfie framing, lighting and outfit as the reference, like a friendly Chinese tech vlogger {purpose}: {act}. Handheld selfie feel with only a very slight natural sway. She speaks Mandarin Chinese, clearly lip-synced, in a {voice}:\n“{line}”\nSound: only her voice and quiet room tone, no music, no subtitles, no on-screen text.",
- "disclosure": "内容由 AI 数字人演绎",
+ "disclosure": "內容由 AI 數位人演繹",
  "other_hosts": {
   "me": {
-   "name": "用户本人数字人（藏青 polo）",
+   "name": "使用者本人數位人（藏青 polo）",
    "reference_image": "assets/host_me_polo.jpg",
    "ratio": "16:9",
-   "note": "用户本人照片，只给用户自己的片子用；横屏照直接出横屏口播。仓库里没有这张图，用前放入你本人的照片。",
+   "note": "使用者本人照片，只給使用者自己的片子用；橫式照直接出橫式口播。倉庫裡沒有這張圖，用前放入你本人的照片。",
    "voice": "warm, steady, confident male voice around 35 years old, natural pace",
    "prompt_template": "The man in {ref} talks straight to the camera, same framing, gray studio backdrop, navy polo shirt, glasses and soft lighting as the reference, like a friendly tech blogger {purpose}: {act}. Locked-off camera, no zoom. He speaks {language}, clearly lip-synced, in a {voice}:\n“{line}”\nSound: only his voice and quiet room tone, no music, no subtitles, no captions, no on-screen text of any kind."
   },
   "cat": {
-   "name": "橘猫店长",
+   "name": "橘貓店長",
    "reference_image": null,
    "ratio": "9:16",
    "voice": "cute, playful small high-pitched voice",
-   "note": "提示词要写 its mouth clearly opens and closes in sync with the words。原静帧在作者的 Renoise 账号里；用 grok 的 image_gen 生成一张静帧存进 assets/，再填路径。"
+   "note": "提示詞要寫 its mouth clearly opens and closes in sync with the words。原靜幀在作者的 Renoise 帳號裡；用 grok 的 image_gen 生成一張靜幀存進 assets/，再填路徑。"
   },
   "dog": {
-   "name": "柴犬新闻主播",
+   "name": "柴犬新聞主播",
    "reference_image": null,
    "ratio": "16:9",
    "voice": "deep, serious male TV news-anchor voice",
-   "note": "原静帧在作者的 Renoise 账号里；用 grok 的 image_gen 生成一张静帧存进 assets/，再填路径。"
+   "note": "原靜幀在作者的 Renoise 帳號裡；用 grok 的 image_gen 生成一張靜幀存進 assets/，再填路徑。"
   }
  },
  "languages_tested": {
@@ -63,6 +63,6 @@
   "fr": "100%",
   "es": "100%",
   "ar": "99%",
-  "note": "2026-10 第三期实测 whisper 回听准确率；台词提前翻好再写进提示词"
+  "note": "2026-10 第三期實測 whisper 回聽準確率；台詞提前翻好再寫進提示詞"
  }
 }

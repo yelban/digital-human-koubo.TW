@@ -3,7 +3,7 @@ import { AbsoluteFill, Composition, Sequence } from "remotion";
 import { DEMOS } from "./demos/Demos";
 
 const TOTAL = DEMOS.reduce((a, [, , d]) => a + Math.round(d * 30), 0);
-/** 图鉴总片：所有组件演示首尾相接 */
+/** 圖鑑總片：所有元件演示首尾相接 */
 const Gallery: React.FC = () => {
   let acc = 0;
   return (

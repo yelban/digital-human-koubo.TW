@@ -1,4 +1,4 @@
-// AIGC 自媒体视频创作教程 · 第二期：手把手做一个 AI 数字人（16:9）。时间轴来自 tl.json（32 段 Grok 口播 + 3 段演示 + 片尾）。
+// AIGC 自媒體影片創作教學 · 第二期：手把手做一個 AI 數位人（16:9）。時間軸來自 tl.json（32 段 Grok 口播 + 3 段演示 + 片尾）。
 import React from "react";
 import { AbsoluteFill, Audio, Easing, Img, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame } from "remotion";
 import tl from "./tl.json";
@@ -7,7 +7,7 @@ const FPS = 30;
 const F = (s: number) => Math.round(s * FPS);
 export const TOTAL = F(tl.total);
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
-const ZH = '"PingFang SC","Hiragino Sans GB",sans-serif';
+const ZH = '"PingFang TC","Heiti TC",sans-serif';
 const EN = '"Avenir Next","Helvetica Neue",Arial,sans-serif';
 const MONO = '"SF Mono",Menlo,monospace';
 const BG = "#EDF0EA", INK = "#25231F", MUTE = "#7B786F", OR = "#F7931E", CARD = "#FFFFFF", GREEN = "#24A863", RED = "#E5484D", BLUE = "#3767F0", LINE = "rgba(37,35,31,.10)";
@@ -17,17 +17,17 @@ const ITEMS = tl.items as unknown as Item[];
 const BY: Record<string, Item> = Object.fromEntries(ITEMS.map((i) => [i.id, i]));
 const ST = (id: string) => BY[id].start;
 const EN_ = (id: string) => BY[id].start + BY[id].dur;
-/** 某段口播里某个词开始的绝对秒数 */
+/** 某段口播裡某個詞開始的絕對秒數 */
 const W = (id: string, word: string) => {
   const it = BY[id]; const i0 = it.text!.indexOf(word);
-  if (i0 < 0) throw new Error(`${id} 里找不到「${word}」`);
+  if (i0 < 0) throw new Error(`${id} 裡找不到「${word}」`);
   let i = i0; while (it.chars![String(i)] === undefined && i < it.text!.length) i++;
   return it.start + (it.chars![String(i)] ?? 0);
 };
 const sp = (f: number, at: number, damping = 13, stiffness = 170, mass = 0.7) => spring({ frame: f - F(at), fps: FPS, config: { damping, stiffness, mass } });
 const appear = (p: number, dy = 30): React.CSSProperties => ({ opacity: Math.min(1, p * 1.5), transform: `translateY(${(1 - p) * dy}px)` });
 
-/* ================= 布局 ================= */
+/* ================= 佈局 ================= */
 const FULL = { x: 230, y: 90, w: 480, h: 853 };
 const PIP = { x: 1478, y: 196, w: 390, h: 693 };
 const PANEL = { x: 70, y: 150, w: 1360, h: 780 };
@@ -54,13 +54,13 @@ const Host: React.FC = () => {
         </Sequence>
       ) : still ? <Img src={staticFile(still)} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : null}
       <div style={{ position: "absolute", inset: 0, background: "#fff", opacity: k > 0 ? interpolate(local, [0, 3], [0.3, 0], clamp) : 0 }} />
-      <div style={{ position: "absolute", left: 14, top: 14, fontFamily: ZH, fontSize: 17, color: "rgba(255,255,255,.9)", background: "rgba(0,0,0,.35)", padding: "3px 10px", borderRadius: 8 }}>内容由 AI 数字人演绎</div>
+      <div style={{ position: "absolute", left: 14, top: 14, fontFamily: ZH, fontSize: 17, color: "rgba(255,255,255,.9)", background: "rgba(0,0,0,.35)", padding: "3px 10px", borderRadius: 8 }}>內容由 AI 數位人演繹</div>
     </div>
   );
 };
 
-/* ================= 顶部：系列标题 + 七步进度 ================= */
-const STEPS = ["准备工具", "生成形象", "配置音色", "脚本生成", "B-roll 画面", "沉淀 Skill", "剪辑合成"];
+/* ================= 頂部：系列標題 + 七步進度 ================= */
+const STEPS = ["準備工具", "生成形象", "配置音色", "腳本生成", "B-roll 畫面", "沉澱 Skill", "剪輯合成"];
 const NUM = ["①", "②", "③", "④", "⑤", "⑥", "⑦"];
 const TopBar: React.FC = () => {
   const f = useCurrentFrame();
@@ -71,12 +71,12 @@ const TopBar: React.FC = () => {
   return (
     <div style={{ position: "absolute", left: 70, right: 52, top: 40, display: "flex", alignItems: "center", justifyContent: "space-between", opacity: p }}>
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-        <span style={{ fontFamily: ZH, fontWeight: 600, fontSize: 26, color: INK }}>AIGC 自媒体视频创作教程</span>
-        <span style={{ fontFamily: ZH, fontWeight: 600, fontSize: 22, color: "#fff", background: OR, padding: "3px 12px", borderRadius: 8 }}>第二期 · 做一个 AI 数字人</span>
+        <span style={{ fontFamily: ZH, fontWeight: 600, fontSize: 26, color: INK }}>AIGC 自媒體影片創作教學</span>
+        <span style={{ fontFamily: ZH, fontWeight: 600, fontSize: 22, color: "#fff", background: OR, padding: "3px 12px", borderRadius: 8 }}>第二期 · 做一個 AI 數位人</span>
       </div>
       <div style={{ display: "flex", gap: 8 }}>
         {STEPS.map((s, k) => {
-          const on = k === cur, done = cur > k || it.ch === "结尾";
+          const on = k === cur, done = cur > k || it.ch === "結尾";
           return (
             <div key={s} style={{ fontFamily: ZH, fontWeight: 600, fontSize: 18, padding: "6px 12px", borderRadius: 999, color: on ? "#fff" : done ? GREEN : MUTE,
               background: on ? INK : done ? "rgba(36,168,99,.12)" : "rgba(37,35,31,.06)", transform: `scale(${on ? 1.06 : 1})` }}>{NUM[k]} {s}</div>
@@ -88,7 +88,7 @@ const TopBar: React.FC = () => {
 };
 
 /* ================= 字幕 ================= */
-const HL = ["Renoise", "Claude Code", "Claude", "Codex", "MCP", "Grok", "Wan 3.0", "MiMo", "B-roll", "Skill", "四视图", "积分", "七步", "克隆", "连接器"];
+const HL = ["Renoise", "Claude Code", "Claude", "Codex", "MCP", "Grok", "Wan 3.0", "MiMo", "B-roll", "Skill", "四視圖", "積分", "七步", "克隆", "連接器"];
 type Line = { text: string; i0: number; it: Item; start: number; end: number };
 const LINES: Line[] = (() => {
   const out: Line[] = [];
@@ -130,7 +130,7 @@ const Subs: React.FC = () => {
   );
 };
 
-/* ================= 通用组件 ================= */
+/* ================= 通用元件 ================= */
 const Card: React.FC<{ style?: React.CSSProperties; children?: React.ReactNode }> = ({ style, children }) => (
   <div style={{ position: "absolute", background: CARD, borderRadius: 24, boxShadow: "0 18px 50px rgba(40,40,30,.12)", border: `1px solid ${LINE}`, ...style }}>{children}</div>
 );
@@ -156,7 +156,7 @@ const Chip: React.FC<{ text: string; bg?: string; color?: string; size?: number;
 const Check: React.FC<{ on: boolean; size?: number }> = ({ on, size = 30 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24"><circle cx={12} cy={12} r={11} fill={on ? GREEN : "rgba(37,35,31,.12)"} /><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
-/** 聊天窗：用户气泡 + 助手回复（工具调用小条） */
+/** 聊天窗：使用者氣泡 + 助手回覆（工具呼叫小條） */
 const Chat: React.FC<{ f: number; title?: string; user: { at: number; text: string; attach?: React.ReactNode }; replies: Array<{ at: number; text: string; tool?: boolean; color?: string }>; children?: React.ReactNode; h?: number }> = ({ f, title = "Claude", user, replies, children, h = 680 }) => (
   <Card style={{ left: 40, top: 30, width: 1280, minHeight: Math.min(h, 360), overflow: "hidden" }}>
     <Dots title={title} />
@@ -192,7 +192,7 @@ const Term: React.FC<{ f: number; x: number; y: number; w: number; h: number; ti
     </div>
   </Card>
 );
-/** 全屏段：右侧大标题区 */
+/** 全螢幕段：右側大標題區 */
 const Big: React.FC<{ f: number; at: number; kicker?: string; title: React.ReactNode; sub?: React.ReactNode; children?: React.ReactNode }> = ({ f, at, kicker, title, sub, children }) => {
   const p = sp(f, at, 14, 150);
   return (
@@ -220,20 +220,20 @@ const Browser: React.FC<{ f: number; at: number; url: string; img: string; iw: n
   );
 };
 
-/* ================= 每段的画面 ================= */
+/* ================= 每段的畫面 ================= */
 const Scene: React.FC<{ id: string }> = ({ id }) => {
   const f = useCurrentFrame();
   switch (id) {
     case "h1": return (
-      <Big f={f} at={ST("h1") + 0.2} kicker="嗨，我是 AI 数字人" title={<>脸、声音、讲解<br /><span style={{ color: OR }}>全是 AI 做的</span></>}>
+      <Big f={f} at={ST("h1") + 0.2} kicker="嗨，我是 AI 數位人" title={<>臉、聲音、講解<br /><span style={{ color: OR }}>全是 AI 做的</span></>}>
         <div style={{ display: "flex", gap: 14, marginTop: 34 }}>
-          {[["脸", W("h1", "从脸")], ["声音", W("h1", "声音")], ["讲解", W("h1", "这段讲解")]].map(([t, a]) => <div key={t as string} style={appear(sp(f, a as number, 10, 220))}><Chip text={t as string} size={34} bg="rgba(247,147,30,.14)" color={OR} /></div>)}
+          {[["臉", W("h1", "從臉")], ["聲音", W("h1", "聲音")], ["講解", W("h1", "這段講解")]].map(([t, a]) => <div key={t as string} style={appear(sp(f, a as number, 10, 220))}><Chip text={t as string} size={34} bg="rgba(247,147,30,.14)" color={OR} /></div>)}
         </div>
       </Big>
     );
-    case "h2": return <Big f={f} at={ST("h2")} kicker="AIGC 自媒体视频创作教程 · 第二期" title={<>手把手教你<br />做一个 <span style={{ color: OR }}>AI 数字人</span></>} sub="照片 → 数字人口播成片，全流程跟着做" />;
+    case "h2": return <Big f={f} at={ST("h2")} kicker="AIGC 自媒體影片創作教學 · 第二期" title={<>手把手教你<br />做一個 <span style={{ color: OR }}>AI 數位人</span></>} sub="照片 → 數位人口播成品，全流程跟著做" />;
     case "h3": return (
-      <Big f={f} at={ST("h3")} kicker="一共七步" title="跟着做就行">
+      <Big f={f} at={ST("h3")} kicker="一共七步" title="跟著做就行">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 26px", marginTop: 30 }}>
           {STEPS.map((s, k) => <div key={s} style={{ ...appear(sp(f, ST("h3") + 0.25 + k * 0.22, 12, 220)), fontFamily: ZH, fontWeight: 600, fontSize: 34, color: INK }}><span style={{ color: OR }}>{NUM[k]}</span> {s}</div>)}
         </div>
@@ -241,42 +241,42 @@ const Scene: React.FC<{ id: string }> = ({ id }) => {
     );
     case "s1a": return (
       <Browser f={f} at={ST("s1a")} url="renoise.ai" img="shots/home.png" iw={2880} ih={1800} w={1280}>
-        <Ring f={f} at={W("s1a", "注册")} x={2590 * (1280 / 2880)} y={62 * (1280 / 2880)} w={92} h={40} />
-        <Ring f={f} at={W("s1a", "注册") + 0.4} x={2762 * (1280 / 2880)} y={62 * (1280 / 2880)} w={110} h={40} />
-        {f >= F(W("s1a", "积分")) && <div style={{ position: "absolute", left: 760, top: 110, ...appear(sp(f, W("s1a", "积分"))) }}><Chip text="登录后右上角能看到积分余额" size={26} bg={INK} color="#fff" /></div>}
+        <Ring f={f} at={W("s1a", "註冊")} x={2590 * (1280 / 2880)} y={62 * (1280 / 2880)} w={92} h={40} />
+        <Ring f={f} at={W("s1a", "註冊") + 0.4} x={2762 * (1280 / 2880)} y={62 * (1280 / 2880)} w={110} h={40} />
+        {f >= F(W("s1a", "積分")) && <div style={{ position: "absolute", left: 760, top: 110, ...appear(sp(f, W("s1a", "積分"))) }}><Chip text="登入後右上角能看到積分餘額" size={26} bg={INK} color="#fff" /></div>}
       </Browser>
     );
     case "s1b": return (
-      <Browser f={f} at={ST("s1b")} url="Claude 桌面端 · 设置" img="shots/connectors.png" iw={2000} ih={1319} w={1180}>
-        <Ring f={f} at={W("s1b", "连接器")} x={205 * (1180 / 2000)} y={1169 * (1180 / 2000)} w={150} h={42} />
-        <Ring f={f} at={W("s1b", "添加自定义")} x={1722 * (1180 / 2000)} y={174 * (1180 / 2000)} w={110} h={46} />
-        {f >= F(W("s1b", "添加自定义")) && <div style={{ position: "absolute", left: 640, top: 150, ...appear(sp(f, W("s1b", "添加自定义"))) }}><Chip text="Add → Add custom connector" size={26} bg={INK} color="#fff" /></div>}
+      <Browser f={f} at={ST("s1b")} url="Claude 桌面端 · 設定" img="shots/connectors.png" iw={2000} ih={1319} w={1180}>
+        <Ring f={f} at={W("s1b", "連接器")} x={205 * (1180 / 2000)} y={1169 * (1180 / 2000)} w={150} h={42} />
+        <Ring f={f} at={W("s1b", "新增自定義")} x={1722 * (1180 / 2000)} y={174 * (1180 / 2000)} w={110} h={46} />
+        {f >= F(W("s1b", "新增自定義")) && <div style={{ position: "absolute", left: 640, top: 150, ...appear(sp(f, W("s1b", "新增自定義"))) }}><Chip text="Add → Add custom connector" size={26} bg={INK} color="#fff" /></div>}
       </Browser>
     );
     case "s1c": {
-      const auth = W("s1c", "登录授权");
+      const auth = W("s1c", "登入授權");
       return f < F(auth) ? (
         <Card style={{ left: 190, top: 40, width: 980, height: 600, padding: "36px 44px", ...appear(sp(f, ST("s1c"))) }}>
           <div style={{ fontFamily: EN, fontWeight: 700, fontSize: 40, color: INK }}>Add custom connector</div>
-          <div style={{ fontFamily: EN, fontSize: 22, color: MUTE, marginTop: 8 }}>添加自定义连接器</div>
-          <div style={{ marginTop: 34, fontFamily: ZH, fontSize: 22, color: MUTE }}>名称</div>
-          <div style={{ marginTop: 8, height: 62, borderRadius: 12, border: `2px solid ${f >= F(W("s1c", "名称")) && f < F(W("s1c", "地址")) ? BLUE : LINE}`, display: "flex", alignItems: "center", padding: "0 18px", fontFamily: EN, fontSize: 30, color: INK }}><Typed f={f} at={W("s1c", "名称") + 0.3} text="Renoise" cps={14} /></div>
-          <div style={{ marginTop: 22, fontFamily: ZH, fontSize: 22, color: MUTE }}>远程 MCP 服务器地址</div>
+          <div style={{ fontFamily: EN, fontSize: 22, color: MUTE, marginTop: 8 }}>新增自定義連接器</div>
+          <div style={{ marginTop: 34, fontFamily: ZH, fontSize: 22, color: MUTE }}>名稱</div>
+          <div style={{ marginTop: 8, height: 62, borderRadius: 12, border: `2px solid ${f >= F(W("s1c", "名稱")) && f < F(W("s1c", "地址")) ? BLUE : LINE}`, display: "flex", alignItems: "center", padding: "0 18px", fontFamily: EN, fontSize: 30, color: INK }}><Typed f={f} at={W("s1c", "名稱") + 0.3} text="Renoise" cps={14} /></div>
+          <div style={{ marginTop: 22, fontFamily: ZH, fontSize: 22, color: MUTE }}>遠端 MCP 伺服器地址</div>
           <div style={{ marginTop: 8, height: 62, borderRadius: 12, border: `2px solid ${f >= F(W("s1c", "地址")) ? BLUE : LINE}`, display: "flex", alignItems: "center", padding: "0 18px", fontFamily: MONO, fontSize: 28, color: INK }}><Typed f={f} at={W("s1c", "地址") + 0.3} text="https://renoise.ai/api/public/mcp" cps={22} /></div>
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 16, marginTop: 40 }}>
             <div style={{ fontFamily: EN, fontSize: 26, padding: "12px 26px", borderRadius: 12, border: `1px solid ${LINE}` }}>Cancel</div>
-            <div style={{ fontFamily: EN, fontWeight: 700, fontSize: 26, padding: "12px 26px", borderRadius: 12, background: INK, color: "#fff", transform: `scale(${f >= F(W("s1c", "点继续")) && f < F(W("s1c", "点继续")) + 6 ? 0.92 : 1})` }}>Continue</div>
+            <div style={{ fontFamily: EN, fontWeight: 700, fontSize: 26, padding: "12px 26px", borderRadius: 12, background: INK, color: "#fff", transform: `scale(${f >= F(W("s1c", "點繼續")) && f < F(W("s1c", "點繼續")) + 6 ? 0.92 : 1})` }}>Continue</div>
           </div>
-          <Ring f={f} at={W("s1c", "点继续")} x={818} y={474} w={178} h={66} />
+          <Ring f={f} at={W("s1c", "點繼續")} x={818} y={474} w={178} h={66} />
         </Card>
       ) : (
         <Card style={{ left: 330, top: 60, width: 700, height: 560, padding: 44, display: "flex", flexDirection: "column", alignItems: "center", gap: 22, ...appear(sp(f, auth)) }}>
           <div style={{ fontFamily: EN, fontWeight: 800, fontSize: 56, color: OR }}>Renoise</div>
-          <div style={{ fontFamily: ZH, fontWeight: 700, fontSize: 36, color: INK, textAlign: "center" }}>Claude 请求连接你的 Renoise 账号</div>
-          <div style={{ fontFamily: ZH, fontSize: 26, color: MUTE }}>登录 renoise.ai，点同意即可，不用复制 API key</div>
-          <div style={{ marginTop: 20, width: 420, height: 70, borderRadius: 14, background: GREEN, color: "#fff", display: "grid", placeItems: "center", fontFamily: ZH, fontWeight: 700, fontSize: 32 }}>同意授权</div>
+          <div style={{ fontFamily: ZH, fontWeight: 700, fontSize: 36, color: INK, textAlign: "center" }}>Claude 請求連線你的 Renoise 帳號</div>
+          <div style={{ fontFamily: ZH, fontSize: 26, color: MUTE }}>登入 renoise.ai，點同意即可，不用複製 API key</div>
+          <div style={{ marginTop: 20, width: 420, height: 70, borderRadius: 14, background: GREEN, color: "#fff", display: "grid", placeItems: "center", fontFamily: ZH, fontWeight: 700, fontSize: 32 }}>同意授權</div>
           <Ring f={f} at={auth + 0.5} x={350} y={420} w={440} h={84} />
-          <div style={{ fontFamily: ZH, fontSize: 20, color: MUTE }}>示意图</div>
+          <div style={{ fontFamily: ZH, fontSize: 20, color: MUTE }}>示意圖</div>
         </Card>
       );
     }
@@ -285,39 +285,39 @@ const Scene: React.FC<{ id: string }> = ({ id }) => {
         <Term f={f} x={40} y={20} w={1280} h={300} title="Claude Code" lines={[
           { at: W("s1d", "Claude Code"), text: "/plugin marketplace add ArcoCodes/renoise-plugins-official" },
           { at: W("s1d", "Claude Code") + 1.5, text: "/plugin install renoise@renoise-plugins-official" },
-          { at: W("s1d", "插件命令") + 0.6, text: "首次使用会自动打开浏览器登录 Renoise", color: "#9BE3B5", prompt: false },
+          { at: W("s1d", "外掛命令") + 0.6, text: "首次使用會自動開啟瀏覽器登入 Renoise", color: "#9BE3B5", prompt: false },
         ]} />
-        {f >= F(W("s1d", "Codex") - 0.3) && <Term f={f} x={40} y={360} w={1280} h={280} title="Codex（终端）" lines={[
+        {f >= F(W("s1d", "Codex") - 0.3) && <Term f={f} x={40} y={360} w={1280} h={280} title="Codex（終端）" lines={[
           { at: W("s1d", "Codex"), text: "codex mcp add renoise --url https://renoise.ai/api/public/mcp" },
-          { at: W("s1d", "加上这个地址"), text: "codex mcp login renoise   # 提示登录时执行", color: "#C9C6BD" },
+          { at: W("s1d", "加上這個地址"), text: "codex mcp login renoise   # 提示登入時執行", color: "#C9C6BD" },
         ]} />}
       </>
     );
     case "s1e": return (
-      <Chat f={f} user={{ at: W("s1e", "查一下") - 0.2, text: "查一下我的 Renoise 余额" }} replies={[
+      <Chat f={f} user={{ at: W("s1e", "查一下") - 0.2, text: "查一下我的 Renoise 餘額" }} replies={[
         { at: W("s1e", "能查到") - 0.4, text: "renoise · get_account", tool: true },
-        { at: W("s1e", "能查到") + 0.3, text: "当前余额 9,097 credits（Advanced 套餐）" },
-        { at: W("s1e", "连上了") - 0.2, text: "✓ 已连接，可以开始做视频了", color: GREEN },
+        { at: W("s1e", "能查到") + 0.3, text: "當前餘額 9,097 credits（Advanced 套餐）" },
+        { at: W("s1e", "連上了") - 0.2, text: "✓ 已連線，可以開始做影片了", color: GREEN },
       ]} />
     );
     case "s2a": return (
-      <Big f={f} at={ST("s2a")} kicker="② 生成形象" title="先准备一张人物照" sub="数字人照片、你自己的生活照都可以">
+      <Big f={f} at={ST("s2a")} kicker="② 生成形象" title="先準備一張人物照" sub="數位人照片、你自己的生活照都可以">
         <div style={{ marginTop: 30, display: "flex", gap: 24, alignItems: "flex-end", ...appear(sp(f, W("s2a", "人物照"))) }}>
           <Img src={staticFile("demo/photo.jpg")} style={{ width: 200, height: 395, objectFit: "cover", borderRadius: 18, boxShadow: "0 0 0 5px #fff, 0 12px 30px rgba(0,0,0,.2)" }} />
-          <div style={{ fontFamily: ZH, fontSize: 26, color: MUTE, lineHeight: 1.6 }}>正脸 · 光线均匀<br />头发不挡脸 · 嘴闭着<br /><span style={{ color: RED }}>只用本人或已授权的照片</span></div>
+          <div style={{ fontFamily: ZH, fontSize: 26, color: MUTE, lineHeight: 1.6 }}>正臉 · 光線均勻<br />頭髮不擋臉 · 嘴閉著<br /><span style={{ color: RED }}>只用本人或已授權的照片</span></div>
         </div>
       </Big>
     );
     case "s2b": return (
-      <Chat f={f} user={{ at: W("s2b", "把照片") - 0.1, text: "帮我生成这个人的四视图：正面、两个侧面和背面", attach: <Img src={staticFile("demo/photo.jpg")} style={{ width: 90, height: 178, objectFit: "cover", borderRadius: 12, marginBottom: 10, display: "block", marginLeft: "auto" }} /> }} replies={[
-        { at: W("s2b", "正面"), text: "renoise · gpt-image-2.5 · 2k · 约 23 积分", tool: true },
+      <Chat f={f} user={{ at: W("s2b", "把照片") - 0.1, text: "幫我生成這個人的四視圖：正面、兩個側面和背面", attach: <Img src={staticFile("demo/photo.jpg")} style={{ width: 90, height: 178, objectFit: "cover", borderRadius: 12, marginBottom: 10, display: "block", marginLeft: "auto" }} /> }} replies={[
+        { at: W("s2b", "正面"), text: "renoise · gpt-image-2.5 · 2k · 約 23 積分", tool: true },
       ]}>
-        {f >= F(W("s2b", "两个侧面")) && <Img src={staticFile("demo/multiview.png")} style={{ width: 540, borderRadius: 14, ...appear(sp(f, W("s2b", "两个侧面"))) }} />}
+        {f >= F(W("s2b", "兩個側面")) && <Img src={staticFile("demo/multiview.png")} style={{ width: 540, borderRadius: 14, ...appear(sp(f, W("s2b", "兩個側面"))) }} />}
       </Chat>
     );
     case "s2c": {
-      const labels = ["正面", "左侧", "右侧", "背面"];
-      const cmpAt = W("s2c", "多用几个模型");
+      const labels = ["正面", "左側", "右側", "背面"];
+      const cmpAt = W("s2c", "多用幾個模型");
       return (
         <>
           <Card style={{ left: 40, top: 20, width: 1280, overflow: "hidden", ...appear(sp(f, ST("s2c"))) }}>
@@ -327,14 +327,14 @@ const Scene: React.FC<{ id: string }> = ({ id }) => {
             </div>
           </Card>
           {f >= F(cmpAt) && <div style={{ position: "absolute", left: 40, top: 762, display: "flex", gap: 14, ...appear(sp(f, cmpAt)) }}>
-            <Chip text="多模型对比：" size={28} bg="transparent" />
+            <Chip text="多模型對比：" size={28} bg="transparent" />
             {["Grok Video 1.5", "Wan 3.0", "Seedance 2.5"].map((m, k) => <div key={m} style={appear(sp(f, cmpAt + 0.2 + k * 0.2, 10, 220))}><Chip text={m} size={28} bg={k === 0 ? OR : "rgba(37,35,31,.08)"} color={k === 0 ? "#fff" : INK} /></div>)}
           </div>}
         </>
       );
     }
     case "s2d": {
-      const l = W("s2d", "左边"), r = W("s2d", "右边");
+      const l = W("s2d", "左邊"), r = W("s2d", "右邊");
       return (
         <div style={{ position: "absolute", left: 160, top: 10, display: "flex", gap: 60 }}>
           {[["Grok Video 1.5", "demo/grok_first.jpg", l], ["Wan 3.0", "demo/wan_first.jpg", r]].map(([name, img, at]) => {
@@ -350,12 +350,12 @@ const Scene: React.FC<{ id: string }> = ({ id }) => {
       );
     }
     case "s2e": {
-      const rows = [["表情手势", "更自然", "偏少"], ["配音", "自带中文配音", "自带配音"], ["720p · 8 秒", "136 积分", "96 积分"], ["生成方式", "参考图", "首帧"]];
+      const rows = [["表情手勢", "更自然", "偏少"], ["配音", "自帶中文配音", "自帶配音"], ["720p · 8 秒", "136 積分", "96 積分"], ["生成方式", "參考圖", "首幀"]];
       return (
         <Card style={{ left: 120, top: 40, width: 1120, padding: "34px 44px", ...appear(sp(f, ST("s2e"))) }}>
           <div style={{ display: "grid", gridTemplateColumns: "260px 1fr 1fr", rowGap: 22, alignItems: "center" }}>
             <div />
-            <div style={{ position: "relative" }}><Chip text="Grok Video 1.5" size={32} bg={OR} color="#fff" />{f >= F(W("s2e", "优选")) && <span style={{ position: "absolute", left: 10, top: -46, fontFamily: ZH, fontWeight: 800, fontSize: 30, color: GREEN, transform: `rotate(-6deg) scale(${sp(f, W("s2e", "优选"), 9, 240)})`, display: "inline-block" }}>我选它 ✓</span>}</div>
+            <div style={{ position: "relative" }}><Chip text="Grok Video 1.5" size={32} bg={OR} color="#fff" />{f >= F(W("s2e", "優選")) && <span style={{ position: "absolute", left: 10, top: -46, fontFamily: ZH, fontWeight: 800, fontSize: 30, color: GREEN, transform: `rotate(-6deg) scale(${sp(f, W("s2e", "優選"), 9, 240)})`, display: "inline-block" }}>我選它 ✓</span>}</div>
             <Chip text="Wan 3.0" size={32} />
             {rows.map((r, k) => (
               <React.Fragment key={k}>
@@ -365,35 +365,35 @@ const Scene: React.FC<{ id: string }> = ({ id }) => {
               </React.Fragment>
             ))}
           </div>
-          <div style={{ fontFamily: ZH, fontSize: 22, color: MUTE, marginTop: 24 }}>积分为本次实测 Renoise 报价 · 表情手势为个人观感</div>
+          <div style={{ fontFamily: ZH, fontSize: 22, color: MUTE, marginTop: 24 }}>積分為本次實測 Renoise 報價 · 表情手勢為個人觀感</div>
         </Card>
       );
     }
-    case "s3a": return <Big f={f} at={ST("s3a")} kicker="③ 配置音色" title={<>默认：<span style={{ color: OR }}>Grok 原生配音</span></>} sub="生成数字人时自带声音，就是你现在听到的这个"><Wave f={f} at={ST("s3a")} w={760} h={120} color={OR} active /></Big>;
+    case "s3a": return <Big f={f} at={ST("s3a")} kicker="③ 配置音色" title={<>預設：<span style={{ color: OR }}>Grok 原生配音</span></>} sub="生成數位人時自帶聲音，就是你現在聽到的這個"><Wave f={f} at={ST("s3a")} w={760} h={120} color={OR} active /></Big>;
     case "s3b": return (
       <div style={{ position: "absolute", left: 40, top: 30, display: "flex", gap: 36 }}>
-        {[["音色设计", "写一句描述就生成", "「温柔知性的年轻女声，语速稍慢」", W("s3b", "按文字描述")], ["声音克隆", "上传十几秒录音", "像你自己的声音", W("s3b", "也能克隆")]].map(([t, s, e, at]) => (
+        {[["音色設計", "寫一句描述就生成", "「溫柔知性的年輕女聲，語速稍慢」", W("s3b", "按文字描述")], ["聲音克隆", "上傳十幾秒錄音", "像你自己的聲音", W("s3b", "也能克隆")]].map(([t, s, e, at]) => (
           <Card key={t as string} style={{ position: "relative", width: 620, height: 520, padding: "40px 44px", ...appear(sp(f, at as number)) }}>
-            <Chip text="小米 MiMo 语音" size={24} bg="rgba(247,147,30,.14)" color={OR} />
+            <Chip text="小米 MiMo 語音" size={24} bg="rgba(247,147,30,.14)" color={OR} />
             <div style={{ fontFamily: ZH, fontWeight: 800, fontSize: 60, color: INK, marginTop: 26 }}>{t}</div>
             <div style={{ fontFamily: ZH, fontSize: 32, color: MUTE, marginTop: 12 }}>{s}</div>
             <div style={{ fontFamily: ZH, fontSize: 28, color: INK, marginTop: 40, padding: "18px 22px", background: "#F5F3EE", borderRadius: 14 }}>{e}</div>
-            <div style={{ position: "absolute", left: 44, bottom: 40 }}><Wave f={f} at={at as number} w={530} h={70} color={t === "音色设计" ? BLUE : GREEN} active /></div>
+            <div style={{ position: "absolute", left: 44, bottom: 40 }}><Wave f={f} at={at as number} w={530} h={70} color={t === "音色設計" ? BLUE : GREEN} active /></div>
           </Card>
         ))}
       </div>
     );
     case "s3c": return (
-      <Chat f={f} title="Claude Code" user={{ at: W("s3c", "发给") - 0.3, text: "用我的声音配这段话：……", attach: <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}><Chip text="🎙 我的录音.m4a · 0:14" size={24} bg="rgba(36,168,99,.14)" color={GREEN} /></div> }} replies={[
-        { at: W("s3c", "它就会") - 0.2, text: "MiMo voiceclone · 逐字对齐 · 回听校验", tool: true },
-        { at: W("s3c", "调用完成") - 0.2, text: "✓ 已生成 配音.wav（6.0 秒）", color: GREEN },
+      <Chat f={f} title="Claude Code" user={{ at: W("s3c", "發給") - 0.3, text: "用我的聲音配這段話：……", attach: <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}><Chip text="🎙 我的錄音.m4a · 0:14" size={24} bg="rgba(36,168,99,.14)" color={GREEN} /></div> }} replies={[
+        { at: W("s3c", "它就會") - 0.2, text: "MiMo voiceclone · 逐字對齊 · 回聽校驗", tool: true },
+        { at: W("s3c", "呼叫完成") - 0.2, text: "✓ 已生成 配音.wav（6.0 秒）", color: GREEN },
       ]} />
     );
     case "s3d": return <ClonePlayer f={f} playing={false} />;
     case "s4a": return (
-      <Big f={f} at={ST("s4a")} kicker="④ 脚本生成" title="把内容发给 AI">
+      <Big f={f} at={ST("s4a")} kicker="④ 腳本生成" title="把內容發給 AI">
         <Card style={{ position: "relative", marginTop: 30, width: 860, padding: "26px 30px", ...appear(sp(f, W("s4a", "比如"))) }}>
-          <div style={{ fontFamily: ZH, fontSize: 30, color: INK, lineHeight: 1.6 }}>「用这个形象，讲一段<span style={{ color: OR, fontWeight: 700 }}>一分半钟</span>的产品推荐」</div>
+          <div style={{ fontFamily: ZH, fontSize: 30, color: INK, lineHeight: 1.6 }}>「用這個形象，講一段<span style={{ color: OR, fontWeight: 700 }}>一分半鐘</span>的產品推薦」</div>
         </Card>
       </Big>
     );
@@ -401,7 +401,7 @@ const Scene: React.FC<{ id: string }> = ({ id }) => {
       const S5 = ITEMS.filter((i) => i.kind === "nar").slice(3, 8);
       return (
         <Card style={{ left: 40, top: 20, width: 1280, height: 700, padding: "30px 40px", ...appear(sp(f, ST("s4b"))) }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 22 }}><Chip text="自动切段" size={28} bg={INK} color="#fff" /><Chip text="每段 ≤ 15 秒（Grok 单段上限）" size={26} bg="rgba(247,147,30,.14)" color={OR} /></div>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 22 }}><Chip text="自動切段" size={28} bg={INK} color="#fff" /><Chip text="每段 ≤ 15 秒（Grok 單段上限）" size={26} bg="rgba(247,147,30,.14)" color={OR} /></div>
           {S5.map((s, k) => {
             const p = sp(f, ST("s4b") + 0.4 + k * 0.45, 12, 200);
             return (
@@ -412,54 +412,54 @@ const Scene: React.FC<{ id: string }> = ({ id }) => {
               </div>
             );
           })}
-          <div style={{ fontFamily: ZH, fontSize: 22, color: MUTE, marginTop: 14 }}>这期教程的真实切段 · 共 32 段</div>
+          <div style={{ fontFamily: ZH, fontSize: 22, color: MUTE, marginTop: 14 }}>這期教學的真實切段 · 共 32 段</div>
         </Card>
       );
     }
     case "s4c": {
-      const ok = W("s4c", "点头");
+      const ok = W("s4c", "點頭");
       return (
-        <Chat f={f} title="Claude Code" user={{ at: ST("s4c") + 0.1, text: "按这个稿子生成数字人口播" }} replies={[
+        <Chat f={f} title="Claude Code" user={{ at: ST("s4c") + 0.1, text: "按這個稿子生成數位人口播" }} replies={[
           { at: W("s4c", "生成之前") - 0.3, text: "renoise · estimate_cost", tool: true },
-          { at: W("s4c", "要花多少"), text: "32 段 · 约 244 秒 · 预估 2,958 积分 · 当前余额 9,097" },
-          { at: W("s4c", "要花多少") + 0.6, text: "确认后我再开始生成，可以吗？", color: OR },
+          { at: W("s4c", "要花多少"), text: "32 段 · 約 244 秒 · 預估 2,958 積分 · 當前餘額 9,097" },
+          { at: W("s4c", "要花多少") + 0.6, text: "確認後我再開始生成，可以嗎？", color: OR },
         ]}>
           {f >= F(ok - 0.4) && <div style={{ display: "flex", gap: 16, ...appear(sp(f, ok - 0.4)) }}>
-            <div style={{ fontFamily: ZH, fontWeight: 700, fontSize: 28, padding: "12px 28px", borderRadius: 12, background: GREEN, color: "#fff", transform: `scale(${f >= F(ok) && f < F(ok) + 6 ? 0.92 : 1})` }}>确认，开始生成</div>
+            <div style={{ fontFamily: ZH, fontWeight: 700, fontSize: 28, padding: "12px 28px", borderRadius: 12, background: GREEN, color: "#fff", transform: `scale(${f >= F(ok) && f < F(ok) + 6 ? 0.92 : 1})` }}>確認，開始生成</div>
             <div style={{ fontFamily: ZH, fontSize: 28, padding: "12px 28px", borderRadius: 12, border: `1px solid ${LINE}` }}>我再改改稿子</div>
           </div>}
         </Chat>
       );
     }
     case "s4d": {
-      const rows = [["h1", "100%", "✓"], ["s1c", "89%", "✓"], ["s2c", "65%", "识别成繁体 → 复核没念错 ✓"], ["s5c", "81%", "Wan 念作「万」→ 复核 ✓"]];
+      const rows = [["h1", "100%", "✓"], ["s1c", "89%", "✓"], ["s2c", "65%", "識別成繁體 → 複核沒念錯 ✓"], ["s5c", "81%", "Wan 唸作「萬」→ 複核 ✓"]];
       return (
         <Card style={{ left: 40, top: 20, width: 1280, height: 700, padding: "30px 40px", ...appear(sp(f, ST("s4d"))) }}>
-          {[["先拍第 1 段，听音色", W("s4d", "先做")], ["满意再批量生成", W("s4d", "批量")], ["逐段回听，比对文稿", W("s4d", "逐段")], ["念错了就单独重拍", W("s4d", "单独重做")]].map(([t, a], k) => (
+          {[["先拍第 1 段，聽音色", W("s4d", "先做")], ["滿意再批次生成", W("s4d", "批次")], ["逐段回聽，比對文稿", W("s4d", "逐段")], ["唸錯了就單獨重拍", W("s4d", "單獨重做")]].map(([t, a], k) => (
             <div key={k} style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 14, ...appear(sp(f, a as number)) }}><Check on={f >= F(a as number)} /><span style={{ fontFamily: ZH, fontWeight: 600, fontSize: 32, color: INK }}>{t}</span></div>
           ))}
           {f >= F(W("s4d", "逐段")) && (
             <div style={{ marginTop: 18, borderTop: `1px solid ${LINE}`, paddingTop: 16, ...appear(sp(f, W("s4d", "逐段"))) }}>
-              <div style={{ fontFamily: ZH, fontSize: 22, color: MUTE, marginBottom: 8 }}>本期真实回听结果（节选）</div>
+              <div style={{ fontFamily: ZH, fontSize: 22, color: MUTE, marginBottom: 8 }}>本期真實回聽結果（節選）</div>
               {rows.map((r) => <div key={r[0]} style={{ display: "flex", gap: 30, fontFamily: MONO, fontSize: 24, color: INK, padding: "6px 0" }}><span style={{ width: 70 }}>{r[0]}</span><span style={{ width: 90, color: parseInt(r[1]) < 85 ? OR : GREEN }}>{r[1]}</span><span style={{ fontFamily: ZH }}>{r[2]}</span></div>)}
             </div>
           )}
         </Card>
       );
     }
-    case "s5a": return <Big f={f} at={ST("s5a")} kicker="⑤ B-roll 画面" title={<>只有人在讲<br /><span style={{ color: OR }}>太单调了</span></>} sub="穿插空镜、示意画面，节奏才起得来" />;
+    case "s5a": return <Big f={f} at={ST("s5a")} kicker="⑤ B-roll 畫面" title={<>只有人在講<br /><span style={{ color: OR }}>太單調了</span></>} sub="穿插空鏡、示意畫面，節奏才起得來" />;
     case "s5b": {
-      const A = [["节奏", "约 5 秒切一个场景"], ["镜头", "美食特写 → 平滑大幅拉远"], ["光线", "夜市霓虹 / 夕阳 / 正午"], ["情绪", "欢快、时尚、有活力"]];
+      const A = [["節奏", "約 5 秒切一個場景"], ["鏡頭", "美食特寫 → 平滑大幅拉遠"], ["光線", "夜市霓虹 / 夕陽 / 正午"], ["情緒", "歡快、時尚、有活力"]];
       return (
         <>
           <Card style={{ left: 40, top: 20, width: 380, height: 676, overflow: "hidden", ...appear(sp(f, ST("s5b"))) }}>
             <Sequence from={F(ST("s5b"))} durationInFrames={F(BY.s5b.dur) + 4} layout="none"><OffthreadVideo src={staticFile("demo/ref_soya.mp4")} muted style={{ width: "100%", height: "100%", objectFit: "cover" }} /></Sequence>
-            <div style={{ position: "absolute", left: 12, top: 12 }}><Chip text="参考视频" size={22} bg="rgba(0,0,0,.6)" color="#fff" /></div>
+            <div style={{ position: "absolute", left: 12, top: 12 }}><Chip text="參考影片" size={22} bg="rgba(0,0,0,.6)" color="#fff" /></div>
           </Card>
-          <Card style={{ left: 460, top: 20, width: 860, height: 676, padding: "30px 38px", ...appear(sp(f, W("s5b", "让它先总结") - 0.3)) }}>
-            <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 22 }}><Chip text="renoise · analyze_media" size={24} bg="rgba(55,103,240,.1)" color={BLUE} /><span style={{ fontFamily: ZH, fontSize: 24, color: MUTE }}>AI 先总结风格</span></div>
+          <Card style={{ left: 460, top: 20, width: 860, height: 676, padding: "30px 38px", ...appear(sp(f, W("s5b", "讓它先總結") - 0.3)) }}>
+            <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 22 }}><Chip text="renoise · analyze_media" size={24} bg="rgba(55,103,240,.1)" color={BLUE} /><span style={{ fontFamily: ZH, fontSize: 24, color: MUTE }}>AI 先總結風格</span></div>
             {A.map(([k, v], i) => {
-              const at = [W("s5b", "镜头怎么动"), W("s5b", "镜头怎么动"), W("s5b", "节奏多快"), W("s5b", "什么风格")][i];
+              const at = [W("s5b", "鏡頭怎麼動"), W("s5b", "鏡頭怎麼動"), W("s5b", "節奏多快"), W("s5b", "什麼風格")][i];
               return <div key={k} style={{ display: "flex", gap: 22, padding: "18px 0", borderTop: `1px solid ${LINE}`, ...appear(sp(f, at + i * 0.1)) }}><span style={{ width: 90, fontFamily: ZH, fontWeight: 700, fontSize: 30, color: OR }}>{k}</span><span style={{ fontFamily: ZH, fontSize: 32, color: INK }}>{v}</span></div>;
             })}
           </Card>
@@ -469,12 +469,12 @@ const Scene: React.FC<{ id: string }> = ({ id }) => {
     case "s5c": return (
       <Card style={{ left: 40, top: 20, width: 1280, height: 720, overflow: "hidden", ...appear(sp(f, W("s5c", "生成你自己"))) }}>
         <Sequence from={F(W("s5c", "生成你自己"))} durationInFrames={F(EN_("s5c") - W("s5c", "生成你自己")) + 4} layout="none"><OffthreadVideo src={staticFile("demo/broll.mp4")} muted style={{ width: "100%", height: "100%", objectFit: "cover" }} /></Sequence>
-        <div style={{ position: "absolute", left: 20, top: 20, display: "flex", gap: 10 }}><Chip text="AI 生成的空镜" size={24} bg="rgba(0,0,0,.6)" color="#fff" />{f >= F(W("s5c", "Wan")) && <Chip text="Wan 3.0 · 480p · 5 秒 · 30 积分" size={24} bg={OR} color="#fff" />}</div>
+        <div style={{ position: "absolute", left: 20, top: 20, display: "flex", gap: 10 }}><Chip text="AI 生成的空鏡" size={24} bg="rgba(0,0,0,.6)" color="#fff" />{f >= F(W("s5c", "Wan")) && <Chip text="Wan 3.0 · 480p · 5 秒 · 30 積分" size={24} bg={OR} color="#fff" />}</div>
       </Card>
     );
-    case "s6a": return <Big f={f} at={ST("s6a")} kicker="⑥ 沉淀 Skill" title={<>最容易忽略<br /><span style={{ color: OR }}>也最重要</span></>} sub="把这次的经验写下来，下次一句话复用" />;
+    case "s6a": return <Big f={f} at={ST("s6a")} kicker="⑥ 沉澱 Skill" title={<>最容易忽略<br /><span style={{ color: OR }}>也最重要</span></>} sub="把這次的經驗寫下來，下次一句話複用" />;
     case "s6b": {
-      const tree: Array<[string, string, string]> = [["SKILL.md", "流程 · 红线 · 用法", "Skill"], ["persona.json", "形象 · 音色 · 提示词模板", "形象"], ["scripts/build_tasks.py", "切段规则 · 报价", "切段规则"], ["scripts/rangedl.py", "分片下载 · 校验", "切段规则"], ["scripts/assemble.py", "回听 · 剪空白 · 拼接", "切段规则"], ["references/edit-styles.md", "剪辑风格（9:16 / 16:9 / 教程）", "剪辑风格"]];
+      const tree: Array<[string, string, string]> = [["SKILL.md", "流程 · 紅線 · 用法", "Skill"], ["persona.json", "形象 · 音色 · 提示詞模板", "形象"], ["scripts/build_tasks.py", "切段規則 · 報價", "切段規則"], ["scripts/rangedl.py", "分片下載 · 校驗", "切段規則"], ["scripts/assemble.py", "回聽 · 剪空白 · 拼接", "切段規則"], ["references/edit-styles.md", "剪輯風格（9:16 / 16:9 / 教學）", "剪輯風格"]];
       return (
         <Card style={{ left: 40, top: 20, width: 1280, height: 700, padding: "30px 40px", background: "#1C1B19", ...appear(sp(f, ST("s6b"))) }}>
           <div style={{ fontFamily: MONO, fontSize: 28, color: OR, marginBottom: 20 }}>~/.claude/skills/digital-human-koubo/</div>
@@ -483,29 +483,29 @@ const Scene: React.FC<{ id: string }> = ({ id }) => {
             const on = f >= F(at);
             return <div key={n} style={{ display: "flex", gap: 30, padding: "14px 0", borderTop: "1px solid rgba(255,255,255,.08)", opacity: on ? 1 : 0.35 }}><span style={{ width: 460, fontFamily: MONO, fontSize: 26, color: on ? "#EDEBE4" : "#8D8A82" }}>├─ {n}</span><span style={{ fontFamily: ZH, fontSize: 28, color: on ? "#9BE3B5" : "#8D8A82" }}>{d}</span></div>;
           })}
-          <div style={{ fontFamily: ZH, fontSize: 22, color: "#8D8A82", marginTop: 16 }}>已装在本机 · 就是做这期教程时沉淀的</div>
+          <div style={{ fontFamily: ZH, fontSize: 22, color: "#8D8A82", marginTop: 16 }}>已裝在本機 · 就是做這期教學時沉澱的</div>
         </Card>
       );
     }
     case "s6c": return (
-      <Chat f={f} title="Claude Code" user={{ at: W("s6c", "用我的") - 0.2, text: "用我的数字人 Skill 讲这段内容：……" }} replies={[
-        { at: W("s6c", "出来的") - 0.4, text: "Skill · digital-human-koubo 已加载", tool: true, color: GREEN },
-        { at: W("s6c", "同一个我") - 0.2, text: "形象 / 音色 / 提示词 / 切段规则已就位 → 先报价，等你确认再生成" },
-        { at: W("s6c", "非常稳定") - 0.2, text: "同一个人 · 同一种风格 ✓", color: GREEN },
+      <Chat f={f} title="Claude Code" user={{ at: W("s6c", "用我的") - 0.2, text: "用我的數位人 Skill 講這段內容：……" }} replies={[
+        { at: W("s6c", "出來的") - 0.4, text: "Skill · digital-human-koubo 已載入", tool: true, color: GREEN },
+        { at: W("s6c", "同一個我") - 0.2, text: "形象 / 音色 / 提示詞 / 切段規則已就位 → 先報價，等你確認再生成" },
+        { at: W("s6c", "非常穩定") - 0.2, text: "同一個人 · 同一種風格 ✓", color: GREEN },
       ]} />
     );
-    case "s7a": return <Big f={f} at={ST("s7a")} kicker="⑦ 剪辑合成" title={<>交给 <span style={{ color: OR }}>Claude</span></>} sub="字幕、花字、画中画、配乐、横竖屏，一次做完" />;
+    case "s7a": return <Big f={f} at={ST("s7a")} kicker="⑦ 剪輯合成" title={<>交給 <span style={{ color: OR }}>Claude</span></>} sub="字幕、花字、畫中畫、配樂、橫直式，一次做完" />;
     case "s7b": {
-      const feats = [["对齐字幕", "对齐字幕"], ["花字和表情", "花字"], ["画中画", "画中画"], ["背景音乐", "背景音乐"], ["横屏竖屏", "横屏"]];
+      const feats = [["對齊字幕", "對齊字幕"], ["花字和表情", "花字"], ["畫中畫", "畫中畫"], ["背景音樂", "背景音樂"], ["橫式直式", "橫式"]];
       return (
         <>
           <Card style={{ left: 40, top: 20, width: 340, height: 604, overflow: "hidden", ...appear(sp(f, ST("s7b"))) }}>
             <Sequence from={F(ST("s7b"))} durationInFrames={F(BY.s7b.dur) + 4} layout="none"><OffthreadVideo src={staticFile("show/koubo.mp4")} muted style={{ width: "100%", height: "100%", objectFit: "cover" }} /></Sequence>
-            <div style={{ position: "absolute", left: 10, top: 10 }}><Chip text="竖屏花字版" size={20} bg="rgba(0,0,0,.6)" color="#fff" /></div>
+            <div style={{ position: "absolute", left: 10, top: 10 }}><Chip text="直式花字版" size={20} bg="rgba(0,0,0,.6)" color="#fff" /></div>
           </Card>
           <Card style={{ left: 420, top: 20, width: 900, height: 506, overflow: "hidden", ...appear(sp(f, ST("s7b") + 0.2)) }}>
             <Sequence from={F(ST("s7b"))} durationInFrames={F(BY.s7b.dur) + 4} layout="none"><OffthreadVideo src={staticFile("show/memt.mp4")} muted style={{ width: "100%", height: "100%", objectFit: "cover" }} /></Sequence>
-            <div style={{ position: "absolute", left: 12, top: 12 }}><Chip text="横屏侧边版" size={20} bg="rgba(0,0,0,.6)" color="#fff" /></div>
+            <div style={{ position: "absolute", left: 12, top: 12 }}><Chip text="橫式側邊版" size={20} bg="rgba(0,0,0,.6)" color="#fff" /></div>
           </Card>
           <div style={{ position: "absolute", left: 420, top: 560, display: "flex", flexWrap: "wrap", gap: 14, width: 900 }}>
             {feats.map(([t, w]) => f >= F(W("s7b", w)) && <div key={t} style={appear(sp(f, W("s7b", w), 10, 220))}><Chip text={`✓ ${t}`} size={30} bg="rgba(36,168,99,.14)" color={GREEN} /></div>)}
@@ -514,11 +514,11 @@ const Scene: React.FC<{ id: string }> = ({ id }) => {
       );
     }
     case "s7c": {
-      const tracks = [["数字人", 32, OR], ["字幕", 60, BLUE], ["界面画面", 30, "#8B5CF6"], ["音效", 40, GREEN], ["配乐", 1, "#9A968C"]];
+      const tracks = [["數位人", 32, OR], ["字幕", 60, BLUE], ["介面畫面", 30, "#8B5CF6"], ["音效", 40, GREEN], ["配樂", 1, "#9A968C"]];
       const ph = interpolate(f, [F(ST("s7c")), F(EN_("s7c"))], [0.08, 0.92], clamp);
       return (
         <Card style={{ left: 40, top: 40, width: 1280, height: 560, padding: "28px 34px", ...appear(sp(f, ST("s7c"))) }}>
-          <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 18 }}><Chip text="Remotion" size={26} bg={INK} color="#fff" /><span style={{ fontFamily: ZH, fontSize: 26, color: MUTE }}>这期教程的工程 · 4 分 36 秒</span></div>
+          <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 18 }}><Chip text="Remotion" size={26} bg={INK} color="#fff" /><span style={{ fontFamily: ZH, fontSize: 26, color: MUTE }}>這期教學的工程 · 4 分 36 秒</span></div>
           <div style={{ position: "relative" }}>
             {tracks.map(([n, k, c]) => (
               <div key={n as string} style={{ display: "flex", alignItems: "center", gap: 16, height: 74 }}>
@@ -534,9 +534,9 @@ const Scene: React.FC<{ id: string }> = ({ id }) => {
       );
     }
     case "e1": {
-      const words = ["照片", "形象", "音色", "脚本", "画面", "Skill", "剪辑"];
+      const words = ["照片", "形象", "音色", "腳本", "畫面", "Skill", "剪輯"];
       return (
-        <Big f={f} at={ST("e1")} kicker="七步讲完" title="记住这个顺序">
+        <Big f={f} at={ST("e1")} kicker="七步講完" title="記住這個順序">
           <div style={{ display: "flex", flexWrap: "wrap", gap: 16, marginTop: 34, width: 960 }}>
             {words.map((w, k) => {
               const at = W("e1", w);
@@ -546,12 +546,12 @@ const Scene: React.FC<{ id: string }> = ({ id }) => {
         </Big>
       );
     }
-    case "e2": return <Big f={f} at={ST("e2")} kicker="轮到你了" title={<>去做一个<br /><span style={{ color: OR }}>你自己的数字人</span></>} sub="我们下期见" />;
+    case "e2": return <Big f={f} at={ST("e2")} kicker="輪到你了" title={<>去做一個<br /><span style={{ color: OR }}>你自己的數位人</span></>} sub="我們下期見" />;
     default: return null;
   }
 };
 
-/* ================= 声波（克隆试听用） ================= */
+/* ================= 聲波（克隆試聽用） ================= */
 const Wave: React.FC<{ f: number; at: number; w: number; h: number; color: string; active: boolean }> = ({ f, at, w, h, color, active }) => {
   const n = 48;
   return (
@@ -565,10 +565,10 @@ const Wave: React.FC<{ f: number; at: number; w: number; h: number; color: strin
 };
 const ClonePlayer: React.FC<{ f: number; playing: boolean }> = ({ f, playing }) => (
   <Card style={{ left: 120, top: 80, width: 1120, height: 520, padding: "40px 50px", ...appear(sp(f, ST("s3d"))) }}>
-    <div style={{ display: "flex", gap: 14, alignItems: "center" }}><Chip text="MiMo 克隆" size={30} bg={GREEN} color="#fff" /><span style={{ fontFamily: ZH, fontSize: 26, color: MUTE }}>参照：她的 Grok 原声 23 秒 · 不是真人声音</span></div>
-    <div style={{ fontFamily: ZH, fontWeight: 700, fontSize: 40, color: INK, marginTop: 40, lineHeight: 1.5 }}>「这一句，是用 MiMo 克隆出来的我的声音。<br />你能听出和刚才 Grok 原声的区别吗？」</div>
+    <div style={{ display: "flex", gap: 14, alignItems: "center" }}><Chip text="MiMo 克隆" size={30} bg={GREEN} color="#fff" /><span style={{ fontFamily: ZH, fontSize: 26, color: MUTE }}>參照：她的 Grok 原聲 23 秒 · 不是真人聲音</span></div>
+    <div style={{ fontFamily: ZH, fontWeight: 700, fontSize: 40, color: INK, marginTop: 40, lineHeight: 1.5 }}>「這一句，是用 MiMo 克隆出來的我的聲音。<br />你能聽出和剛才 Grok 原聲的區別嗎？」</div>
     <Wave f={f} at={playing ? ST("clone") : ST("s3d")} w={1020} h={110} color={GREEN} active={playing} />
-    <div style={{ fontFamily: ZH, fontSize: 24, color: playing ? GREEN : MUTE, marginTop: 14 }}>{playing ? "▶ 正在播放克隆版" : "即将播放 ▸"}</div>
+    <div style={{ fontFamily: ZH, fontSize: 24, color: playing ? GREEN : MUTE, marginTop: 14 }}>{playing ? "▶ 正在播放克隆版" : "即將播放 ▸"}</div>
   </Card>
 );
 
@@ -595,10 +595,10 @@ const Inserts: React.FC = () => {
     return (
       <AbsoluteFill>
         <div style={{ position: "absolute", left: 0, right: 0, top: 120, display: "flex", justifyContent: "center", gap: 90 }}>
-          {card("demo/grok.mp4", "demo/grok_first.jpg", "Grok Video 1.5", "720p 8 秒 · 136 积分", g0, 5.6)}
-          {card("demo/wan.mp4", "demo/wan_first.jpg", "Wan 3.0", "720p 8 秒 · 96 积分", w0, 7.37)}
+          {card("demo/grok.mp4", "demo/grok_first.jpg", "Grok Video 1.5", "720p 8 秒 · 136 積分", g0, 5.6)}
+          {card("demo/wan.mp4", "demo/wan_first.jpg", "Wan 3.0", "720p 8 秒 · 96 積分", w0, 7.37)}
         </div>
-        <div style={{ position: "absolute", left: 0, right: 0, bottom: 40, textAlign: "center" }}><span style={{ fontFamily: ZH, fontWeight: 600, fontSize: 34, color: "#fff", background: "rgba(28,27,24,.82)", padding: "8px 26px", borderRadius: 14 }}>同一张图、同一句台词 · {t < w0 ? "先听 Grok 版" : "再听 Wan 3.0 版"}</span></div>
+        <div style={{ position: "absolute", left: 0, right: 0, bottom: 40, textAlign: "center" }}><span style={{ fontFamily: ZH, fontWeight: 600, fontSize: 34, color: "#fff", background: "rgba(28,27,24,.82)", padding: "8px 26px", borderRadius: 14 }}>同一張圖、同一句台詞 · {t < w0 ? "先聽 Grok 版" : "再聽 Wan 3.0 版"}</span></div>
       </AbsoluteFill>
     );
   }
@@ -607,7 +607,7 @@ const Inserts: React.FC = () => {
     <AbsoluteFill>
       <div style={{ position: "absolute", left: 210, top: 140, width: 1500, height: 844, borderRadius: 26, overflow: "hidden", boxShadow: "0 24px 70px rgba(0,0,0,.3)" }}>
         <Sequence from={F(br.start)} durationInFrames={F(br.dur)} layout="none"><OffthreadVideo src={staticFile("demo/broll.mp4")} muted style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${interpolate(t, [br.start, br.start + br.dur], [1, 1.06])})` }} /></Sequence>
-        <div style={{ position: "absolute", left: 24, top: 24, display: "flex", gap: 12 }}><Chip text="按参考风格生成的 B-roll" size={28} bg="rgba(0,0,0,.6)" color="#fff" /><Chip text="AI 生成" size={24} bg={OR} color="#fff" /></div>
+        <div style={{ position: "absolute", left: 24, top: 24, display: "flex", gap: 12 }}><Chip text="按參考風格生成的 B-roll" size={28} bg="rgba(0,0,0,.6)" color="#fff" /><Chip text="AI 生成" size={24} bg={OR} color="#fff" /></div>
       </div>
     </AbsoluteFill>
   );
@@ -616,24 +616,24 @@ const Inserts: React.FC = () => {
     return (
       <div style={{ position: "absolute", left: 820, top: 230, width: 1000, ...appear(p, 40) }}>
         <div style={{ fontFamily: EN, fontWeight: 800, fontSize: 84, color: INK }}>renoise<span style={{ color: OR }}>.ai</span></div>
-        <div style={{ fontFamily: ZH, fontSize: 34, color: MUTE, marginTop: 26 }}>插件与连接器：<span style={{ fontFamily: MONO, color: INK }}>renoise.ai/plugin</span></div>
+        <div style={{ fontFamily: ZH, fontSize: 34, color: MUTE, marginTop: 26 }}>外掛與連接器：<span style={{ fontFamily: MONO, color: INK }}>renoise.ai/plugin</span></div>
         <div style={{ fontFamily: ZH, fontSize: 34, color: MUTE, marginTop: 12 }}>MCP 地址：<span style={{ fontFamily: MONO, color: INK }}>renoise.ai/api/public/mcp</span></div>
-        <div style={{ marginTop: 40 }}><Chip text="AIGC 自媒体视频创作教程 · 第二期" size={28} bg={OR} color="#fff" /></div>
+        <div style={{ marginTop: 40 }}><Chip text="AIGC 自媒體影片創作教學 · 第二期" size={28} bg={OR} color="#fff" /></div>
       </div>
     );
   }
   return null;
 };
 
-/* ================= 声音 ================= */
+/* ================= 聲音 ================= */
 type Cue = [number, string, number];
 const SFX: Cue[] = (() => {
   const c: Cue[] = [];
   for (const it of ITEMS) if (it.kind === "nar" && it.shot === "full") c.push([it.start, "swish-1", 0.18]);
-  c.push([W("s1a", "注册"), "click", 0.4], [W("s1b", "连接器"), "click", 0.4], [W("s1b", "添加自定义"), "click", 0.4], [W("s1c", "名称") + 0.3, "key-1", 0.3], [W("s1c", "地址") + 0.3, "key-2", 0.3], [W("s1c", "点继续"), "click", 0.45], [W("s1c", "登录授权") + 0.5, "ding", 0.3],
-    [W("s1d", "Claude Code"), "key-3", 0.3], [W("s1d", "Codex"), "key-1", 0.3], [W("s1e", "连上了") - 0.2, "ding", 0.35], [W("s2b", "两个侧面"), "pop", 0.4], [W("s2e", "优选"), "pop", 0.4],
-    [W("s3c", "调用完成") - 0.2, "ding", 0.3], [W("s4c", "点头"), "click", 0.45], [W("s5b", "让它先总结") - 0.3, "page-1", 0.4], [W("s6c", "出来的") - 0.4, "ding", 0.3], [BY.outro.start + 0.2, "done", 0.4]);
-  ["照片", "形象", "音色", "脚本", "画面", "Skill", "剪辑"].forEach((w) => c.push([W("e1", w), "tap", 0.3]));
+  c.push([W("s1a", "註冊"), "click", 0.4], [W("s1b", "連接器"), "click", 0.4], [W("s1b", "新增自定義"), "click", 0.4], [W("s1c", "名稱") + 0.3, "key-1", 0.3], [W("s1c", "地址") + 0.3, "key-2", 0.3], [W("s1c", "點繼續"), "click", 0.45], [W("s1c", "登入授權") + 0.5, "ding", 0.3],
+    [W("s1d", "Claude Code"), "key-3", 0.3], [W("s1d", "Codex"), "key-1", 0.3], [W("s1e", "連上了") - 0.2, "ding", 0.35], [W("s2b", "兩個側面"), "pop", 0.4], [W("s2e", "優選"), "pop", 0.4],
+    [W("s3c", "呼叫完成") - 0.2, "ding", 0.3], [W("s4c", "點頭"), "click", 0.45], [W("s5b", "讓它先總結") - 0.3, "page-1", 0.4], [W("s6c", "出來的") - 0.4, "ding", 0.3], [BY.outro.start + 0.2, "done", 0.4]);
+  ["照片", "形象", "音色", "腳本", "畫面", "Skill", "剪輯"].forEach((w) => c.push([W("e1", w), "tap", 0.3]));
   return c;
 })();
 

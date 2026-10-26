@@ -1,4 +1,4 @@
-// timeline.json 由 scripts/build_timeline.py 生成：所有时间都已换算成秒（相对整片开头）
+// timeline.json 由 scripts/build_timeline.py 生成：所有時間都已換算成秒（相對整片開頭）
 export type HostState = "full" | "shrink" | "side" | "pip" | "off";
 export type Overlay = { type: string; t: number; t2?: number; [k: string]: any };
 export type Beat = {

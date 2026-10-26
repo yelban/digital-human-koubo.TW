@@ -232,7 +232,7 @@ export const KineticHeadline: React.FC<{
   font?: string;
   weight?: number;
   align?: "center" | "flex-start";
-}> = ({ parts, variant = "rise", at = 0, hideAt, size = 72, color = "#FAF9FC", muted = "rgba(250,249,252,0.6)", accent = ["#7C4DFF", "#B05CF5"], font = '"PingFang SC", "SF Pro Display", -apple-system, sans-serif', weight = 700, align = "center" }) => {
+}> = ({ parts, variant = "rise", at = 0, hideAt, size = 72, color = "#FAF9FC", muted = "rgba(250,249,252,0.6)", accent = ["#7C4DFF", "#B05CF5"], font = '"PingFang TC", "SF Pro Display", -apple-system, sans-serif', weight = 700, align = "center" }) => {
   const f = useCurrentFrame();
   const chars = parts.flatMap((p) => Array.from(p.t).map((c) => ({ c, tone: p.tone })));
   const nAccent = chars.filter((x) => x.tone === "accent").length;

@@ -27,8 +27,8 @@ const baseBrand = (sb: Storyboard): CineBrand => {
   const body = f.body?.family ?? f.display?.family;
   return {
     name: sb.brand.name,
-    display: `${display ? `"${display}", ` : ""}Georgia, "Songti SC", serif`,
-    body: `${body ? `"${body}", ` : ""}"PingFang SC", "Helvetica Neue", sans-serif`,
+    display: `${display ? `"${display}", ` : ""}Georgia, "Songti TC", serif`,
+    body: `${body ? `"${body}", ` : ""}"PingFang TC", "Helvetica Neue", sans-serif`,
     accent: c.primary ?? "#F36440",
     accent2: c.accent ?? "#7D6BC1",
     ink: c.dark ?? "#141414",

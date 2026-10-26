@@ -1,11 +1,11 @@
-// 科技评测质感派（MKBHD / 影视飓风 / 何同学 实测，见 packaging-research/reports/2）：
-// 关键词图标堆叠、玻璃数据面板（跑分 / 参数条）、里程表数字滚动、官方文档慢推 + 中文译句荧光底。
+// 科技評測質感派（MKBHD / 影視颶風 / 何同學 實測，見 packaging-research/reports/2）：
+// 關鍵詞圖示堆疊、玻璃資料面板（跑分 / 參數條）、里程錶數字滾動、官方文件慢推 + 中文譯句熒光底。
 import React from "react";
 import { AbsoluteFill, Img, interpolate, staticFile } from "remotion";
 import { C, F, FONT, clamp, ease, lerp, sp, useT } from "./core";
 import { NotoEmoji } from "../icons/NotoEmoji";
 
-/** 关键词堆叠：主播说到「性能 / 续航 / 发热」时身旁依次弹出 图标 + 彩色词（0.3 秒弹入，间隔 0.5–0.9 秒），结束一起模糊淡出。 */
+/** 關鍵詞堆疊：主播說到「效能 / 續航 / 發熱」時身旁依次彈出 圖示 + 彩色詞（0.3 秒彈入，間隔 0.5–0.9 秒），結束一起模糊淡出。 */
 export const KeywordStack: React.FC<{ items: Array<{ t: string; at: number; icon?: string; color?: string }>; until: number; x?: number; y?: number; gap?: number }> = ({ items, until, x, y, gap }) => {
   const { f, t, W, H } = useT();
   if (!items.length || t < items[0].at - 0.05 || t > until) return null;
@@ -27,7 +27,7 @@ export const KeywordStack: React.FC<{ items: Array<{ t: string; at: number; icon
   );
 };
 
-/** 玻璃数据面板：深色毛玻璃卡 0.6 秒上浮入场，条形和数字一起滚到终值（1.8 秒）；highlight 那一行用产品色。 */
+/** 玻璃資料面板：深色毛玻璃卡 0.6 秒上浮入場，條形和數字一起滾到終值（1.8 秒）；highlight 那一行用產品色。 */
 export const GlassPanel: React.FC<{ at: number; until: number; title: string; unit?: string; rows: Array<{ label: string; value: number; highlight?: boolean }>; x?: number; y?: number; w?: number; color?: string; note?: string }> = ({ at, until, title, unit = "", rows, x, y, w, color = C.orange, note }) => {
   const { f, t, W, H } = useT();
   if (t < at || t > until) return null;
@@ -52,7 +52,7 @@ export const GlassPanel: React.FC<{ at: number; until: number; title: string; un
   );
 };
 
-/** 里程表：大数字逐位滚动（1.2 秒，高位先停），单位 0.58 倍，标签用产品色。 */
+/** 里程錶：大數字逐位滾動（1.2 秒，高位先停），單位 0.58 倍，標籤用產品色。 */
 export const Odometer: React.FC<{ at: number; until: number; value: string; unit?: string; label?: string; x?: number; y?: number; size?: number; color?: string; labelColor?: string }> = ({ at, until, value, unit, label, x, y, size, color = "#fff", labelColor = C.orange }) => {
   const { f, t, W, H } = useT();
   if (t < at || t > until) return null;
@@ -70,7 +70,7 @@ export const Odometer: React.FC<{ at: number; until: number; value: string; unit
           const idx = di++;
           const stop = at + 0.4 + (1.2 * (idx + 1)) / nd;          // 高位先停
           const spin = interpolate(f, [F(at), F(stop)], [0, 1], { ...clamp, easing: ease.out });
-          const n = Number(d) + 10 * 2;                              // 先多滚两圈
+          const n = Number(d) + 10 * 2;                              // 先多滾兩圈
           const pos = spin * n;
           return (
             <span key={k} style={{ display: "inline-block", height: sz, overflow: "hidden", position: "relative", width: sz * 0.6 }}>
@@ -86,7 +86,7 @@ export const Odometer: React.FC<{ at: number; until: number; value: string; unit
   );
 };
 
-/** 官方文档慢推：截图（或渲染的英文原文）缓慢推近 + 底部黄色荧光中文译句 + 左上灰色来源角标。 */
+/** 官方文件慢推：截圖（或渲染的英文原文）緩慢推近 + 底部黃色熒光中文譯句 + 左上灰色來源角標。 */
 export const SourceDoc: React.FC<{ at: number; until: number; src: string; iw: number; ih: number; zh: string; source: string; focusY?: number }> = ({ at, until, src, iw, ih, zh, source, focusY = 0.4 }) => {
   const { f, t, W, H } = useT();
   if (t < at || t > until) return null;
@@ -96,7 +96,7 @@ export const SourceDoc: React.FC<{ at: number; until: number; src: string; iw: n
   return (
     <AbsoluteFill style={{ background: "#111", overflow: "hidden" }}>
       <Img src={staticFile(src)} style={{ position: "absolute", left: (W - iw * base * z) / 2, top: H * 0.5 - ih * base * z * focusY, width: iw * base * z, height: ih * base * z, filter: "brightness(.55) blur(.4px)" }} />
-      <div style={{ position: "absolute", left: W * 0.04, top: H * 0.05, fontFamily: FONT.zh, fontWeight: 600, fontSize: H * 0.022, color: "rgba(255,255,255,.7)", background: "rgba(0,0,0,.45)", padding: "6px 14px", borderRadius: 8 }}>来源：{source}</div>
+      <div style={{ position: "absolute", left: W * 0.04, top: H * 0.05, fontFamily: FONT.zh, fontWeight: 600, fontSize: H * 0.022, color: "rgba(255,255,255,.7)", background: "rgba(0,0,0,.45)", padding: "6px 14px", borderRadius: 8 }}>來源：{source}</div>
       <div style={{ position: "absolute", left: W * 0.08, right: W * 0.08, bottom: H * 0.16, textAlign: "center" }}>
         <span style={{ position: "relative", display: "inline", fontFamily: FONT.zh, fontWeight: 800, fontSize: H * 0.05, color: zp > 0.6 ? "#111" : "#fff", lineHeight: 1.6,
           backgroundImage: `linear-gradient(${C.yellow}, ${C.yellow})`, backgroundRepeat: "no-repeat", backgroundSize: `${zp * 100}% 100%`, boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone", padding: "2px 10px" }}>{zh}</span>

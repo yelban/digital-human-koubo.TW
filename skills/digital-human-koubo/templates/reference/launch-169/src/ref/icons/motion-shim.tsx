@@ -1,8 +1,8 @@
-// motion/react 的逐帧替身：让 lucide-animated（pqoqubbw/icons, MIT）的图标在 Remotion 里按帧号渲染。
-// 编排（variants、controls.start、await 串联、staggerChildren、delay、repeat）在这里重写；
-// 数值计算直接用 motion-dom 自己的生成器（keyframes / spring / mix）和 buildSVGAttrs，
-// 所以缓动、弹簧、默认过渡、SVG 描边与 transform-origin 都与原库一致。
-// 用法见 AnimatedIcon.tsx；不要在别处直接 import 本文件的 motion。
+// motion/react 的逐幀替身：讓 lucide-animated（pqoqubbw/icons, MIT）的圖示在 Remotion 裡按幀號渲染。
+// 編排（variants、controls.start、await 串聯、staggerChildren、delay、repeat）在這裡重寫；
+// 數值計算直接用 motion-dom 自己的生成器（keyframes / spring / mix）和 buildSVGAttrs，
+// 所以緩動、彈簧、預設過渡、SVG 描邊與 transform-origin 都與原庫一致。
+// 用法見 AnimatedIcon.tsx；不要在別處直接 import 本檔案的 motion。
 import React, { createContext, forwardRef, useContext, useMemo, useRef } from "react";
 import {
   buildHTMLStyles,
@@ -24,11 +24,11 @@ export type Variants = Record<string, any>;
 export type Variant = any;
 export type Transition = any;
 
-// ---------- 时钟与录制 ----------
+// ---------- 時鐘與錄製 ----------
 
-// 录制：startAnimation() 里的 controls.start 按虚拟时间记成事件；
-// 每个 await 按「这段动画结束的虚拟时间」进队列，由 drain() 按时间先后唤醒——
-// 并发的 async 流程（Promise.all 里一路长一路短）也能各自拿到正确的时间
+// 錄製：startAnimation() 裡的 controls.start 按虛擬時間記成事件；
+// 每個 await 按「這段動畫結束的虛擬時間」進佇列，由 drain() 按時間先後喚醒——
+// 併發的 async 流程（Promise.all 裡一路長一路短）也能各自拿到正確的時間
 export type Recorder = { vt: number; active: boolean; queue?: { time: number; seq: number; fn: () => void }[]; seq?: number };
 const flush = () => new Promise((r) => setTimeout(r, 0));
 export async function drain(rec: Recorder, until = 60) {
@@ -46,7 +46,7 @@ export async function drain(rec: Recorder, until = 60) {
 export type Scope = { rec: Recorder; t: number; cycles: number };
 export const IconScope = createContext<Scope | null>(null);
 
-// 确定性随机数：图标源码里的 Math.random() 在 vendor 时被替换成它
+// 確定性隨機數：圖示原始碼裡的 Math.random() 在 vendor 時被替換成它
 let seed = 1;
 export const __rand = () => {
   seed = (seed * 16807) % 2147483647;
@@ -68,7 +68,7 @@ export class Controls {
     const t0 = rec.vt;
     this.events.push({ def, t: t0, instant, override });
     const dur = instant ? 0 : this.durationOf(def, override);
-    // 被 await / .then 时才把虚拟时钟推进到这段动画结束，模拟「等动画播完再下一步」
+    // 被 await / .then 時才把虛擬時鐘推進到這段動畫結束，模擬「等動畫播完再下一步」
     const p: any = {
       then(onF?: () => any, onR?: (e: any) => any) {
         if (!Number.isFinite(dur)) return new Promise(() => {});
@@ -80,7 +80,7 @@ export class Controls {
     };
     return p as Promise<void>;
   }
-  // 第二个参数与 motion 相同：transitionOverride，整体替换目标里的 transition
+  // 第二個參數與 motion 相同：transitionOverride，整體替換目標裡的 transition
   start(def: Def, override?: any) {
     return this.push(def, false, override);
   }
@@ -108,7 +108,7 @@ export const useAnimationControls = useAnimation;
 
 export const AnimatePresence: React.FC<{ children?: React.ReactNode }> = ({ children }) => <>{children}</>;
 
-// ---------- 单个数值的采样（复刻 motion-dom JSAnimation.tick） ----------
+// ---------- 單個數值的取樣（復刻 motion-dom JSAnimation.tick） ----------
 
 const DEFAULTS: Record<string, number> = {
   opacity: 1, scale: 1, scaleX: 1, scaleY: 1, x: 0, y: 0, z: 0, translateX: 0, translateY: 0,
@@ -141,7 +141,7 @@ export function sampleValue(
   if (kf[0] === null || kf[0] === undefined) kf[0] = from;
   for (let i = 1; i < kf.length; i++) if (kf[i] === null || kf[i] === undefined) kf[i] = kf[i - 1];
   if (kf[0] === undefined) kf[0] = kf[kf.length - 1];
-  // 数字与带单位字符串混用（未写 initial 时起点是 0，目标是 "2px"）：motion 会先读 DOM 统一单位，这里按目标单位补齐
+  // 數字與帶單位字串混用（未寫 initial 時起點是 0，目標是 "2px"）：motion 會先讀 DOM 統一單位，這裡按目標單位補齊
   const unitKf = kf.find((v) => typeof v === "string" && /^-?[\d.]+[a-z%]+$/i.test(v.trim()));
   if (unitKf) {
     const unit = unitKf.trim().replace(/^-?[\d.]+/, "");
@@ -201,7 +201,7 @@ export function sampleValue(
   return { value: mixer ? mixer(v) : v, end: endSec };
 }
 
-// ---------- 变体解析 ----------
+// ---------- 變體解析 ----------
 
 const resolveDef = (def: Def | undefined, variants: any, custom: any): Record<string, any> | null => {
   if (def === undefined || def === null || (def as any) === false) return null;
@@ -212,7 +212,7 @@ const resolveDef = (def: Def | undefined, variants: any, custom: any): Record<st
 };
 const SKIP = new Set(["transition", "transitionEnd"]);
 
-// 父级把「事件来源 + 给孩子的延迟」传下去
+// 父級把「事件來源 + 給孩子的延遲」傳下去
 type Source = {
   events: () => Ev[];
   offset: (def: Def) => number;
@@ -259,7 +259,7 @@ function makeMotion(tag: string) {
     const initialDef = initial !== undefined ? initial : source?.labelsOnly ? parent?.initial : undefined;
     const cycles = scope?.cycles ?? 1;
 
-    // 注册到 controls，供 await 计算时长
+    // 註冊到 controls，供 await 計算時長
     if (source?.controls) {
       const src = source;
       src.controls!.members.set(key, {
@@ -279,7 +279,7 @@ function makeMotion(tag: string) {
       });
     }
 
-    // 静止值
+    // 靜止值
     const restVals: Record<string, any> = {};
     const initTarget =
       initialDef === false
@@ -322,9 +322,9 @@ function makeMotion(tag: string) {
     };
     const animated = evalAt(t, events.length - 1);
 
-    // 与 motion 相同的渲染路径：style 里的静态值也算进 latest
-    // motion 只把 style 里的 transform 类与 origin* 当作动画值，其余当原始 CSS，且被生成的样式覆盖
-    // （所以 style={{transformOrigin:"12px 12px"}} 一旦有 transform 就会被 50% 50% + fill-box 盖掉，与原库一致）
+    // 與 motion 相同的渲染路徑：style 裡的靜態值也算進 latest
+    // motion 只把 style 裡的 transform 類與 origin* 當作動畫值，其餘當原始 CSS，且被生成的樣式覆蓋
+    // （所以 style={{transformOrigin:"12px 12px"}} 一旦有 transform 就會被 50% 50% + fill-box 蓋掉，與原庫一致）
     const latest: Record<string, any> = {};
     const rawStyle: Record<string, any> = {};
     if (style)
@@ -346,7 +346,7 @@ function makeMotion(tag: string) {
       outProps = { ...rest, style: { ...rawStyle, ...state.style, ...state.vars } };
     }
 
-    // 子元素：variant 传递 + staggerChildren
+    // 子元素：variant 傳遞 + staggerChildren
     let kids = children;
     let n = 0;
     React.Children.forEach(children, (c: any) => c?.type?.__motion && n++);

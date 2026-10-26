@@ -3,8 +3,8 @@ import { AbsoluteFill, Img, OffthreadVideo, Sequence, interpolate, spring, stati
 import type { Beat, HostState, Timeline } from "../lib/types";
 import type { Theme } from "../lib/theme";
 
-// 主播层：一个容器在「全屏 / 缩小 / 侧移 / 小窗 / 隐藏」几何之间弹簧插值，
-// 里面的画面（整帧主播）按同一个缩放比放置；小窗为圆形时把脸对到圆心。
+// 主播層：一個容器在「全螢幕 / 縮小 / 側移 / 小窗 / 隱藏」幾何之間彈簧插值，
+// 裡面的畫面（整幀主播）按同一個縮放比放置；小窗為圓形時把臉對到圓心。
 type Geo = { x: number; y: number; w: number; h: number; r: number; k: number; ox: number; oy: number; o: number };
 
 function geoFor(state: HostState, theme: Theme, W: number, H: number, face: [number, number]): Geo {
@@ -17,7 +17,7 @@ function geoFor(state: HostState, theme: Theme, W: number, H: number, face: [num
     case "off":
     case "pip": {
       if (theme.pip === "rect") return rect(W * 0.03, H - (W * 0.25 * H) / W - H * 0.07, W * 0.25, 14, state === "off" ? 0 : 1);
-      const d = H * 0.23, k = 0.44;            // 圆形头像：直径 d，内容缩放 k，脸对准圆心
+      const d = H * 0.23, k = 0.44;            // 圓形頭像：直徑 d，內容縮放 k，臉對準圓心
       return { x: W * 0.035, y: H - d - H * 0.07, w: d, h: d, r: d / 2, k,
                ox: d / 2 - face[0] * W * k, oy: d / 2 - face[1] * H * k + d * 0.12, o: state === "off" ? 0 : 1 };
     }
@@ -40,7 +40,7 @@ export const Host: React.FC<{ tl: Timeline; theme: Theme }> = ({ tl, theme }) =>
   const p = spring({ frame: Math.round((t - cur.start) * fps), fps, config: { damping: 16, stiffness: 170, mass: 0.7 } });
   const g: Geo = { x: lerp(a.x, b.x, p), y: lerp(a.y, b.y, p), w: lerp(a.w, b.w, p), h: lerp(a.h, b.h, p), r: lerp(a.r, b.r, p),
                    k: lerp(a.k, b.k, p), ox: lerp(a.ox, b.ox, p), oy: lerp(a.oy, b.oy, p), o: lerp(a.o, b.o, p) };
-  // 推近：只在全屏时生效，硬切进入（盖住录音跳切的接缝），绕脸部放大
+  // 推近：只在全螢幕時生效，硬切進入（蓋住錄音跳切的接縫），繞臉部放大
   const punch = cur.host === "full" && cur.punch ? cur.punch : 1;
   const ringW = theme.pip === "round" ? interpolate(g.r / Math.max(1, g.w), [0, 0.5], [0, 5], { extrapolateRight: "clamp" }) : g.r > 2 ? 4 : 0;
 
@@ -57,7 +57,7 @@ export const Host: React.FC<{ tl: Timeline; theme: Theme }> = ({ tl, theme }) =>
   );
 };
 
-// 主播画面：按 hostClips 时间表放口型视频；没有口型片段时退回定妆照（样片阶段）
+// 主播畫面：按 hostClips 時間表放口型影片；沒有口型片段時退回定妝照（樣片階段）
 const HostFrame: React.FC<{ tl: Timeline }> = ({ tl }) => {
   const { fps } = useVideoConfig();
   const fill: React.CSSProperties = { width: "100%", height: "100%", objectFit: "cover" };

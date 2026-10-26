@@ -105,7 +105,7 @@ export const KickFlash: React.FC<{ f: number; color?: string; max?: number; ever
 };
 
 /** Type whose letters stretch with their own spectrum band — the "lyric video" look. */
-export const ReactiveType: React.FC<{ f: number; text: string; size?: number; color?: string; font?: string; weight?: number; stretch?: number; lift?: number }> = ({ f, text, size = 200, color = "#fff", font = '"SF Pro Display", "PingFang SC", sans-serif', weight = 900, stretch = 0.35, lift = 18 }) => {
+export const ReactiveType: React.FC<{ f: number; text: string; size?: number; color?: string; font?: string; weight?: number; stretch?: number; lift?: number }> = ({ f, text, size = 200, color = "#fff", font = '"SF Pro Display", "PingFang TC", sans-serif', weight = 900, stretch = 0.35, lift = 18 }) => {
   const d = useAudio();
   const s = specAt(d, f);
   const chars = Array.from(text);

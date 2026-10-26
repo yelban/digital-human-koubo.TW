@@ -1,6 +1,6 @@
-// 风格扩展包 02 · 一镜到底接力（references/style-pack-02.md）
-// 规则：每个画面都由上一个画面里的物体变来；全片一个强调色 + 一条贯穿线索；用产品自己的界面讲功能。
-// 所有组件只收整片绝对帧 f 和各自的触发帧，不依赖 Sequence；颜色走 theme。
+// 風格擴充包 02 · 一鏡到底接力（references/style-pack-02.md）
+// 規則：每個畫面都由上一個畫面裡的物體變來；全片一個強調色 + 一條貫穿線索；用產品自己的介面講功能。
+// 所有元件只收整片絕對幀 f 和各自的觸發幀，不依賴 Sequence；顏色走 theme。
 import React from "react";
 import { getLength, getPointAtLength } from "@remotion/paths";
 import { AbsoluteFill, Img, random } from "remotion";
@@ -10,7 +10,7 @@ import { step } from "../spring";
 export type RelayTheme = { ink: string; accent: string; accent2: string; mint: string; heavy: string; mono: string };
 export const RELAY_GREEN: RelayTheme = {
   ink: "#050B09", accent: "#12C9A0", accent2: "#7BDB6E", mint: "#C8FFE9",
-  heavy: '"PingFang SC", "Lantinghei SC", -apple-system, sans-serif', mono: '"SF Mono", Menlo, monospace',
+  heavy: '"PingFang TC", "Lantinghei SC", -apple-system, sans-serif', mono: '"SF Mono", Menlo, monospace',
 };
 const hz = (x: number) => 2 * Math.PI * x;
 export const SLAM = { w: hz(4.2), z: 0.6 };
@@ -26,14 +26,14 @@ export const Grad: React.FC<{ t?: RelayTheme; children: React.ReactNode }> = ({ 
   <span style={{ backgroundImage: grad(t), WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>{children}</span>
 );
 
-/** 玻璃材质：深色实底（背景字不会透进来）+ 顶部高光 + 强调色边缘光。不用 backdrop-filter。 */
+/** 玻璃材質：深色實底（背景字不會透進來）+ 頂部高光 + 強調色邊緣光。不用 backdrop-filter。 */
 export const glass = (t: RelayTheme = RELAY_GREEN, rim = 0.6, solid = true): React.CSSProperties => ({
   background: solid ? `linear-gradient(180deg, ${rgba(t.accent, 0.1)}, rgba(8,14,12,0.94))` : "linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
   border: `1.5px solid ${rgba(t.mint, 0.22)}`,
   boxShadow: `inset 0 1px 0 rgba(255,255,255,0.25), 0 0 0 1px ${rgba(t.accent, rim * 0.5)}, 0 0 40px ${rgba(t.accent, rim * 0.45)}, 0 30px 80px rgba(0,0,0,0.6)`,
 });
 
-/* ── 地面网格 + 贯穿线索的光（开场流光） ── */
+/* ── 地面網格 + 貫穿線索的光（開場流光） ── */
 export const Floor: React.FC<{ f: number; t?: RelayTheme; speed?: number; o?: number; horizon?: number }> = ({ f, t = RELAY_GREEN, speed = 6, o = 1, horizon = 560 }) => (
   <AbsoluteFill style={{ perspective: 700, opacity: o }}>
     <div
@@ -48,7 +48,7 @@ export const Floor: React.FC<{ f: number; t?: RelayTheme; speed?: number; o?: nu
   </AbsoluteFill>
 );
 
-/** 流光从画外冲到目标矩形左端，再描出矩形边框。rect 是接下来要出现的物体（输入框、卡片）。 */
+/** 流光從畫外衝到目標矩形左端，再描出矩形邊框。rect 是接下來要出現的物體（輸入框、卡片）。 */
 export const Streak: React.FC<{ f: number; at?: number; rect: { x: number; y: number; w: number; h: number; r?: number }; t?: RelayTheme; fade?: number }> = ({ f, at = 0, rect, t = RELAY_GREEN, fade = 0 }) => {
   const s = ex(f, at, 26);
   const d = ex(f, at + 20, 16);
@@ -66,7 +66,7 @@ export const Streak: React.FC<{ f: number; at?: number; rect: { x: number; y: nu
   );
 };
 
-/** 背景里流动的「待办卡片墙」：交代痛点（重复的活）。words 换成客户场景里的琐事。 */
+/** 背景裡流動的「待辦卡片牆」：交代痛點（重複的活）。words 換成客戶場景裡的瑣事。 */
 export const ChoreWall: React.FC<{ f: number; words: string[]; o?: number; t?: RelayTheme }> = ({ f, words, o = 1, t = RELAY_GREEN }) => (
   <AbsoluteFill style={{ opacity: o, filter: "blur(1.5px)" }}>
     {Array.from({ length: 5 }, (_, r) => (
@@ -81,7 +81,7 @@ export const ChoreWall: React.FC<{ f: number; words: string[]; o?: number; t?: R
   </AbsoluteFill>
 );
 
-/* ── 玻璃输入框：占位语 → 打字 → 发送；dims 让被「拆走」的那段字变暗 ── */
+/* ── 玻璃輸入框：佔位語 → 打字 → 傳送；dims 讓被「拆走」的那段字變暗 ── */
 export const GlassBar: React.FC<{
   f: number; x: number; y: number; w: number; h: number; text: string; typeFrom: number; typeTo: number;
   inAt?: number; placeholder?: string; logo?: string; send?: React.ReactNode; dims?: { from: number; to: number; at: number }[]; t?: RelayTheme; fontSize?: number;
@@ -106,7 +106,7 @@ export const GlassBar: React.FC<{
   );
 };
 
-/** 句子被拆成参数标签：每个标签在旁白念到它的那一帧，从句子里的位置飞到四周。 */
+/** 句子被拆成參數標籤：每個標籤在旁白唸到它的那一幀，從句子裡的位置飛到四周。 */
 export const ChipBurst: React.FC<{ f: number; chips: { label: string; value: string; at: number; from: [number, number]; to: [number, number] }[]; t?: RelayTheme }> = ({ f, chips, t = RELAY_GREEN }) => (
   <>
     {chips.map((c) => {
@@ -124,9 +124,9 @@ export const ChipBurst: React.FC<{ f: number; chips: { label: string; value: str
   </>
 );
 
-/* ── 钻进物体：物体内部的裁切区从物体的矩形扩张到全屏，里面放下一个场景 ── */
+/* ── 鑽進物體：物體內部的裁切區從物體的矩形擴張到全螢幕，裡面放下一個場景 ── */
 export const diveP = (f: number, at: number, dur = 16) => E.inOut(clamp01((f - at) / dur));
-/** 外层（旧场景）用 diveScale 往物体中心推镜；内层用 DivePortal 放新场景。 */
+/** 外層（舊場景）用 diveScale 往物體中心推鏡；內層用 DivePortal 放新場景。 */
 export const diveScale = (p: number, k = 2.2) => 1 + p * k;
 export const DivePortal: React.FC<{ f: number; at: number; dur?: number; rect: { x: number; y: number; w: number; h: number; r?: number }; children: React.ReactNode }> = ({ f, at, dur = 16, rect, children }) => {
   if (f < at - 2) return null;
@@ -139,7 +139,7 @@ export const DivePortal: React.FC<{ f: number; at: number; dur?: number; rect: {
   );
 };
 
-/* ── 卡片隧道：素材贴满两壁，镜头一直往前冲；关键词从深处迎面飞来 ── */
+/* ── 卡片隧道：素材貼滿兩壁，鏡頭一直往前衝；關鍵詞從深處迎面飛來 ── */
 export const CardTunnel: React.FC<{ f: number; start: number; images: string[]; words?: { text: string; at: number; y: number }[]; slowAt?: number; t?: RelayTheme }> = ({ f, start, images, words = [], slowAt = 1e9, t = RELAY_GREEN }) => {
   const u = f - start;
   const camZ = u * 70 + Math.max(0, u - 30) * 10;
@@ -187,7 +187,7 @@ export const CardTunnel: React.FC<{ f: number; start: number; images: string[]; 
   );
 };
 
-/* ── 卡片层叠：新来的卡在最前，旧卡平滑往后退一层；第一张可以从隧道深处飞来 ── */
+/* ── 卡片層疊：新來的卡在最前，舊卡平滑往後退一層；第一張可以從隧道深處飛來 ── */
 export type FanCard = { src: string; label: string; sub?: string; at: number };
 export const CascadeFan: React.FC<{
   f: number; cards: FanCard[]; w?: number; h?: number; x0?: number; step?: number; y?: number; flyFirst?: boolean;
@@ -236,7 +236,7 @@ export const CascadeFan: React.FC<{
   );
 };
 
-/* ── 3D 日历：格子按随机顺序填满缩略图，最后一张卡掉进「今天」 ── */
+/* ── 3D 日曆：格子按隨機順序填滿縮圖，最後一張卡掉進「今天」 ── */
 export const CalendarDrop: React.FC<{ f: number; start: number; thumbs: string[]; drop: string; today?: number; days?: number; blurAt?: number; t?: RelayTheme }> = ({ f, start, thumbs, drop, today = 17, days = 35, blurAt = 1e9, t = RELAY_GREEN }) => {
   const d0 = sp(f, start + 4, SLAM);
   const back = E.inOut(clamp01((f - blurAt) / 14));
@@ -266,7 +266,7 @@ export const CalendarDrop: React.FC<{ f: number; start: number; thumbs: string[]
   );
 };
 
-/* ── 通知堆叠：新通知从上方落下压住旧的 ── */
+/* ── 通知堆疊：新通知從上方落下壓住舊的 ── */
 export const NotifyStack: React.FC<{ f: number; start: number; gap?: number; icon?: string; app?: string; items: { title: string; sub?: string; time?: string }[]; x?: number; y?: number; t?: RelayTheme }> = ({ f, start, gap = 7, icon, app = "", items, x = 580, y = 330, t = RELAY_GREEN }) => (
   <>
     {items.map((n, i) => {
@@ -289,7 +289,7 @@ export const NotifyStack: React.FC<{ f: number; start: number; gap?: number; ico
   </>
 );
 
-/* ── 点阵数字（5×7） ── */
+/* ── 點陣數字（5×7） ── */
 const DIGITS: Record<string, string[]> = {
   "0": ["01110", "10001", "10011", "10101", "11001", "10001", "01110"], "1": ["00100", "01100", "00100", "00100", "00100", "00100", "01110"],
   "2": ["01110", "10001", "00001", "00010", "00100", "01000", "11111"], "3": ["11110", "00001", "00001", "01110", "00001", "00001", "11110"],
@@ -311,14 +311,14 @@ export const DotNumber: React.FC<{ value: string; dot?: number; t?: RelayTheme }
   </div>
 );
 
-/* ── 圆形擦除（黑白大反差转场，全片最多一次） ── */
+/* ── 圓形擦除（黑白大反差轉場，全片最多一次） ── */
 export const CircleWipe: React.FC<{ f: number; at: number; dur?: number; color?: string; cx?: number; cy?: number }> = ({ f, at, dur = 12, color = "#F4F5F2", cx = 960, cy = 540 }) => {
   const w = E.in2(clamp01((f - at) / dur));
   if (w <= 0) return null;
   return <div style={{ position: "absolute", left: cx - 1200 * w, top: cy - 1200 * w, width: 2400 * w, height: 2400 * w, borderRadius: "50%", background: color }} />;
 };
 
-/* ── 闭环跑道：流程画成一圈，光点跑一圈；可以最后收成 Logo ── */
+/* ── 閉環跑道：流程畫成一圈，光點跑一圈；可以最後收成 Logo ── */
 export const LOOP_PATH = "M 330 450 C 330 290, 1300 150, 1540 230 C 1740 300, 1720 520, 1520 640 C 1320 760, 560 880, 340 790 C 150 710, 330 600, 330 450 Z";
 export const LoopTrack: React.FC<{
   f: number; start: number; path?: string; labels: { text: string; x: number; y: number }[]; rounds?: { text: string; at: number; ok?: boolean }[];

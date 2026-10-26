@@ -8,7 +8,7 @@ const COUNT = 6500;
 const CX = W / 2;
 const CY = H / 2;
 const DEFAULT_COLORS = ["#D7FF3B", "#FFFFFF", "#2B59FF", "#D7FF3B", "#FF3B2F"];
-const DEFAULT_FONT = '"SF Pro Display", "PingFang SC", -apple-system, "Helvetica Neue", sans-serif';
+const DEFAULT_FONT = '"SF Pro Display", "PingFang TC", -apple-system, "Helvetica Neue", sans-serif';
 
 const sampleText = (text: string, size: number, font: string) => {
   const c = document.createElement("canvas");

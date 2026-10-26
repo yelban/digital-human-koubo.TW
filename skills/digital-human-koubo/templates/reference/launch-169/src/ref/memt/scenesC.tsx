@@ -1,17 +1,17 @@
-// 数据（两个尺寸、>5% 内部测试、约 300B 规模）→ 金句粒子 → 收尾
+// 資料（兩個尺寸、>5% 內部測試、約 300B 規模）→ 金句粒子 → 收尾
 import React from "react";
 import { AbsoluteFill } from "remotion";
 import { clamp01, E, mix, seg } from "../cinematic/motion";
 import { ap, C, CN, EN, GRAD, GradText, Kicker, Mark, MONO, out, Rise, slamStyle, T, TE, Wd } from "./kit";
 import { MemParticle } from "./MemParticle";
 
-// ═════════ S10 数据 ═════════
+// ═════════ S10 資料 ═════════
 const NANO = Wd("b11", "36B");
 const FLASH = Wd("b11", "293B");
 const CW = Wd("b11", "Coding");
 const PCT = Wd("b11", "百分之五");
-const NOTPUB = Wd("b12", "不是公开");
-const SCALE = Wd("b12", "约");
+const NOTPUB = Wd("b12", "不是公開");
+const SCALE = Wd("b12", "約");
 export const C_TIMES = { NANO, FLASH, CW, PCT, NOTPUB, SCALE };
 export const s10Cues = () => [
   { at: NANO, name: "slam-1", volume: 0.65 },
@@ -49,7 +49,7 @@ const SizeCard: React.FC<{ f: number; at: number; x: number; name: string; value
       <div style={{ fontFamily: EN, fontSize: 176, fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1.1, fontVariantNumeric: "tabular-nums", ...slamStyle(f, at) }}>
         <GradText>{Math.round(count(f, at, value))}B</GradText>
       </div>
-      <div style={{ fontFamily: CN, fontSize: 24, color: C.mute }}>总参数</div>
+      <div style={{ fontFamily: CN, fontSize: 24, color: C.mute }}>總參數</div>
     </div>
   );
 };
@@ -62,7 +62,7 @@ export const S10Data: React.FC<{ f: number; start: number }> = ({ f, start }) =>
     <AbsoluteFill style={{ opacity: ap(f, start, 10) }}>
       <AbsoluteFill style={{ opacity: 1 - toGrid, transform: `translateY(${-toGrid * 80}px)` }}>
         <div style={{ position: "absolute", left: 0, right: 0, top: 150, textAlign: "center", opacity: ap(f, start + 4, 10) * (1 - shrink) }}>
-          <Kicker>两个尺寸 · Model family</Kicker>
+          <Kicker>兩個尺寸 · Model family</Kicker>
         </div>
         <SizeCard f={f} at={NANO} x={mix(330, 560, shrink)} name="Nano" value={36} shrink={shrink} />
         <SizeCard f={f} at={FLASH} x={mix(1030, 800, shrink)} name="Flash" value={293} shrink={shrink} />
@@ -74,11 +74,11 @@ export const S10Data: React.FC<{ f: number; start: number }> = ({ f, start }) =>
             <div style={{ position: "absolute", left: 0, right: 0, top: 386, textAlign: "center", fontFamily: EN, fontWeight: 800, fontSize: 300, letterSpacing: "-0.04em", lineHeight: 1.05, fontVariantNumeric: "tabular-nums", ...slamStyle(f, PCT - 2) }}>
               <GradText>&gt;{pct.toFixed(f < PCT + 16 ? 1 : 0)}%</GradText>
             </div>
-            <div style={{ position: "absolute", left: 0, right: 0, top: 730, textAlign: "center", fontFamily: CN, fontSize: 36, color: C.mute, opacity: ap(f, PCT + 6, 10) }}>性能提升</div>
+            <div style={{ position: "absolute", left: 0, right: 0, top: 730, textAlign: "center", fontFamily: CN, fontSize: 36, color: C.mute, opacity: ap(f, PCT + 6, 10) }}>效能提升</div>
             <div style={{ position: "absolute", left: 1290, top: 420, ...slamStyle(f, NOTPUB), transform: `${slamStyle(f, NOTPUB).transform} rotate(-6deg)` }}>
               <div style={{ padding: "12px 24px", borderRadius: 12, border: "3px solid #FFB547", color: "#FFB547", fontFamily: CN, fontSize: 30, fontWeight: 800, background: "rgba(255,181,71,0.08)" }}>
-                内部测试
-                <div style={{ fontSize: 20, fontWeight: 600, opacity: 0.85 }}>非公开榜单</div>
+                內部測試
+                <div style={{ fontSize: 20, fontWeight: 600, opacity: 0.85 }}>非公開榜單</div>
               </div>
             </div>
           </>
@@ -100,9 +100,9 @@ const ScaleGrid: React.FC<{ f: number; q: number }> = ({ f, q }) => {
   return (
     <AbsoluteFill style={{ opacity: q }}>
       <div style={{ position: "absolute", left: 0, right: 0, top: 140, textAlign: "center", fontFamily: CN, fontWeight: 900, fontSize: 120, color: C.ink, ...slamStyle(f, SCALE) }}>
-        约 <GradText style={{ fontFamily: EN }}>300B</GradText> 规模
+        約 <GradText style={{ fontFamily: EN }}>300B</GradText> 規模
       </div>
-      <div style={{ position: "absolute", left: 0, right: 0, top: 316, textAlign: "center", fontFamily: CN, fontSize: 44, color: C.mute, opacity: ap(f, SCALE + 10, 12) }}>算法构想 → 工程验证</div>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 316, textAlign: "center", fontFamily: CN, fontSize: 44, color: C.mute, opacity: ap(f, SCALE + 10, 12) }}>演算法構想 → 工程驗證</div>
       {Array.from({ length: COLS * ROWS }, (_, n) => {
         const i = Math.floor(n / COLS);
         const j = n % COLS;
@@ -133,8 +133,8 @@ const ScaleGrid: React.FC<{ f: number; q: number }> = ({ f, q }) => {
 
 // ═════════ S11 金句 → 粒子 ═════════
 const Q1 = Wd("b13", "今天");
-const Q2 = Wd("b13", "参数");
-const Q3 = Wd("b13", "记忆决定");
+const Q2 = Wd("b13", "參數");
+const Q3 = Wd("b13", "記憶決定");
 export const BURST = TE("b13") + 4;
 const PS = Q3 - 40;
 const HOLD = BURST - PS - 60;
@@ -152,31 +152,31 @@ export const S11Quote: React.FC<{ f: number; start: number }> = ({ f, start }) =
     <AbsoluteFill style={{ opacity: ap(f, start, 10) }}>
       <AbsoluteFill style={{ opacity: 1 - q1Out, transform: `translateY(${-q1Out * 40}px)` }}>
         <div style={{ position: "absolute", left: 0, right: 0, top: 330 }}>
-          <Rise f={f} at={Q1 - 2} parts={[{ t: "今天正确的经验，" }]} size={96} weight={800} step={1.6} />
+          <Rise f={f} at={Q1 - 2} parts={[{ t: "今天正確的經驗，" }]} size={96} weight={800} step={1.6} />
         </div>
         <div style={{ position: "absolute", left: 0, right: 0, top: 470 }}>
-          <Rise f={f} at={Q1 + 22} parts={[{ t: "会成为" }, { t: "明天的能力", accent: true }, { t: "。" }]} size={96} weight={800} step={1.6} />
+          <Rise f={f} at={Q1 + 22} parts={[{ t: "會成為" }, { t: "明天的能力", accent: true }, { t: "。" }]} size={96} weight={800} step={1.6} />
         </div>
       </AbsoluteFill>
       {f >= Q2 - 4 && (
         <div style={{ position: "absolute", left: 0, right: 0, top: 200, opacity: 1 - q2Out }}>
-          <Rise f={f} at={Q2 - 2} parts={[{ t: "参数决定模型的起点，", color: "rgba(226,232,255,0.7)" }]} size={64} weight={700} step={1.2} />
+          <Rise f={f} at={Q2 - 2} parts={[{ t: "參數決定模型的起點，", color: "rgba(226,232,255,0.7)" }]} size={64} weight={700} step={1.2} />
         </div>
       )}
     </AbsoluteFill>
   );
 };
 
-// MemParticle 用 useCurrentFrame：Film 把它放进 <Sequence from={PARTICLE_START}>
+// MemParticle 用 useCurrentFrame：Film 把它放進 <Sequence from={PARTICLE_START}>
 export const ParticleLayer: React.FC = () => (
   <AbsoluteFill style={{ transform: "translateY(60px)" }}>
-    <MemParticle text="记忆决定它能长多高" size={150} count={9000} hold={HOLD} colors={["#27B9F3", "#FFFFFF", "#3D6BF5", "#6A3BF0", "#9FE6FF"]} />
+    <MemParticle text="記憶決定它能長多高" size={150} count={9000} hold={HOLD} colors={["#27B9F3", "#FFFFFF", "#3D6BF5", "#6A3BF0", "#9FE6FF"]} />
   </AbsoluteFill>
 );
 export const PARTICLE_START = PS;
 
 // ═════════ S12 收尾 ═════════
-const CTA = Wd("b14", "模型权重");
+const CTA = Wd("b14", "模型權重");
 const HF = Wd("b14", "Hugging");
 export const s12Cues = (land: number) => [
   { at: land - 36, name: "riser", volume: 0.35 },
@@ -210,7 +210,7 @@ export const S12End: React.FC<{ f: number; land: number }> = ({ f, land }) => {
       </div>
       <div style={{ position: "absolute", left: 960 - 330, width: 660 * line, top: 572, height: 5, borderRadius: 3, background: GRAD, boxShadow: `0 0 18px ${C.blue}` }} />
       <div style={{ position: "absolute", left: 0, right: 0, top: 612, textAlign: "center", fontFamily: CN, fontSize: 40, fontWeight: 600, color: C.ink, opacity: ap(f, CTA, 12) }}>
-        记忆原生大模型
+        記憶原生大模型
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, top: 714, display: "flex", justifyContent: "center", ...slamStyle(f, HF - 2) }}>
         <div style={{ padding: "16px 34px", borderRadius: 40, background: "rgba(255,255,255,0.06)", border: "1.5px solid rgba(39,185,243,0.55)", fontFamily: MONO, fontSize: 32, color: C.ink, boxShadow: "0 0 40px rgba(61,107,245,0.25)" }}>
@@ -218,7 +218,7 @@ export const S12End: React.FC<{ f: number; land: number }> = ({ f, land }) => {
         </div>
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, top: 1010, textAlign: "center", fontFamily: CN, fontSize: 18, color: "rgba(226,232,255,0.42)", opacity: ap(f, land + 20, 14) }}>
-        信息来源：MemOS 团队发布资料与 Hugging Face model card · 性能提升为团队内部测试结果 · 配乐 Mixkit
+        資訊來源：MemOS 團隊發布資料與 Hugging Face model card · 效能提升為團隊內部測試結果 · 配樂 Mixkit
       </div>
     </AbsoluteFill>
   );

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { cancelRender, continueRender, delayRender, staticFile } from "remotion";
 
-export const FONT = 'Geist, "PingFang SC", -apple-system, sans-serif';
+export const FONT = 'Geist, "PingFang TC", -apple-system, sans-serif';
 
 /** Loads public/fonts/Geist-*.woff2 (from `npm i geist`, dist/fonts/geist-sans) before the first frame renders. */
 export const useGeist = () => {

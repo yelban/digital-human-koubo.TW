@@ -1,10 +1,10 @@
-// Google Noto 动态 emoji：逐帧驱动 lottie-web（不依赖浏览器时钟）。
-// 素材先用 scripts/fetch_noto_emoji.py 下到 public/emoji/（manifest.json 记录每个 emoji 是动态还是静态）。
+// Google Noto 動態 emoji：逐幀驅動 lottie-web（不依賴瀏覽器時鐘）。
+// 素材先用 scripts/fetch_noto_emoji.py 下到 public/emoji/（manifest.json 記錄每個 emoji 是動態還是靜態）。
 // <NotoEmoji char="🚀" at={at(3)} size={160} />
-//  - at：开始播放的帧；之前停在第 0 帧（Noto 的起止姿态相同，静止时就是正常 emoji）
-//  - speed：播放速度倍数；cycles：播几轮（默认 1，播完停住）；Infinity = 一直循环
-//  - 没有动态版的 emoji 自动退回 Noto 静态 SVG
-// 授权：片尾或声明里加「Animated emoji: Google Noto」。
+//  - at：開始播放的幀；之前停在第 0 幀（Noto 的起止姿態相同，靜止時就是正常 emoji）
+//  - speed：播放速度倍數；cycles：播幾輪（預設 1，播完停住）；Infinity = 一直循環
+//  - 沒有動態版的 emoji 自動退回 Noto 靜態 SVG
+// 授權：片尾或聲明裡加「Animated emoji: Google Noto」。
 import React, { useEffect, useRef, useState } from "react";
 import lottie, { type AnimationItem } from "lottie-web";
 import { continueRender, delayRender, Img, staticFile, useCurrentFrame, useVideoConfig } from "remotion";

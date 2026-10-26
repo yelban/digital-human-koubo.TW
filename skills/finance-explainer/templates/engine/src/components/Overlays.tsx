@@ -3,7 +3,7 @@ import { AbsoluteFill, Img, OffthreadVideo, interpolate, spring, staticFile, use
 import type { Overlay, Timeline } from "../lib/types";
 import type { Theme } from "../lib/theme";
 
-// 所有叠加卡片：出现时刻 o.t（秒，整片时间），消失时刻 o.t2（默认所在拍结束）
+// 所有疊加卡片：出現時刻 o.t（秒，整片時間），消失時刻 o.t2（預設所在拍結束）
 const useLocal = (o: Overlay) => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig();
   const lf = f - Math.round(o.t * fps);
@@ -29,7 +29,7 @@ const stroke = (c = "#000", w = 4) => {
   return s.join(",");
 };
 
-// —— 观众私信卡（开场钩子）——
+// —— 觀眾私信卡（開場鉤子）——
 const Comment: React.FC<{ o: Overlay; theme: Theme }> = ({ o, theme }) => {
   const { inP, outP, vis } = useLocal(o); if (!vis) return null;
   const left = o.side === "left";
@@ -41,14 +41,14 @@ const Comment: React.FC<{ o: Overlay; theme: Theme }> = ({ o, theme }) => {
         <div style={{ width: 52, height: 52, borderRadius: 26, background: `hsl(${(o.user?.length ?? 3) * 47 % 360} 55% 62%)`, color: "#fff",
                       display: "grid", placeItems: "center", fontSize: 24, fontWeight: 700 }}>{(o.user ?? "?").slice(0, 1)}</div>
         <div style={{ fontSize: 24, color: "#666", fontWeight: 600 }}>{o.user}</div>
-        <div style={{ marginLeft: "auto", fontSize: 18, color: "#aaa" }}>{o.time ?? "刚刚"}</div>
+        <div style={{ marginLeft: "auto", fontSize: 18, color: "#aaa" }}>{o.time ?? "剛剛"}</div>
       </div>
       <div style={{ fontSize: 31, color: "#1d1d1f", marginTop: 12, lineHeight: 1.45, fontWeight: 500 }}>{o.text}</div>
     </div>
   );
 };
 
-// —— 日期贴纸叠加（时间线）——
+// —— 日期貼紙疊加（時間線）——
 const DateStack: React.FC<{ o: Overlay; theme: Theme }> = ({ o, theme }) => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig(); const t = f / fps;
   if (t < o.t || (o.t2 != null && t > o.t2)) return null;
@@ -70,7 +70,7 @@ const DateStack: React.FC<{ o: Overlay; theme: Theme }> = ({ o, theme }) => {
   );
 };
 
-// —— 大数字滚动 ——
+// —— 大數字滾動 ——
 const fmt = (v: number, money?: boolean) => money ? Math.round(v).toLocaleString("en-US") : (v >= 100 ? Math.round(v).toLocaleString("en-US") : v.toFixed(v % 1 ? 1 : 0));
 const Counter: React.FC<{ o: Overlay; theme: Theme }> = ({ o, theme }) => {
   const { lf, fps, inP, outP, vis } = useLocal(o); if (!vis) return null;
@@ -106,7 +106,7 @@ const Kinetic: React.FC<{ o: Overlay; theme: Theme }> = ({ o, theme }) => {
   );
 };
 
-// —— 术语卡（英文原词 + 中文解释）——
+// —— 術語卡（英文原詞 + 中文解釋）——
 const Term: React.FC<{ o: Overlay; theme: Theme }> = ({ o, theme }) => {
   const { inP, outP, vis } = useLocal(o); if (!vis) return null;
   return (
@@ -120,7 +120,7 @@ const Term: React.FC<{ o: Overlay; theme: Theme }> = ({ o, theme }) => {
   );
 };
 
-// —— 反应梗（生成的短片或图，全屏插入 + 大字）——
+// —— 反應梗（生成的短片或圖，全螢幕插入 + 大字）——
 const Meme: React.FC<{ o: Overlay; theme: Theme; tl: Timeline }> = ({ o, theme, tl }) => {
   const { inP, vis } = useLocal(o); if (!vis) return null;
   return (
@@ -132,7 +132,7 @@ const Meme: React.FC<{ o: Overlay; theme: Theme; tl: Timeline }> = ({ o, theme, 
   );
 };
 
-// —— 卡通贴纸 + 气泡台词（拟人独白）——
+// —— 卡通貼紙 + 氣泡台詞（擬人獨白）——
 const Sticker: React.FC<{ o: Overlay; theme: Theme; tl: Timeline }> = ({ o, theme, tl }) => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig(); const t = f / fps;
   const { inP, vis } = useLocal(o); if (!vis) return null;
@@ -148,7 +148,7 @@ const Sticker: React.FC<{ o: Overlay; theme: Theme; tl: Timeline }> = ({ o, them
   );
 };
 
-// —— 要点清单（右侧逐条出现）——
+// —— 要點清單（右側逐條出現）——
 const List: React.FC<{ o: Overlay; theme: Theme }> = ({ o, theme }) => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig(); const t = f / fps;
   if (t < o.t || (o.t2 != null && t > o.t2)) return null;
@@ -165,7 +165,7 @@ const List: React.FC<{ o: Overlay; theme: Theme }> = ({ o, theme }) => {
   );
 };
 
-// —— 素材渲染：gen:/stock: id → timeline.assets；没有素材时画占位，方便先出样片 ——
+// —— 素材渲染：gen:/stock: id → timeline.assets；沒有素材時畫佔位，方便先出樣片 ——
 export const Asset: React.FC<{ id?: string; tl: Timeline; kb?: boolean; contain?: boolean }> = ({ id, tl, kb, contain }) => {
   const f = useCurrentFrame(); const { durationInFrames } = useVideoConfig();
   const key = (id ?? "").replace(/^(gen|stock|wiki):/, "");

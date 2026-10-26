@@ -27,6 +27,7 @@ import difflib
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -141,6 +142,20 @@ def whisper_chars(wav, prompt="", model=None):
     return out
 
 
+def t2s_table(text):
+    """剧本里繁体字 → 简体字的逐字对照（whisper 只输出简体），比对时换字、下标不变。没装 opencc 就是空表"""
+    cs = sorted({c for c in text if not c.isspace()}); oc = shutil.which("opencc")
+    if not oc:
+        return {}
+    out = subprocess.run([oc, "-c", "t2s"], input="\n".join(cs), capture_output=True, text=True, check=True).stdout.split("\n")
+    return {a: b for a, b in zip(cs, out) if len(b) == 1 and a != b}
+
+
+def to_simplified(text):
+    t = t2s_table(text)
+    return "".join(t.get(c, c) for c in text)
+
+
 def norm(ch):
     return ch.lower()
 
@@ -148,8 +163,9 @@ def norm(ch):
 def align(text, wch, dur):
     """原文每个字的开始时刻（相对本拍）。能对上的用 whisper 时间，对不上的在前后已知点之间按位置插值。"""
     idx = [i for i, c in enumerate(text) if c not in PUNCT and not c.isspace()]
-    a = [norm(text[i]) for i in idx]
-    b = [norm(c) for c, _, _ in wch if c not in PUNCT]
+    t2s = t2s_table(text)   # 两边用同一张表
+    a = [norm(t2s.get(text[i], text[i])) for i in idx]
+    b = [norm(t2s.get(c, c)) for c, _, _ in wch if c not in PUNCT]
     bt = [t0 for c, t0, _ in wch if c not in PUNCT]
     known = {}
     for blk in difflib.SequenceMatcher(None, a, b, autojunk=False).get_matching_blocks():
@@ -190,7 +206,8 @@ CN_NUM = str.maketrans("零〇一二三四五六七八九", "00123456789")
 def qa_diff(text, heard):
     """回读比对：去掉标点、统一数字写法后比，返回 (相似度, 差异片段)"""
     f = lambda s: [c for c in s.lower().translate(CN_NUM) if c not in PUNCT and not c.isspace()]
-    a, b = f(text), f(heard.replace("做", "作"))
+    t2s = t2s_table(text); conv = lambda s: "".join(t2s.get(c, c) for c in s)   # 两边用同一张表
+    a, b = f(conv(text)), f(conv(heard.replace("做", "作")))
     sm = difflib.SequenceMatcher(None, a, b, autojunk=False)
     diffs = [("".join(a[i1:i2]), "".join(b[j1:j2])) for op, i1, i2, j1, j2 in sm.get_opcodes() if op != "equal"]
     return sm.ratio(), diffs
@@ -214,6 +231,7 @@ def cn_value(tok):
 
 def odd_numbers(text, heard):
     """回读里冒出原文没有的数字 = 多半念错了（例如 CLI 被当罗马数字念成「一百五十一」、AGENTS.MD 念成「一千五百」）"""
+    text = to_simplified(text)   # 下面的中文数字字元集只认简体（两、万）
     src = {int(x.replace(",", "")) for x in re.findall(r"\d[\d,]*", text)}
     src |= {v for x in re.findall(r"[零〇一二三四五六七八九十百千万]+", text) if (v := cn_value(x)) is not None}
     bad = []

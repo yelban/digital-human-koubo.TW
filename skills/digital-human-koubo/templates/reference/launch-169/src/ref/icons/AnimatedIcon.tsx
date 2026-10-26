@@ -1,9 +1,9 @@
-// 逐帧播放 lucide-animated 图标：在 at 帧触发原图标的 startAnimation()，之后按帧号求值。
+// 逐幀播放 lucide-animated 圖示：在 at 幀觸發原圖示的 startAnimation()，之後按幀號求值。
 // <AnimatedIcon name="rocket" at={at(4)} size={120} color="#fff" />
-//  - at：整片绝对帧（在 <Sequence> 里传局部帧也可以，只要和 useCurrentFrame 同一坐标）
-//  - stop：可选，在该帧调用 stopAnimation()（回到 normal）
-//  - cycles：原图标里无限循环的动画播几轮，默认 1（播一次后停住，符合「只在接触帧动一次」）
-//  - strokeWidth：默认 1.75，与 skill 的 Lucide 规范一致
+//  - at：整片絕對幀（在 <Sequence> 裡傳局部幀也可以，只要和 useCurrentFrame 同一座標）
+//  - stop：可選，在該幀呼叫 stopAnimation()（回到 normal）
+//  - cycles：原圖示裡無限循環的動畫播幾輪，預設 1（播一次後停住，符合「只在接觸幀動一次」）
+//  - strokeWidth：預設 1.75，與 skill 的 Lucide 規範一致
 import React, { useEffect, useRef, useState } from "react";
 import { continueRender, delayRender, useCurrentFrame } from "remotion";
 import { useVideoConfig } from "remotion";

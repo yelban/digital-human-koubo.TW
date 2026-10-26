@@ -1,18 +1,18 @@
-# 换声音
+# 換聲音
 
-默认用 Grok 原生配音（persona.json 里的 voice.desc，每段一字不改，整片音色才统一）。
+預設用 Grok 原生配音（persona.json 裡的 voice.desc，每段一字不改，整片音色才統一）。
 
-## 换成自己的声音（MiMo 克隆）
-- 录 12–20 秒干净的朗读（安静房间、离嘴 20 厘米），发给 Claude Code，说「用我的声音配这段话」。
-- Claude 调用小米 MiMo：`mimo-v2.5-tts-voiceclone`，assistant 消息放正文，user 消息放语气说明；密钥只放在 ~/.config/ai-teardown/mimo.env。
-- 克隆声 2–5 kHz 偏弱，配完套 EQ+压缩（SKILL.md 里的人声链）。
-- 只克隆本人或明确授权的声音。
+## 換成自己的聲音（MiMo 克隆）
+- 錄 12–20 秒乾淨的朗讀（安靜房間、離嘴 20 公分），發給 Claude Code，說「用我的聲音配這段話」。
+- Claude 呼叫小米 MiMo：`mimo-v2.5-tts-voiceclone`，assistant 訊息放正文，user 訊息放語氣說明；金鑰只放在 ~/.config/ai-teardown/mimo.env。
+- 克隆聲 2–5 kHz 偏弱，配完套 EQ+壓縮（SKILL.md 裡的人聲鏈）。
+- 只克隆本人或明確授權的聲音。
 
-## 按文字设计音色
-- `mimo-v2.5-tts-voicedesign`：user 消息写音色描述（如「温柔知性的年轻女声，语速稍慢，咬字清楚」），不能为空。
+## 按文字設計音色
+- `mimo-v2.5-tts-voicedesign`：user 訊息寫音色描述（如「溫柔知性的年輕女聲，語速稍慢，咬字清楚」），不能為空。
 
-## 让数字人用新声音开口
-Grok 只吃图片，不吃音频，口型跟的是它自己的配音。grok CLI 没有「音频驱动口型」的模式，所以要口型对上自己的声音：
-- 另外用支持音频驱动的服务（例如 Wan 3.0、OmniHuman；这个技能目前没接）。
-- 或者只在画中画、空镜段落用新声音做旁白，全屏出镜段保留 Grok 原声。
-- grok 的 reference_to_video 还能指定预设音色（`voices`，例如 eve、ara），让每段同一个声音；中文效果没测过，build_tasks.py 目前没接。
+## 讓數位人用新聲音開口
+Grok 只吃圖片，不吃音訊，口型跟的是它自己的配音。grok CLI 沒有「音訊驅動口型」的模式，所以要口型對上自己的聲音：
+- 另外用支援音訊驅動的服務（例如 Wan 3.0、OmniHuman；這個技能目前沒接）。
+- 或者只在畫中畫、空鏡段落用新聲音做旁白，全螢幕出鏡段保留 Grok 原聲。
+- grok 的 reference_to_video 還能指定預設音色（`voices`，例如 eve、ara），讓每段同一個聲音；中文效果沒測過，build_tasks.py 目前沒接。

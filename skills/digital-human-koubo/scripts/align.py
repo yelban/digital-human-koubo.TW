@@ -2,11 +2,20 @@
 """逐字时间轴：把 assemble.py 的 cut/<id>.json（whisper 逐字）和文稿对齐，输出剪辑模板用的 tl.json。
 用法：python3 align.py script.json [--out edit/src/tl.json]
 tl.json = {"total": 秒, "segs": [{"i","id","start","end","text","chars":{"字符下标": 秒}}]}（chars 是整片绝对时间）"""
-import json, difflib, sys
+import json, difflib, shutil, subprocess, sys
 from pathlib import Path
+
+def t2s_table(text):
+    """文稿里繁体字 → 简体字的逐字对照（whisper 只输出简体），比对时换字、下标不变。没装 opencc 就是空表"""
+    cs = sorted({c for c in text if not c.isspace()}); oc = shutil.which('opencc')
+    if not oc: return {}
+    out = subprocess.run([oc, '-c', 't2s'], input='\n'.join(cs), capture_output=True, text=True, check=True).stdout.split('\n')
+    return {a: b for a, b in zip(cs, out) if len(b) == 1 and a != b}
+
 a = sys.argv[1:]
 if not a: sys.exit(__doc__)
 S = json.load(open(a[0])); Q = {r['id']: r for r in json.load(open('cut/qa.json'))}
+T2S = t2s_table(''.join(s['t'] for s in S))
 out = a[a.index('--out') + 1] if '--out' in a else 'edit/src/tl.json'
 PUNCT = set('，。、：；！？,.:;!? “”「」')
 T0 = 0.0; segs = []
@@ -17,8 +26,8 @@ for i, s in enumerate(S, 1):
         a0, a1 = t['offsets']['from'] / 1000, t['offsets']['to'] / 1000; tx = t['text'].strip()
         if not tx or tx.startswith('['): continue
         for k, ch in enumerate(tx):
-            if ch not in PUNCT: tk.append((ch.lower(), a0 + (a1 - a0) * k / len(tx)))
-    clean = [(j, ch.lower()) for j, ch in enumerate(text) if ch not in PUNCT]
+            if ch not in PUNCT: tk.append((T2S.get(ch, ch).lower(), a0 + (a1 - a0) * k / len(tx)))   # 两边用同一张表，日文汉字也对得上
+    clean = [(j, T2S.get(ch, ch).lower()) for j, ch in enumerate(text) if ch not in PUNCT]
     A = ''.join(c for _, c in clean); B = ''.join(c for c, _ in tk)
     sm = difflib.SequenceMatcher(None, A, B, autojunk=False); st = [None] * len(clean)
     for bl in sm.get_matching_blocks():

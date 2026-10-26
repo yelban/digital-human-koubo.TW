@@ -9,7 +9,7 @@ const stroke = (c = "#000", w = 3) => {
   return s.join(",");
 };
 
-// 字幕：一屏 6–14 字，白字黑描边，底部居中
+// 字幕：一屏 6–14 字，白字黑描邊，底部居中
 export const Subtitles: React.FC<{ tl: Timeline; theme: Theme }> = ({ tl, theme }) => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig(); const t = f / fps;
   const s = tl.subs.find((x) => t >= x.start && t < x.end);
@@ -20,7 +20,7 @@ export const Subtitles: React.FC<{ tl: Timeline; theme: Theme }> = ({ tl, theme 
   );
 };
 
-// 章节标题卡：空镜 + 大字距中文 + 细英文
+// 章節標題卡：空鏡 + 大字距中文 + 細英文
 export const Chapter: React.FC<{ beat: Beat; tl: Timeline; theme: Theme }> = ({ beat, tl, theme }) => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig();
   const lf = f - Math.round(beat.start * fps); const dur = Math.round((beat.end - beat.start) * fps);
@@ -41,7 +41,7 @@ export const Chapter: React.FC<{ beat: Beat; tl: Timeline; theme: Theme }> = ({ 
   );
 };
 
-// 问题云：本期要回答的问题浮在主播四周
+// 問題雲：本期要回答的問題浮在主播四周
 export const Questions: React.FC<{ o: Overlay; theme: Theme }> = ({ o, theme }) => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig();
   const lf = f - Math.round(o.t * fps); if (lf < 0 || (o.t2 != null && f > o.t2 * fps)) return null;
@@ -59,7 +59,7 @@ export const Questions: React.FC<{ o: Overlay; theme: Theme }> = ({ o, theme }) 
   );
 };
 
-// 水印 / 角标（演示片声明）
+// 水印 / 角標（演示片聲明）
 export const Badge: React.FC<{ text?: string; theme: Theme }> = ({ text, theme }) => !text ? null : (
   <div style={{ position: "absolute", right: 36, top: 30, fontFamily: theme.font, fontSize: 22, color: "rgba(255,255,255,.8)", background: "rgba(0,0,0,.35)",
                 padding: "6px 14px", borderRadius: 8 }}>{text}</div>

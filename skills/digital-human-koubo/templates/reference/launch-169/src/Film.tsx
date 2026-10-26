@@ -1,4 +1,4 @@
-// MemT 1.0 发布解读（16:9）：左侧整幅竖屏数字人，右侧内容区嵌入 memt-promo 的 MemT 场景（按口播卡点做时间重映射）。
+// MemT 1.0 發布解讀（16:9）：左側整幅直式數位人，右側內容區嵌入 memt-promo 的 MemT 場景（按口播卡點做時間重映射）。
 import React from "react";
 import { AbsoluteFill, Audio, Easing, Img, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import tl from "./timeline.json";
@@ -9,19 +9,19 @@ import { BURST, ParticleLayer, PARTICLE_START, S10Data, s10Cues, S11Quote, s11Cu
 import { keyCues, type Cue } from "./ref/cinematic/sfx";
 import { BrandProvider, type CineBrand } from "./ref/cinematic/brand";
 
-/* ---------- 基础 ---------- */
+/* ---------- 基礎 ---------- */
 const FPS = 30;
 const F = (s: number) => Math.round(s * FPS);
 const C = tl.cues as Record<string, number>;
 const CYAN = K.cyan, BLUE = K.blue, VIOLET = K.violet, INK = K.ink, MUTE = K.mute;
 const ZH = CN;
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
-const BRAND: CineBrand = { name: "MemT 1.0", display: '"SF Pro Display", "PingFang SC", sans-serif', body: '"PingFang SC", sans-serif', accent: BLUE, accent2: VIOLET, ink: "#03050D", paper: INK };
+const BRAND: CineBrand = { name: "MemT 1.0", display: '"SF Pro Display", "PingFang TC", sans-serif', body: '"PingFang TC", sans-serif', accent: BLUE, accent2: VIOLET, ink: "#03050D", paper: INK };
 const fadeWin = (f: number, a: number, b: number, d = 6) => interpolate(f, [F(a), F(a) + d, F(b) - d, F(b)], [0, 1, 1, 0], clamp);
 const segEnd = (i: number) => tl.segs[i].start + tl.segs[i].dur;
 const HOST_IN = C.but;
 
-/* ---------- 时间重映射：本片的秒 → 参考片的帧（分段线性，两端斜率 1） ---------- */
+/* ---------- 時間重映射：本片的秒 → 參考片的幀（分段線性，兩端斜率 1） ---------- */
 type Remap = { fwd: (f: number) => number; inv: (r: number) => number };
 const remap = (pairs: Array<[number, number]>): Remap => {
   const P = pairs.map(([s, r]) => [s * FPS, r] as [number, number]);
@@ -37,43 +37,43 @@ const remap = (pairs: Array<[number, number]>): Remap => {
   return { fwd: (f) => lerp(f, 0), inv: (r) => lerp(r, 1) };
 };
 
-const OPS = ["写入", "保持", "更新", "读取"].map((w) => Wd("b08", w));
-const STATE = Wd("b08", "持续存在");
-const EXT = Wd("b08", "不是外挂");
+const OPS = ["寫入", "保持", "更新", "讀取"].map((w) => Wd("b08", w));
+const STATE = Wd("b08", "持續存在");
+const EXT = Wd("b08", "不是外掛");
 const CH1E = T("b08") - 4;
 const B10 = T("b11") - 6;
 const B11 = T("b13") - 6;
 const LAND = BURST + 2;
 
 const SCENES: Array<{ a: number; b: number; m: Remap; draw: (r: number) => React.ReactNode; cues: Cue[] }> = [
-  { // 发布：日期 · logo · MemT 1.0 · 全球首个
+  { // 發布：日期 · logo · MemT 1.0 · 全球首個
     a: tl.segs[1].start - 0.05, b: C.pain + 0.1,
     m: remap([[tl.segs[1].start - 0.05, B2], [C.date, Wd("b03", "十月")], [C.memt, Wd("b03", "MemT")], [C.first, Wd("b03", "全球")], [C.pain, B3]]),
     draw: (r) => <S2Launch f={r} />, cues: s2Cues(),
   },
-  { // 失忆聊天：讲了三遍 → 新对话碎裂 → 全忘了
+  { // 失憶聊天：講了三遍 → 新對話碎裂 → 全忘了
     a: C.pain - 0.2, b: segEnd(1) + 0.05,
-    m: remap([[C.pain, T("b04")], [C.r3, Wd("b04", "讲了")], [C.r3 + 0.35, Wd("b04", "三遍")], [C.newchat, Wd("b04", "新开")], [C.forgot, Wd("b04", "全忘")], [segEnd(1), TE("b04") + 6]]),
+    m: remap([[C.pain, T("b04")], [C.r3, Wd("b04", "講了")], [C.r3 + 0.35, Wd("b04", "三遍")], [C.newchat, Wd("b04", "新開")], [C.forgot, Wd("b04", "全忘")], [segEnd(1), TE("b04") + 6]]),
     draw: (r) => <S34Window f={r} />, cues: [...s3Cues(), ...keyCues(s3KeyText.text, s3KeyText.times, 0, 0.4, 3)],
   },
-  { // 三条老路 → 第四条路：记忆
+  { // 三條老路 → 第四條路：記憶
     a: tl.segs[2].start, b: C.mem3 + 0.35,
-    m: remap([[tl.segs[2].start, T("b01")], [C.params, Wd("b01", "更多参数")], [C.data, Wd("b01", "更多数据")], [C.newway, Wd("b02", "第四条路")], [C.mem3, Wd("b02", "记忆")], [C.mem3 + 0.35, B2 - 2]]),
+    m: remap([[tl.segs[2].start, T("b01")], [C.params, Wd("b01", "更多參數")], [C.data, Wd("b01", "更多資料")], [C.newway, Wd("b02", "第四條路")], [C.mem3, Wd("b02", "記憶")], [C.mem3 + 0.35, B2 - 2]]),
     draw: (r) => <S1Paths f={r} />, cues: s1Cues(),
   },
-  { // Memory-Native MoE：写入 · 保持 · 更新 · 读取，外挂检索被划掉
+  { // Memory-Native MoE：寫入 · 保持 · 更新 · 讀取，外掛檢索被劃掉
     a: C.mem3 + 0.2, b: segEnd(2) + 0.05,
     m: remap([[C.mem3 + 0.2, STATE - 6], [C.write, OPS[0]], [(C.write + C.update) / 2, OPS[1]], [C.update, OPS[2]], [C.read, OPS[3]], [C.inside, EXT - 20], [segEnd(2) - 0.3, EXT + 34]]),
     draw: (r) => <S7Arch f={r} start={CH1E - 12} />, cues: s7Cues(),
   },
-  { // Nano 36B / Flash 293B → >5% → 不是公开榜单
+  { // Nano 36B / Flash 293B → >5% → 不是公開榜單
     a: tl.segs[3].start, b: C.p1 - 0.2,
-    m: remap([[tl.segs[3].start, T("b11")], [C.nano, Wd("b11", "36B")], [C.flash, Wd("b11", "293B")], [C.gain, Wd("b11", "Coding")], [C.pct, Wd("b11", "百分之五")], [C.notpub, Wd("b12", "不是公开")], [C.p1 - 0.2, Wd("b12", "不是公开") + 26]]),
+    m: remap([[tl.segs[3].start, T("b11")], [C.nano, Wd("b11", "36B")], [C.flash, Wd("b11", "293B")], [C.gain, Wd("b11", "Coding")], [C.pct, Wd("b11", "百分之五")], [C.notpub, Wd("b12", "不是公開")], [C.p1 - 0.2, Wd("b12", "不是公開") + 26]]),
     draw: (r) => <S10Data f={r} start={B10} />, cues: s10Cues(),
   },
   { // 金句
     a: C.p1 - 0.25, b: C.bye + 0.55,
-    m: remap([[C.p1 - 0.25, Wd("b13", "参数") - 8], [C.p1, Wd("b13", "参数")], [C.p2, Wd("b13", "记忆决定")], [C.bye + 0.4, BURST]]),
+    m: remap([[C.p1 - 0.25, Wd("b13", "參數") - 8], [C.p1, Wd("b13", "參數")], [C.p2, Wd("b13", "記憶決定")], [C.bye + 0.4, BURST]]),
     draw: (r) => <S11Quote f={r} start={B11} />, cues: s11Cues(),
   },
   { // 片尾：logo · MemT 1.0 · Hugging Face
@@ -82,19 +82,19 @@ const SCENES: Array<{ a: number; b: number; m: Remap; draw: (r: number) => React
     draw: (r) => <S12End f={r} land={LAND} />, cues: s12Cues(LAND),
   },
 ];
-// 粒子字按真实速度播放：参考片里它在「记忆决定」前 (Q3 - PARTICLE_START) 帧起步，这里同样提前这么多帧
-const PARTICLE_AT = C.p2 - (Wd("b13", "记忆决定") - PARTICLE_START) / FPS;
+// 粒子字按真實速度播放：參考片裡它在「記憶決定」前 (Q3 - PARTICLE_START) 幀起步，這裡同樣提前這麼多幀
+const PARTICLE_AT = C.p2 - (Wd("b13", "記憶決定") - PARTICLE_START) / FPS;
 
-/* ---------- 右侧内容区：参考场景（1920×1080）整体缩放放入 ---------- */
+/* ---------- 右側內容區：參考場景（1920×1080）整體縮放放入 ---------- */
 const PK = 0.68;
 const PX = 612, PY = (1080 - 1080 * PK) / 2 - 34;
 const Panel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div style={{ position: "absolute", left: PX, top: PY, width: 1920, height: 1080, transform: `scale(${PK})`, transformOrigin: "0 0" }}>{children}</div>
 );
 
-/* ---------- 主播：整幅竖屏，侧边 ---------- */
+/* ---------- 主播：整幅直式，側邊 ---------- */
 const SIDE = { x: 96, y: 56, w: 488, h: 964 };
-const ZOOMS = [1.0, 1.04, 1.0, 1.04, 1.02]; // 跳切处交替轻推，盖住接缝
+const ZOOMS = [1.0, 1.04, 1.0, 1.04, 1.02]; // 跳切處交替輕推，蓋住接縫
 const Host: React.FC = () => {
   const f = useCurrentFrame();
   if (f < F(HOST_IN)) return null;
@@ -130,7 +130,7 @@ const Host: React.FC = () => {
         <div style={{ position: "absolute", left: 0, right: 0, bottom: 20, display: "flex", justifyContent: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, fontFamily: ZH, fontWeight: 600, fontSize: 24, color: INK, padding: "7px 18px", borderRadius: 999, background: "rgba(8,12,28,.82)", border: "1px solid rgba(39,185,243,.45)" }}>
             <Mark w={34} />
-            <span style={{ fontFamily: REN, fontWeight: 800 }}><GradText>MemT 1.0</GradText></span> · 发布解读
+            <span style={{ fontFamily: REN, fontWeight: 800 }}><GradText>MemT 1.0</GradText></span> · 發布解讀
           </div>
         </div>
       </div>
@@ -138,7 +138,7 @@ const Host: React.FC = () => {
   );
 };
 
-/* ---------- 图标（快闪用） ---------- */
+/* ---------- 圖示（快閃用） ---------- */
 const Icon: React.FC<{ kind: "chat" | "image" | "video"; size?: number; color?: string }> = ({ kind, size = 84, color = CYAN }) => {
   const s = size;
   if (kind === "chat") return (
@@ -152,7 +152,7 @@ const Icon: React.FC<{ kind: "chat" | "image" | "video"; size?: number; color?: 
   );
 };
 
-/* ---------- 开场快闪（全屏，主播还没出现） ---------- */
+/* ---------- 開場快閃（全螢幕，主播還沒出現） ---------- */
 const FlashOpen: React.FC = () => {
   const f = useCurrentFrame();
   const t = f / FPS;
@@ -182,11 +182,11 @@ const FlashOpen: React.FC = () => {
         <div style={{ position: "absolute", fontFamily: REN, fontWeight: 900, fontSize: 560, color: "transparent", WebkitTextStroke: "3px rgba(255,255,255,.35)", letterSpacing: -10 }}>LLM</div>
         {[0, 1, 2].map((k) => {
           const y = 760 - ((cut(C.llm) * (9 + k * 3) + k * 220) % 900);
-          return <div key={k} style={{ position: "absolute", left: 220 + k * 560, top: y, padding: "18px 30px", borderRadius: "26px 26px 26px 6px", background: "rgba(255,255,255,.9)", fontFamily: ZH, fontSize: 34, color: "#06304A" }}>{["帮我写个周报", "解释一下这段代码", "翻译成英文"][k]}</div>;
+          return <div key={k} style={{ position: "absolute", left: 220 + k * 560, top: y, padding: "18px 30px", borderRadius: "26px 26px 26px 6px", background: "rgba(255,255,255,.9)", fontFamily: ZH, fontSize: 34, color: "#06304A" }}>{["幫我寫個週報", "解釋一下這段程式碼", "翻譯成英文"][k]}</div>;
         })}
         <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
           <Icon kind="chat" size={200} color="#031A2B" />
-          <div style={{ fontFamily: ZH, fontWeight: 600, fontSize: 200, color: "#031A2B" }}>大语言模型</div>
+          <div style={{ fontFamily: ZH, fontWeight: 600, fontSize: 200, color: "#031A2B" }}>大語言模型</div>
         </div>
       </AbsoluteFill>
     );
@@ -201,7 +201,7 @@ const FlashOpen: React.FC = () => {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 40, padding: "30px 60px", borderRadius: 40, background: "rgba(20,8,60,.55)" }}>
           <Icon kind="image" size={190} color="#fff" />
-          <div style={{ fontFamily: ZH, fontWeight: 600, fontSize: 200, color: "#fff" }}>图像模型</div>
+          <div style={{ fontFamily: ZH, fontWeight: 600, fontSize: 200, color: "#fff" }}>影像模型</div>
         </div>
       </AbsoluteFill>
     );
@@ -219,7 +219,7 @@ const FlashOpen: React.FC = () => {
         <div style={{ position: "absolute", fontFamily: REN, fontWeight: 900, fontSize: 420, color: "transparent", WebkitTextStroke: "3px rgba(3,5,13,.18)" }}>VIDEO</div>
         <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
           <Icon kind="video" size={200} color="#03050D" />
-          <div style={{ fontFamily: ZH, fontWeight: 600, fontSize: 200, color: "#03050D" }}>视频模型</div>
+          <div style={{ fontFamily: ZH, fontWeight: 600, fontSize: 200, color: "#03050D" }}>影片模型</div>
         </div>
       </AbsoluteFill>
     );
@@ -232,14 +232,14 @@ const FlashOpen: React.FC = () => {
   );
 };
 
-/* ---------- 第 1 段后半：主播切入 →「下一个是？」→ 记忆模型 ---------- */
+/* ---------- 第 1 段後半：主播切入 →「下一個是？」→ 記憶模型 ---------- */
 const NextIsMemory: React.FC = () => {
   const f = useCurrentFrame();
   const q = spring({ frame: f - F(C.but + 0.12), fps: FPS, config: { damping: 12, stiffness: 170 } });
   const slam = spring({ frame: f - F(C.mem), fps: FPS, config: { damping: 11, stiffness: 180, mass: 0.7 } });
   const flash = interpolate(f, [F(C.mem), F(C.mem) + 10], [0.9, 0], clamp);
   const qOut = interpolate(f, [F(C.mem) - 4, F(C.mem)], [1, 0], clamp);
-  const chips = [{ k: "chat" as const, zh: "大语言模型" }, { k: "image" as const, zh: "图像模型" }, { k: "video" as const, zh: "视频模型" }];
+  const chips = [{ k: "chat" as const, zh: "大語言模型" }, { k: "image" as const, zh: "影像模型" }, { k: "video" as const, zh: "影片模型" }];
   return (
     <AbsoluteFill style={{ left: 660, top: 90, width: 1200, height: 840 }}>
       <div style={{ position: "absolute", left: 110, top: 60, display: "flex", gap: 20, opacity: Math.min(1, q) * 0.75 }}>
@@ -253,7 +253,7 @@ const NextIsMemory: React.FC = () => {
       </div>
       <div style={{ position: "absolute", left: 110, top: 300, opacity: qOut }}>
         <div style={{ opacity: Math.min(1, q * 1.4), transform: `translateY(${(1 - q) * 40}px)`, fontFamily: ZH, fontWeight: 800, fontSize: 124, color: "#fff" }}>
-          下一个是<span style={{ color: CYAN, textShadow: `0 0 30px ${CYAN}`, opacity: f % 20 < 12 ? 1 : 0.35 }}>？</span>
+          下一個是<span style={{ color: CYAN, textShadow: `0 0 30px ${CYAN}`, opacity: f % 20 < 12 ? 1 : 0.35 }}>？</span>
         </div>
       </div>
       {f >= F(C.mem) && (
@@ -264,7 +264,7 @@ const NextIsMemory: React.FC = () => {
         }}>
           <Mark w={250} />
           <div>
-            <div style={{ fontFamily: ZH, fontWeight: 800, fontSize: 138, lineHeight: 1.1 }}><GradText>记忆模型</GradText></div>
+            <div style={{ fontFamily: ZH, fontWeight: 800, fontSize: 138, lineHeight: 1.1 }}><GradText>記憶模型</GradText></div>
             <div style={{ fontFamily: REN, fontWeight: 700, fontSize: 30, color: CYAN, letterSpacing: 14, marginTop: 8 }}>MEMORY MODEL</div>
           </div>
           <div style={{ position: "absolute", inset: 0, borderRadius: 30, background: "#fff", opacity: flash }} />
@@ -274,8 +274,8 @@ const NextIsMemory: React.FC = () => {
   );
 };
 
-/* ---------- 字幕：放在右侧内容区下方 ---------- */
-const HL = ["记忆模型", "MemT 1.0", "MemT", "全球首个", "记忆原生", "全忘了", "堆参数", "堆数据", "写入", "更新", "读取", "36B", "293B", "5%", "内部测试", "起点", "能长多高"];
+/* ---------- 字幕：放在右側內容區下方 ---------- */
+const HL = ["記憶模型", "MemT 1.0", "MemT", "全球首個", "記憶原生", "全忘了", "堆參數", "堆資料", "寫入", "更新", "讀取", "36B", "293B", "5%", "內部測試", "起點", "能長多高"];
 const Subs: React.FC = () => {
   const f = useCurrentFrame();
   const t = f / FPS;
@@ -300,7 +300,7 @@ const Subs: React.FC = () => {
   );
 };
 
-/* ---------- 声音：开场自己的 + 参考场景的音效点（按映射换算到本片时间） ---------- */
+/* ---------- 聲音：開場自己的 + 參考場景的音效點（按映射換算到本片時間） ---------- */
 const OWN: Cue[] = [
   { at: 0, name: "impact", volume: 0.55 }, { at: F(0.47), name: "tap", volume: 0.35 }, { at: F(0.94), name: "tap", volume: 0.35 },
   { at: F(C.llm) - 1, name: "slam-1", volume: 0.55 }, { at: F(C.img) - 1, name: "slam-2", volume: 0.55 }, { at: F(C.vid) - 1, name: "slam-1", volume: 0.55 },
@@ -316,7 +316,7 @@ const ALL_CUES: Cue[] = [
   ),
 ];
 
-/* ---------- 镜头冲击（快闪三刀 + 记忆模型 + 全忘了） ---------- */
+/* ---------- 鏡頭衝擊（快閃三刀 + 記憶模型 + 全忘了） ---------- */
 const hit = (f: number) => {
   let dx = 0, dy = 0;
   for (const at of [C.llm, C.img, C.vid, C.mem, C.forgot]) {

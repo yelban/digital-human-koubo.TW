@@ -1,8 +1,8 @@
-// 两代舞台主题：v1 = 2022-23 客厅 + 紫色几何舞台 + 矩形小窗；v2 = 2025- 深色玻璃 + 圆形头像
+// 兩代舞台主題：v1 = 2022-23 客廳 + 紫色幾何舞台 + 矩形小窗；v2 = 2025- 深色玻璃 + 圓形頭像
 export type Theme = {
   name: "v1-purple" | "v2-glass";
   stageBg: string;            // 舞台底色（CSS background）
-  card: React.CSSProperties;  // 图表卡片
+  card: React.CSSProperties;  // 圖表卡片
   cardInk: string; cardMute: string;
   accent: string; accent2: string; hot: string; good: string; bad: string;
   pip: "rect" | "round";
@@ -11,9 +11,9 @@ export type Theme = {
 };
 
 const fonts = {
-  font: '"PingFang SC","Hiragino Sans GB","Noto Sans SC",sans-serif',
-  display: '"PingFang SC","Hiragino Sans GB",sans-serif',
-  brush: '"Kaiti SC","STKaiti","KaiTi",serif',
+  font: '"PingFang TC","Heiti TC","Noto Sans TC",sans-serif',
+  display: '"PingFang TC","Heiti TC",sans-serif',
+  brush: '"Kaiti TC","BiauKaiTC","STKaiti","KaiTi",serif',
   mono: '"SF Mono","JetBrains Mono",Menlo,monospace',
 };
 

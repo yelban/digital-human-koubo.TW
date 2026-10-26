@@ -1,4 +1,4 @@
-// 自动生成：vendor_lucide_animated.py。图标来自 lucide-animated (MIT)，见 LICENSE
+// 自動生成：vendor_lucide_animated.py。圖示來自 lucide-animated (MIT)，見 LICENSE
 
 import { AArrowDownIcon } from "./a-arrow-down";
 import { AArrowUpIcon } from "./a-arrow-up";

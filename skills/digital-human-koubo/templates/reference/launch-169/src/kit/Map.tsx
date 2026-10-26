@@ -1,7 +1,7 @@
-// 地图：世界 → 推到目标区域，国家高亮，城市图钉，大圆航线逐段生长。数据 world-atlas（Natural Earth 110m，公有领域）。
+// 地圖：世界 → 推到目標區域，國家高亮，城市圖釘，大圓航線逐段生長。資料 world-atlas（Natural Earth 110m，公有領域）。
 import React, { useMemo } from "react";
 import { AbsoluteFill } from "remotion";
-// @ts-ignore 无类型声明
+// @ts-ignore 無類型聲明
 import { geoMercator, geoPath, geoInterpolate, geoNaturalEarth1 } from "d3-geo";
 // @ts-ignore
 import { feature } from "topojson-client";
@@ -13,10 +13,10 @@ const COUNTRIES = (feature(world as any, (world as any).objects.countries) as an
 
 export type Pin = { name: string; lon: number; lat: number; at: number; color?: string };
 export type Route = { from: [number, number]; to: [number, number]; at: number; dur?: number; color?: string };
-/** camera: [{at, lon, lat, zoom}]，zoom=1 看全球，4 左右看一个国家 */
+/** camera: [{at, lon, lat, zoom}]，zoom=1 看全球，4 左右看一個國家 */
 export const MapRoute: React.FC<{ camera: Array<{ at: number; lon: number; lat: number; zoom: number }>; highlight?: Array<{ name: string; at: number; color?: string }>; pins?: Pin[]; routes?: Route[]; theme?: "paper" | "dark"; title?: { text: string; at: number } }> = ({ camera, highlight = [], pins = [], routes = [], theme = "dark", title }) => {
   const { f, t, W, H } = useT();
-  // 当前相机：在关键帧之间缓动插值
+  // 當前相機：在關鍵幀之間緩動插值
   let k = camera.findIndex((c, i) => t < (camera[i + 1]?.at ?? 1e9));
   if (k < 0) k = camera.length - 1;
   const c0 = camera[k], c1 = camera[k + 1] ?? c0;

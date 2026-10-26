@@ -1,5 +1,5 @@
-// 中文口播网感派（半佛 / 差评 / 毕导实测参数，见 packaging-research/reports/4）：
-// 梗图窗、冷开场定格片名卡、证据截图飞入、投票弹窗、故障插屏、人物名牌 + 语录气泡、主播旁悬浮窗、括号旁白、倾斜金句。
+// 中文口播網感派（半佛 / 差評 / 畢導實測參數，見 packaging-research/reports/4）：
+// 梗圖窗、冷開場定格片名卡、證據截圖飛入、投票彈窗、故障插屏、人物名牌 + 語錄氣泡、主播旁懸浮窗、括號旁白、傾斜金句。
 import React from "react";
 import { AbsoluteFill, Img, OffthreadVideo, Sequence, interpolate, random, staticFile } from "remotion";
 import { C, F, FONT, clamp, ease, lerp, sp, stroke, useT } from "./core";
@@ -8,7 +8,7 @@ const MINT = "#3CF0A0", MINT_D = "#0E3B2A";
 const media = (src: string, style: React.CSSProperties, offset = 0) =>
   /\.(jpe?g|png|webp|gif)$/i.test(src) ? <Img src={staticFile(src)} style={style} /> : <OffthreadVideo src={staticFile(src)} muted startFrom={F(offset)} style={style} />;
 
-/** 黑底梗图窗：一句一图，硬切，图上自带梗字（白粗体黑描边）。items: [{src, at, caption?, pos?}]，每张到下一张为止。 */
+/** 黑底梗圖窗：一句一圖，硬切，圖上自帶梗字（白粗體黑描邊）。items: [{src, at, caption?, pos?}]，每張到下一張為止。 */
 export const MemeWindow: React.FC<{ items: Array<{ src: string; at: number; caption?: string; pos?: "top" | "bottom" }>; until: number; watermark?: string }> = ({ items, until, watermark }) => {
   const { t, W, H } = useT();
   const k = items.findIndex((m, i) => t >= m.at && t < (items[i + 1]?.at ?? until));
@@ -26,8 +26,8 @@ export const MemeWindow: React.FC<{ items: Array<{ src: string; at: number; capt
   );
 };
 
-/** 冷开场定格片名卡：动作片段播到 freezeAt → 0.2 秒去色定格 → 手绘「未完待续」箭头 → 半透明圆角片名框 → 雪花噪点转场。 */
-export const ColdOpenFreeze: React.FC<{ src: string; freezeAt: number; until: number; title: [string, string?]; vol?: string; arrow?: string; offset?: number }> = ({ src, freezeAt, until, title, vol, arrow = "未完待续", offset = 0 }) => {
+/** 冷開場定格片名卡：動作片段播到 freezeAt → 0.2 秒去色定格 → 手繪「未完待續」箭頭 → 半透明圓角片名框 → 雪花噪點轉場。 */
+export const ColdOpenFreeze: React.FC<{ src: string; freezeAt: number; until: number; title: [string, string?]; vol?: string; arrow?: string; offset?: number }> = ({ src, freezeAt, until, title, vol, arrow = "未完待續", offset = 0 }) => {
   const { f, t, W, H } = useT();
   if (t > until) return null;
   const gray = lerp(f, freezeAt, freezeAt + 0.2, 0, 1);
@@ -37,7 +37,7 @@ export const ColdOpenFreeze: React.FC<{ src: string; freezeAt: number; until: nu
   return (
     <AbsoluteFill style={{ background: "#000" }}>
       <AbsoluteFill style={{ filter: `grayscale(${gray}) contrast(${1 + 0.1 * gray})` }}>
-        {/* 定格：视频停在 freezeAt 那一帧（startFrom 固定 + 只播 1 帧之后就用同一帧） */}
+        {/* 定格：影片停在 freezeAt 那一幀（startFrom 固定 + 只播 1 幀之後就用同一幀） */}
         {!frozen ? <Sequence from={0} durationInFrames={F(freezeAt) + 1} layout="none">{media(src, { width: "100%", height: "100%", objectFit: "cover" }, offset)}</Sequence>
           : media(src, { width: "100%", height: "100%", objectFit: "cover" }, offset + freezeAt - 0.03)}
       </AbsoluteFill>
@@ -45,7 +45,7 @@ export const ColdOpenFreeze: React.FC<{ src: string; freezeAt: number; until: nu
         <>
           <div style={{ position: "absolute", left: W * 0.05, bottom: H * 0.16, transform: `translateX(${(1 - ap) * -500}px)` }}>
             <svg width={460} height={120} viewBox="0 0 460 120"><path d="M8,26 L330,26 L330,6 L452,60 L330,114 L330,94 L8,94 Z" fill="#fff" stroke="#111" strokeWidth={6} strokeLinejoin="round" /></svg>
-            <span style={{ position: "absolute", left: 34, top: 28, fontFamily: '"Kaiti SC","STKaiti",serif', fontWeight: 900, fontSize: 54, color: "#111" }}>{arrow}</span>
+            <span style={{ position: "absolute", left: 34, top: 28, fontFamily: '"Kaiti TC","BiauKaiTC","STKaiti",serif', fontWeight: 900, fontSize: 54, color: "#111" }}>{arrow}</span>
           </div>
           <div style={{ position: "absolute", left: W * 0.17, width: W * 0.66, top: H * 0.3, padding: `${H * 0.04}px 0`, borderRadius: 16, background: "rgba(40,40,40,.72)", textAlign: "center", opacity: tp }}>
             <div style={{ fontFamily: FONT.zh, fontWeight: 900, fontSize: H * 0.09, color: "#fff", lineHeight: 1.2 }}>{title[0]}</div>
@@ -59,7 +59,7 @@ export const ColdOpenFreeze: React.FC<{ src: string; freezeAt: number; until: nu
   );
 };
 
-/** 证据截图飞入：截图从中心小尺寸飞到大，品牌色描边 + 鼠标指针 + 推近数据点弹数值签 + 可选 3D 倾斜。 */
+/** 證據截圖飛入：截圖從中心小尺寸飛到大，品牌色描邊 + 滑鼠指標 + 推近資料點彈數值籤 + 可選 3D 傾斜。 */
 export const EvidenceCard: React.FC<{ src: string; at: number; until: number; iw: number; ih: number; color?: string; focus?: { x: number; y: number }; label?: string; labelAt?: number; tilt?: number; width?: number; source?: string }> = ({ src, at, until, iw, ih, color = MINT, focus, label, labelAt, tilt = 0, width, source }) => {
   const { f, t, W, H } = useT();
   if (t < at || t > until) return null;
@@ -78,7 +78,7 @@ export const EvidenceCard: React.FC<{ src: string; at: number; until: number; iw
         <div style={{ width: "100%", height: "100%", transform: `rotateY(${tilt}deg) rotateX(${tilt ? 8 : 0}deg)`, boxShadow: `0 0 0 4px ${color}, 0 30px 80px rgba(0,0,0,.6)`, borderRadius: 6, overflow: "hidden", background: "#fff" }}>
           <Img src={staticFile(src)} style={{ width: "100%", height: "100%" }} />
         </div>
-        {/* 鼠标指针：飞到焦点 */}
+        {/* 滑鼠指標：飛到焦點 */}
         <svg width={44} height={56} viewBox="0 0 44 56" style={{ position: "absolute", left: (focus ? focus.x / iw : 0.9) * w - 6 + (1 - lerp(f, at + 0.3, la - 0.2, 0, 1, ease.inOut)) * 120, top: (focus ? focus.y / ih : 0.85) * h - 4 + (1 - lerp(f, at + 0.3, la - 0.2, 0, 1, ease.inOut)) * 80, filter: "drop-shadow(0 3px 4px rgba(0,0,0,.5))" }}>
           <path d="M4,4 L4,44 L14,34 L21,52 L29,48 L22,31 L37,31 Z" fill="#fff" stroke="#111" strokeWidth={3} strokeLinejoin="round" />
         </svg>
@@ -89,8 +89,8 @@ export const EvidenceCard: React.FC<{ src: string; at: number; until: number; iw
   );
 };
 
-/** 投票弹窗：「评论区打 1 还是 2？」两个选项，说到哪个哪个巨大数字弹出。 */
-export const PollPop: React.FC<{ at: number; until: number; question?: string; qy?: number; options: Array<{ n: string; t: string; at: number; color?: string }> }> = ({ at, until, question = "评论区打 1 还是 2？", qy, options }) => {
+/** 投票彈窗：「評論區打 1 還是 2？」兩個選項，說到哪個哪個巨大數字彈出。 */
+export const PollPop: React.FC<{ at: number; until: number; question?: string; qy?: number; options: Array<{ n: string; t: string; at: number; color?: string }> }> = ({ at, until, question = "評論區打 1 還是 2？", qy, options }) => {
   const { f, t, W, H } = useT();
   if (t < at || t > until) return null;
   const qp = sp(f, at, 12, 200);
@@ -115,8 +115,8 @@ export const PollPop: React.FC<{ at: number; until: number; question?: string; q
   );
 };
 
-/** 故障插屏：0.4–0.6 秒电视测试卡色条 + RGB 错位 + 中间圆形主播 + 一句话（点赞关注）。 */
-export const GlitchInterstitial: React.FC<{ at: number; dur?: number; text?: string; host?: string }> = ({ at, dur = 0.5, text = "点赞关注", host }) => {
+/** 故障插屏：0.4–0.6 秒電視測試卡色條 + RGB 錯位 + 中間圓形主播 + 一句話（點贊關注）。 */
+export const GlitchInterstitial: React.FC<{ at: number; dur?: number; text?: string; host?: string }> = ({ at, dur = 0.5, text = "點贊關注", host }) => {
   const { f, t, W, H } = useT();
   if (t < at || t > at + dur) return null;
   const bars = ["#C0C0C0", "#C0C000", "#00C0C0", "#00C000", "#C000C0", "#C00000", "#0000C0"];
@@ -131,7 +131,7 @@ export const GlitchInterstitial: React.FC<{ at: number; dur?: number; text?: str
   );
 };
 
-/** 人物名牌 + 语录气泡：双层错位名牌（名字 + 职务）+ 药丸气泡逐条弹出。人物用无脸剪影 / AI 形象，不用真实肖像。 */
+/** 人物名牌 + 語錄氣泡：雙層錯位名牌（名字 + 職務）+ 藥丸氣泡逐條彈出。人物用無臉剪影 / AI 形象，不用真實肖像。 */
 export const NamePlate: React.FC<{ at: number; until: number; name: string; title?: string; x?: number; y?: number; color?: string; quotes?: Array<{ t: string; at: number }>; qx?: number; qy?: number }> = ({ at, until, name, title, x = 120, y = 640, color = MINT, quotes = [], qx = 980, qy = 260 }) => {
   const { f, t } = useT();
   if (t < at || t > until) return null;
@@ -153,7 +153,7 @@ export const NamePlate: React.FC<{ at: number; until: number; name: string; titl
   );
 };
 
-/** 主播旁悬浮窗：主播画面上方左右各漂一个浏览器窗口 + 黑底小标签（带红叉/对勾图标）。 */
+/** 主播旁懸浮窗：主播畫面上方左右各漂一個瀏覽器視窗 + 黑底小標籤（帶紅叉/對勾圖示）。 */
 export const HostFloaters: React.FC<{ at: number; until: number; windows?: Array<{ src: string; pos: "tl" | "tr"; title?: string; at?: number }>; chips?: Array<{ t: string; icon?: "x" | "ok"; at: number; x: number; y: number }> }> = ({ at, until, windows = [], chips = [] }) => {
   const { f, t, W } = useT();
   if (t < at || t > until) return null;
@@ -181,7 +181,7 @@ export const HostFloaters: React.FC<{ at: number; until: number; windows?: Array
   );
 };
 
-/** 括号旁白：剪辑师画外吐槽，字幕 80% 字号、楷体、0.85 透明度。 */
+/** 括號旁白：剪輯師畫外吐槽，字幕 80% 字號、楷體、0.85 透明度。 */
 export const Aside: React.FC<{ items: Array<{ t: string; at: number; until?: number; x?: number; y?: number }> }> = ({ items }) => {
   const { t, W, H } = useT();
   return (
@@ -190,13 +190,13 @@ export const Aside: React.FC<{ items: Array<{ t: string; at: number; until?: num
         const end = a.until ?? a.at + 2;
         if (t < a.at || t > end) return null;
         const o = interpolate(t, [a.at, a.at + 0.15, end - 0.15, end], [0, 0.88, 0.88, 0], clamp);
-        return <div key={k} style={{ position: "absolute", left: a.x ?? 0, right: a.x === undefined ? 0 : undefined, top: a.y ?? H * 0.82, textAlign: a.x === undefined ? "center" : "left", opacity: o, fontFamily: '"Kaiti SC","STKaiti",serif', fontWeight: 700, fontSize: W > H ? 40 : 46, color: "#fff", textShadow: "0 2px 8px rgba(0,0,0,.8)" }}>（{a.t}）</div>;
+        return <div key={k} style={{ position: "absolute", left: a.x ?? 0, right: a.x === undefined ? 0 : undefined, top: a.y ?? H * 0.82, textAlign: a.x === undefined ? "center" : "left", opacity: o, fontFamily: '"Kaiti TC","BiauKaiTC","STKaiti",serif', fontWeight: 700, fontSize: W > H ? 40 : 46, color: "#fff", textShadow: "0 2px 8px rgba(0,0,0,.8)" }}>（{a.t}）</div>;
       })}
     </AbsoluteFill>
   );
 };
 
-/** 倾斜金句：整句 −12° 逐字弹出（40 ms 一个字），关键词亮黄。 */
+/** 傾斜金句：整句 −12° 逐字彈出（40 ms 一個字），關鍵詞亮黃。 */
 export const TiltLine: React.FC<{ at: number; until: number; text: string; keys?: string[]; size?: number; y?: number; tilt?: number }> = ({ at, until, text, keys = [], size, y, tilt = -12 }) => {
   const { f, t, W, H } = useT();
   if (t < at || t > until) return null;

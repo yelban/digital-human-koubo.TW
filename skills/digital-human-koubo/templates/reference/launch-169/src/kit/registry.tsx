@@ -1,7 +1,7 @@
-// 包装组件注册表：按名字调用组件（edit.json / brief.json 里的 "pack" 列表直接用）。
-// 每条：{ "use": "Counter", "at": "3:积分", "until": "3:end", ...组件参数 }
-// 时间：任何叫 at / until 的字段（包括数组里嵌套的，如 words[].at、pins[].at、camera[].at）都可以写 "段:词"，由调用方传入的 T() 换成秒。
-// 竖屏 9:16 时，没写位置参数的组件自动换成竖屏默认位置（VERT）。
+// 包裝元件註冊表：按名字呼叫元件（edit.json / brief.json 裡的 "pack" 列表直接用）。
+// 每條：{ "use": "Counter", "at": "3:積分", "until": "3:end", ...元件參數 }
+// 時間：任何叫 at / until 的欄位（包括數組裡巢狀的，如 words[].at、pins[].at、camera[].at）都可以寫 "段:詞"，由呼叫方傳入的 T() 換成秒。
+// 直式 9:16 時，沒寫位置參數的元件自動換成直式預設位置（VERT）。
 import React from "react";
 import { AbsoluteFill } from "remotion";
 import { useT } from "./core";
@@ -23,7 +23,7 @@ export const PACK: Record<string, React.FC<any>> = {
   NumberSpike, ProgressTracker, ReviewCards, WordStack,
   KeywordStack, GlassPanel, Odometer, SourceDoc, TextBehind,
 };
-/** 竖屏默认位置（1080×1920） */
+/** 直式預設位置（1080×1920） */
 const VERT: Record<string, Record<string, any>> = {
   RetentionCaption: { y: 1180, size: 92 },
   ZoomFocus: { box: { x: 40, y: 420, w: 1000, h: 1000 } },
@@ -49,7 +49,7 @@ const walk = (v: any, T: (r: any) => number, key = ""): any => {
   if ((key === "at" || key === "until") && (typeof v === "string" || typeof v === "number")) return T(v);
   return v;
 };
-/** 一层包装：items 里每条按 use 找组件渲染。T 把 "段:词" 换成秒（不传就只认数字秒）。 */
+/** 一層包裝：items 裡每條按 use 找元件渲染。T 把 "段:詞" 換成秒（不傳就只認數字秒）。 */
 export const PackLayer: React.FC<{ items: PackItem[]; T?: (r: any) => number }> = ({ items, T = (r) => Number(r) }) => {
   const { W, H, t } = useT();
   const vertical = H > W;
@@ -57,11 +57,11 @@ export const PackLayer: React.FC<{ items: PackItem[]; T?: (r: any) => number }> 
     <AbsoluteFill style={{ pointerEvents: "none" }}>
       {items.map((it, k) => {
         const Comp = PACK[it.use];
-        if (!Comp) throw new Error(`没有包装组件「${it.use}」，可用：${Object.keys(PACK).join("、")}`);
+        if (!Comp) throw new Error(`沒有包裝元件「${it.use}」，可用：${Object.keys(PACK).join("、")}`);
         const { use, ...props } = it;
         const p = walk({ ...(vertical ? VERT[use] ?? {} : {}), ...props }, T);
-        if (use === "Highlight") return null; // 荧光笔要包在文字外面用，不能单独叠层
-        // 可见窗口：有顶层 at 的条目只在 [at, until] 里渲染；没写 until 就用 at + (dur ?? 0) + hold（默认 3.5 秒）
+        if (use === "Highlight") return null; // 熒光筆要包在文字外面用，不能單獨疊層
+        // 可見視窗：有頂層 at 的條目只在 [at, until] 裡渲染；沒寫 until 就用 at + (dur ?? 0) + hold（預設 3.5 秒）
         if (typeof p.at === "number") {
           const end = typeof p.until === "number" ? p.until : p.at + (typeof p.dur === "number" ? p.dur : 0) + (p.hold ?? 3.5);
           if (t < p.at - 0.1 || t > end) return null;

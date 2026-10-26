@@ -19,6 +19,7 @@ import os, codecs
 import difflib
 import json
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -46,8 +47,21 @@ def strip_cues(text):
     return "".join(out), cues
 
 
+T2S = {}   # main() 用剧本填
+
+
+def t2s_table(text):
+    """剧本里繁体字 → 简体字的逐字对照（whisper 只输出简体），比对时换字、下标不变。没装 opencc 就是空表"""
+    cs = sorted({c for c in text if not c.isspace()}); oc = shutil.which("opencc")
+    if not oc:
+        return {}
+    out = subprocess.run([oc, "-c", "t2s"], input="\n".join(cs), capture_output=True, text=True, check=True).stdout.split("\n")
+    return {a: b for a, b in zip(cs, out) if len(b) == 1 and a != b}
+
+
 def norm(ch):
     tbl = {"〇": "零", "两": "二"}
+    ch = T2S.get(ch, ch)
     return tbl.get(ch, ch).lower()
 
 
@@ -140,6 +154,7 @@ def main():
         clean, cues = strip_cues(b["narration"])
         scripts.append((b["id"], clean, cues))
     full = "".join(c for _, c, _ in scripts)
+    T2S.update(t2s_table(full))
     print("转写中（whisper.cpp）…", file=sys.stderr)
     rec_chars = whisper_chars(w16, full, model, pcm)
     stream = "".join(norm(c) for c, _, _ in rec_chars)

@@ -14,7 +14,7 @@ const labelTexture = (text: string) => {
   c.width = 640;
   c.height = 128;
   const ctx = c.getContext("2d")!;
-  ctx.font = '500 52px "Songti SC", "Mole Serif SC", serif';
+  ctx.font = '500 52px "Songti TC", "Mole Serif SC", serif';
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillStyle = "rgba(245,244,237,0.92)";

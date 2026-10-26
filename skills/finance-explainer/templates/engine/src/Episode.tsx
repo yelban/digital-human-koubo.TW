@@ -7,7 +7,7 @@ import { StageBg, StageLayer } from "./components/Stage";
 import { Asset, OverlayLayer } from "./components/Overlays";
 import { Badge, Chapter, Questions, Subtitles } from "./components/Misc";
 
-// 图层顺序：舞台底 → 舞台卡片 → 主播（可缩放）→ B-roll 全屏 → 叠加卡片 → 梗图 → 章节卡 → 字幕 → 角标
+// 圖層順序：舞台底 → 舞台卡片 → 主播（可縮放）→ B-roll 全螢幕 → 疊加卡片 → 梗圖 → 章節卡 → 字幕 → 角標
 export const Episode: React.FC<{ tl: Timeline; badge?: string }> = ({ tl, badge }) => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig(); const t = f / fps;
   const theme = THEMES[tl.meta.theme] ?? THEMES["v2-glass"];
@@ -30,7 +30,7 @@ export const Episode: React.FC<{ tl: Timeline; badge?: string }> = ({ tl, badge 
   );
 };
 
-// 声音：旁白逐拍摆放；BGM 循环、有人声时自动压低；音效按时间点
+// 聲音：旁白逐拍擺放；BGM 循環、有人聲時自動壓低；音效按時間點
 const Sound: React.FC<{ tl: Timeline }> = ({ tl }) => {
   const { fps, durationInFrames } = useVideoConfig();
   const speaking = (fr: number) => tl.audio.some((a) => fr / fps >= a.start && fr / fps < a.start + (a as any).dur);

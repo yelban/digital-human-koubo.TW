@@ -1,17 +1,17 @@
-// 英文顶流节奏派（MrBeast / Mark Rober / Ryan Trahan 实测，见 packaging-research/reports/1）：
-// 数字钉子（大数字从超大尺寸 0.5 秒缩到顶部 + 同色闪光）、常驻进度追踪（路线条 / 步骤徽章 / 角标胶囊）、逐词堆叠大字、证据 / 评论卡连弹。
+// 英文頂流節奏派（MrBeast / Mark Rober / Ryan Trahan 實測，見 packaging-research/reports/1）：
+// 數字釘子（大數字從超大尺寸 0.5 秒縮到頂部 + 同色閃光）、常駐進度追蹤（路線條 / 步驟徽章 / 角標膠囊）、逐詞堆疊大字、證據 / 評論卡連彈。
 import React from "react";
 import { AbsoluteFill, Img, interpolate, staticFile } from "remotion";
 import { C, F, FONT, clamp, ease, lerp, sp, stroke, useT } from "./core";
 
-/** 数字钉子：大数字 / 价格从 3 倍画面大小 0.5 秒缩到顶部（约 13% 画面高），全屏闪同色光；之后可缩成左上角常驻胶囊（pinAt）。 */
+/** 數字釘子：大數字 / 價格從 3 倍畫面大小 0.5 秒縮到頂部（約 13% 畫面高），全螢幕閃同色光；之後可縮成左上角常駐膠囊（pinAt）。 */
 export const NumberSpike: React.FC<{ at: number; until: number; text: string; color?: string; pinAt?: number; label?: string; y?: number; size?: number }> = ({ at, until, text, color = C.green, pinAt, label, y: yf, size: sf }) => {
   const { f, t, W, H } = useT();
   if (t < at || t > until) return null;
   const k = lerp(f, at, at + 0.5, 0, 1, ease.expo);
   const flash = interpolate(f, [F(at) + 10, F(at) + 13, F(at) + 22], [0, 0.45, 0], clamp);
   const pin = pinAt !== undefined ? lerp(f, pinAt, pinAt + 0.45, 0, 1, ease.inOut) : 0;
-  const base = sf ?? (W > H ? 0.13 : 0.075), y0 = yf ?? (W > H ? 0.13 : 0.3);   // 竖屏：字小一点、落在头顶下方，别压顶部标题
+  const base = sf ?? (W > H ? 0.13 : 0.075), y0 = yf ?? (W > H ? 0.13 : 0.3);   // 直式：字小一點、落在頭頂下方，別壓頂部標題
   const size = H * base * (3 - 2 * k) * (1 - 0.62 * pin);
   const x = W / 2 + (W * 0.03 + 160 - W / 2) * pin, y = H * y0 + (H * 0.07 - H * y0) * pin;
   return (
@@ -26,8 +26,8 @@ export const NumberSpike: React.FC<{ at: number; until: number; text: string; co
   );
 };
 
-/** 进度追踪：路线条（起点 —— 终点，小图标沿线走到 progress）或步骤徽章（1–N，当前步高亮），常驻底部 / 角落。 */
-export const ProgressTracker: React.FC<{ at: number; until: number; mode?: "route" | "steps"; from?: string; to?: string; progress?: Array<{ at: number; v: number }>; steps?: string[]; stepAt?: number[]; icon?: string; y?: number }> = ({ at, until, mode = "route", from = "起点", to = "终点", progress = [], steps = [], stepAt = [], icon = "🚌", y }) => {
+/** 進度追蹤：路線條（起點 —— 終點，小圖示沿線走到 progress）或步驟徽章（1–N，當前步高亮），常駐底部 / 角落。 */
+export const ProgressTracker: React.FC<{ at: number; until: number; mode?: "route" | "steps"; from?: string; to?: string; progress?: Array<{ at: number; v: number }>; steps?: string[]; stepAt?: number[]; icon?: string; y?: number }> = ({ at, until, mode = "route", from = "起點", to = "終點", progress = [], steps = [], stepAt = [], icon = "🚌", y }) => {
   const { f, t, W, H } = useT();
   if (t < at || t > until) return null;
   const o = lerp(f, at, at + 0.3, 0, 1) * (1 - lerp(f, until - 0.3, until, 0, 1));
@@ -46,7 +46,7 @@ export const ProgressTracker: React.FC<{ at: number; until: number; mode?: "rout
       </div>
     );
   }
-  // 进度：每个关键点用 0.8 秒缓动到新值
+  // 進度：每個關鍵點用 0.8 秒緩動到新值
   let v = 0;
   const i = progress.filter((p) => t >= p.at).length - 1;
   if (i >= 0) v = interpolate(t, [progress[i].at, progress[i].at + 0.8], [i ? progress[i - 1].v : 0, progress[i].v], { ...clamp, easing: ease.inOut });
@@ -63,7 +63,7 @@ export const ProgressTracker: React.FC<{ at: number; until: number; mode?: "rout
   );
 };
 
-/** 逐词堆叠：全屏一个词一拍叠上去（0.3–0.5 秒一拍，跟鼓点），最后一个词换色放大。 */
+/** 逐詞堆疊：全螢幕一個詞一拍疊上去（0.3–0.5 秒一拍，跟鼓點），最後一個詞換色放大。 */
 export const WordStack: React.FC<{ words: Array<{ t: string; at: number }>; until: number; bg?: string; lastColor?: string }> = ({ words, until, bg = "#0B0B0E", lastColor = C.green }) => {
   const { f, t, H } = useT();
   if (t < words[0].at || t > until) return null;
@@ -79,7 +79,7 @@ export const WordStack: React.FC<{ words: Array<{ t: string; at: number }>; unti
   );
 };
 
-/** 证据 / 评论卡连弹：白色圆角卡（头像 + 星级 + 两行字），每 1.1 秒换一张，轻微倾斜错位叠放。 */
+/** 證據 / 評論卡連彈：白色圓角卡（頭像 + 星級 + 兩行字），每 1.1 秒換一張，輕微傾斜錯位疊放。 */
 export const ReviewCards: React.FC<{ at: number; cards: Array<{ name: string; stars?: number; text: string; avatar?: string }>; per?: number; hold?: number }> = ({ at, cards, per = 1.1, hold = 1.5 }) => {
   const { f, t, W, H } = useT();
   if (t < at || t > at + cards.length * per + hold) return null;

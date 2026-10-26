@@ -1,4 +1,4 @@
-// 章节卡 · 看点一（架构透视 + 长程不跑偏）· 看点二（经验沉淀与复用）
+// 章節卡 · 看點一（架構透視 + 長程不跑偏）· 看點二（經驗沉澱與複用）
 import React from "react";
 import { AbsoluteFill, random } from "remotion";
 import { Database, Gem, Infinity as InfinityIcon, PenLine, RefreshCw, ScanSearch } from "lucide-react";
@@ -6,7 +6,7 @@ import { IconTile } from "../cinematic/IconTile";
 import { clamp01, E, mix, seg } from "../cinematic/motion";
 import { ap, C, CN, EN, GRAD, GradText, Kicker, Mark, out, Rise, slamStyle, T, Wd } from "./kit";
 
-// ═════════ 章节卡：竖条遮罩进、出 ═════════
+// ═════════ 章節卡：豎條遮罩進、出 ═════════
 export const Chapter: React.FC<{ f: number; start: number; end: number; num: string; title: { t: string; accent?: boolean }[]; en: string }> = ({ f, start, end, num, title, en }) => {
   const N = 10;
   const sw = 1920 / N;
@@ -42,17 +42,17 @@ export const Chapter: React.FC<{ f: number; start: number; end: number; num: str
   );
 };
 
-// ═════════ S7 看点一：记忆进入计算 ═════════
+// ═════════ S7 看點一：記憶進入計算 ═════════
 const MOE = Wd("b08", "MoE");
-const STATE = Wd("b08", "持续存在");
+const STATE = Wd("b08", "持續存在");
 const OPS = [
-  { w: "写入", icon: PenLine },
+  { w: "寫入", icon: PenLine },
   { w: "保持", icon: InfinityIcon },
   { w: "更新", icon: RefreshCw },
-  { w: "读取", icon: ScanSearch },
+  { w: "讀取", icon: ScanSearch },
 ].map((o) => ({ ...o, at: Wd("b08", o.w) }));
-const EXT = Wd("b08", "不是外挂");
-const LONG = Wd("b08", "长程");
+const EXT = Wd("b08", "不是外掛");
+const LONG = Wd("b08", "長程");
 const STAY = Wd("b08", "不跑偏");
 const LAYERS = [0, 1, 2, 3];
 const LX = 200;
@@ -98,18 +98,18 @@ export const S7Arch: React.FC<{ f: number; start: number }> = ({ f, start }) => 
   const extFall = seg(f, EXT + 14, 16, E.in2);
   return (
     <AbsoluteFill>
-      {/* ── 架构 ── */}
+      {/* ── 架構 ── */}
       <AbsoluteFill style={{ opacity: 1 - toTraj, transform: `scale(${mix(1, 0.86, toTraj)})` }}>
         <div style={{ position: "absolute", left: 0, right: 0, top: 96, textAlign: "center", ...slamStyle(f, MOE - 2) }}>
           <div style={{ fontFamily: EN, fontWeight: 800, fontSize: 64, color: C.ink, letterSpacing: "-0.02em" }}>
             Memory-Native <GradText>MoE</GradText>
           </div>
-          <div style={{ fontFamily: CN, fontSize: 28, color: C.mute, marginTop: 4 }}>记忆原生 MoE 架构</div>
+          <div style={{ fontFamily: CN, fontSize: 28, color: C.mute, marginTop: 4 }}>記憶原生 MoE 架構</div>
         </div>
-        {/* 模型内部边界 */}
+        {/* 模型內部邊界 */}
         <div style={{ position: "absolute", left: 160, top: 248, width: 1290, height: 650, borderRadius: 28, border: `2px dashed rgba(39,185,243,${0.45 * lit})`, background: `rgba(61,107,245,${0.04 * lit})` }} />
-        <div style={{ position: "absolute", left: 186, top: 262, fontFamily: CN, fontSize: 20, color: C.cyan, opacity: lit, letterSpacing: "0.12em" }}>模型内部</div>
-        {/* 层 */}
+        <div style={{ position: "absolute", left: 186, top: 262, fontFamily: CN, fontSize: 20, color: C.cyan, opacity: lit, letterSpacing: "0.12em" }}>模型內部</div>
+        {/* 層 */}
         {LAYERS.map((i) => {
           const o = ap(f, start + 4 + i * 3, 14);
           const pill = seg(f, STATE + i * 3, 10);
@@ -152,7 +152,7 @@ export const S7Arch: React.FC<{ f: number; start: number }> = ({ f, start }) => 
             </div>
           );
         })}
-        {/* 连线 */}
+        {/* 連線 */}
         <svg width={1920} height={1080} style={{ position: "absolute", opacity: lit }}>
           {LAYERS.map((i) => {
             const y0 = LY(i) + 70;
@@ -167,11 +167,11 @@ export const S7Arch: React.FC<{ f: number; start: number }> = ({ f, start }) => 
             );
           })}
         </svg>
-        {/* 记忆矩阵 */}
+        {/* 記憶矩陣 */}
         <div style={{ position: "absolute", left: MX, top: MY - 40, width: 8 * (CELL + GAP), opacity: ap(f, STATE + 4, 12) }}>
           <div style={{ fontFamily: CN, fontSize: 24, fontWeight: 700, color: C.ink, textAlign: "center" }}>
-            内部记忆状态 <span style={{ fontFamily: EN, fontStyle: "italic" }}>M</span>
-            <span style={{ color: C.mute, fontWeight: 400, fontSize: 20 }}>　持续存在 · 可更新</span>
+            內部記憶狀態 <span style={{ fontFamily: EN, fontStyle: "italic" }}>M</span>
+            <span style={{ color: C.mute, fontWeight: 400, fontSize: 20 }}>　持續存在 · 可更新</span>
           </div>
         </div>
         <div
@@ -210,7 +210,7 @@ export const S7Arch: React.FC<{ f: number; start: number }> = ({ f, start }) => 
             />
           );
         })}
-        {/* 四个操作 */}
+        {/* 四個操作 */}
         <div style={{ position: "absolute", left: MX - 16, top: 762, width: 8 * (CELL + GAP) + 32, display: "flex", justifyContent: "space-between" }}>
           {OPS.map((o) => {
             const on = seg(f, o.at - 2, 10, E.back);
@@ -222,21 +222,21 @@ export const S7Arch: React.FC<{ f: number; start: number }> = ({ f, start }) => 
             );
           })}
         </div>
-        {/* 外挂检索：出现 → 划掉 → 掉落 */}
+        {/* 外掛檢索：出現 → 劃掉 → 掉落 */}
         <div style={{ position: "absolute", left: 1520, top: 450 + extFall * 260, width: 300, opacity: extIn * (1 - extFall), transform: `rotate(${extFall * 14}deg)` }}>
           <div style={{ position: "absolute", left: -70, top: 74, width: 66, height: 2, borderTop: "2px dashed rgba(226,232,255,0.35)" }} />
           <div style={{ padding: "22px 24px", borderRadius: 18, background: "rgba(255,255,255,0.05)", border: `1px solid ${extKill > 0 ? C.red : "rgba(226,232,255,0.25)"}` }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <Database size={34} strokeWidth={1.75} color={C.mute} />
-              <div style={{ fontFamily: CN, fontSize: 32, fontWeight: 700, color: C.ink }}>外挂检索</div>
+              <div style={{ fontFamily: CN, fontSize: 32, fontWeight: 700, color: C.ink }}>外掛檢索</div>
             </div>
-            <div style={{ fontFamily: CN, fontSize: 20, color: C.mute, marginTop: 8 }}>挂在模型外面，用时再去翻</div>
+            <div style={{ fontFamily: CN, fontSize: 20, color: C.mute, marginTop: 8 }}>掛在模型外面，用時再去翻</div>
           </div>
           <div style={{ position: "absolute", left: -10, right: -10, top: 72, height: 5, borderRadius: 3, background: C.red, transform: `scaleX(${extKill})`, transformOrigin: "left", boxShadow: `0 0 12px ${C.red}` }} />
         </div>
       </AbsoluteFill>
 
-      {/* ── 长程轨迹：不跑偏 ── */}
+      {/* ── 長程軌跡：不跑偏 ── */}
       {toTraj > 0 && <Trajectory f={f} q={toTraj} />}
     </AbsoluteFill>
   );
@@ -252,10 +252,10 @@ const Trajectory: React.FC<{ f: number; q: number }> = ({ f, q }) => {
   return (
     <AbsoluteFill style={{ opacity: q }}>
       <div style={{ position: "absolute", left: 0, right: 0, top: 120, textAlign: "center", opacity: ap(f, LONG - 2, 10) }}>
-        <Kicker>长程任务 · Long-horizon</Kicker>
+        <Kicker>長程任務 · Long-horizon</Kicker>
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, top: 168 }}>
-        <Rise f={f} at={STAY - 3} parts={[{ t: "前后一致，" }, { t: "不跑偏", accent: true }]} size={120} weight={900} step={1.4} />
+        <Rise f={f} at={STAY - 3} parts={[{ t: "前後一致，" }, { t: "不跑偏", accent: true }]} size={120} weight={900} step={1.4} />
       </div>
       <svg width={1920} height={1080} style={{ position: "absolute" }}>
         <defs>
@@ -273,24 +273,24 @@ const Trajectory: React.FC<{ f: number; q: number }> = ({ f, q }) => {
         <line x1={X0} y1={Y0} x2={mix(X0, X1, draw)} y2={Y0} style={{ stroke: "url(#gt)", strokeWidth: 7, strokeLinecap: "round", filter: `drop-shadow(0 0 10px ${C.blue})` }} />
         <circle cx={mix(X0, X1, draw)} cy={Y0} r={10} style={{ fill: "#fff", filter: `drop-shadow(0 0 12px ${C.cyan})` }} />
       </svg>
-      {["第 1 轮", "第 50 轮", "第 100 轮"].map((s, i) => (
+      {["第 1 輪", "第 50 輪", "第 100 輪"].map((s, i) => (
         <div key={s} style={{ position: "absolute", left: X0 + ((X1 - X0) * i) / 2 - 80, width: 160, top: 920, textAlign: "center", fontFamily: CN, fontSize: 22, color: C.mute }}>
           {s}
         </div>
       ))}
-      <div style={{ position: "absolute", left: X1 - 380, top: Y0 - 70, width: 420, textAlign: "right", fontFamily: CN, fontSize: 28, fontWeight: 700, color: C.cyan, opacity: ap(f, LONG + 20, 10) }}>MemT：始终守住约束</div>
-      <div style={{ position: "absolute", left: X1 - 380, top: drift(X1) - 64, width: 420, textAlign: "right", fontFamily: CN, fontSize: 24, color: C.mute, opacity: ap(f, LONG + 24, 10) }}>没有记忆：越走越偏</div>
+      <div style={{ position: "absolute", left: X1 - 380, top: Y0 - 70, width: 420, textAlign: "right", fontFamily: CN, fontSize: 28, fontWeight: 700, color: C.cyan, opacity: ap(f, LONG + 20, 10) }}>MemT：始終守住約束</div>
+      <div style={{ position: "absolute", left: X1 - 380, top: drift(X1) - 64, width: 420, textAlign: "right", fontFamily: CN, fontSize: 24, color: C.mute, opacity: ap(f, LONG + 24, 10) }}>沒有記憶：越走越偏</div>
     </AbsoluteFill>
   );
 };
 
-// ═════════ S9 看点二：经验沉淀与复用 ═════════
-const E1 = Wd("b10", "交互");
-const E2 = Wd("b10", "指导");
-const E3 = Wd("b10", "纠错");
-const STORE = Wd("b10", "沉淀");
+// ═════════ S9 看點二：經驗沉澱與複用 ═════════
+const E1 = Wd("b10", "互動");
+const E2 = Wd("b10", "指導");
+const E3 = Wd("b10", "糾錯");
+const STORE = Wd("b10", "沉澱");
 const REUSE = Wd("b10", "用到");
-const SAME = Wd("b10", "同样的错");
+const SAME = Wd("b10", "同樣的錯");
 const VAULT = { x: 960, y: 580 };
 export const s9Cues = () => [
   { at: E1, name: "tap", volume: 0.5 },
@@ -344,7 +344,7 @@ export const S9Exp: React.FC<{ f: number; start: number }> = ({ f, start }) => {
   const xs = [360, 620, 860, 1080];
   const wrong = (y: number, dy: number) => `M ${xs[3]} ${y} C ${xs[3] + 120} ${y}, ${1220} ${y - dy}, ${1360} ${y - dy}`;
   const right = (y: number, dy: number) => `M ${xs[3]} ${y} C ${xs[3] + 120} ${y}, ${1220} ${y + dy}, ${1360} ${y + dy}`;
-  const pA = seg(f, start + 6, Math.max(10, E2 + 14 - start - 6), E.linear); // 起点 → 分叉
+  const pA = seg(f, start + 6, Math.max(10, E2 + 14 - start - 6), E.linear); // 起點 → 分叉
   const pWrongA = seg(f, E3 - 16, 10, E.out);
   const pFix = seg(f, E3, 12, E.inOut);
   const pB = seg(f, REUSE - 2, 16, E.linear);
@@ -357,45 +357,45 @@ export const S9Exp: React.FC<{ f: number; start: number }> = ({ f, start }) => {
     <AbsoluteFill style={{ opacity: ap(f, start, 10) }}>
       {f < SAME - 4 ? (
         <div style={{ position: "absolute", left: 0, right: 0, top: 120, textAlign: "center", opacity: ap(f, start + 4, 10) * out(f, SAME - 10, 6) }}>
-          <Kicker>交互 · 指导 · 纠错 → 经验</Kicker>
+          <Kicker>互動 · 指導 · 糾錯 → 經驗</Kicker>
         </div>
       ) : (
         <div style={{ position: "absolute", left: 0, right: 0, top: 96 }}>
-          <Rise f={f} at={SAME - 3} parts={[{ t: "同样的错，不用教" }, { t: "第二遍", accent: true }]} size={84} weight={900} step={1.2} />
+          <Rise f={f} at={SAME - 3} parts={[{ t: "同樣的錯，不用教" }, { t: "第二遍", accent: true }]} size={84} weight={900} step={1.2} />
         </div>
       )}
       <svg width={1920} height={1080} style={{ position: "absolute" }}>
-        {/* 任务 A */}
+        {/* 任務 A */}
         <line x1={xs[0]} y1={A} x2={mix(xs[0], xs[3], pA)} y2={A} style={{ stroke: "rgba(226,232,255,0.7)", strokeWidth: 4 }} />
         <path d={wrong(A, 90)} pathLength={1} style={{ fill: "none", stroke: C.red, strokeWidth: 4, strokeDasharray: 1, strokeDashoffset: 1 - pWrongA, opacity: mix(1, 0.4, pFix) }} />
         <path d={`M 1360 ${A - 90} C 1440 ${A - 60}, 1440 ${A + 60}, 1360 ${A + 90}`} pathLength={1} style={{ fill: "none", stroke: C.green, strokeWidth: 4, strokeDasharray: "0.04 0.03", strokeDashoffset: 0, opacity: pFix }} />
         <path d={right(A, 90)} pathLength={1} style={{ fill: "none", stroke: C.green, strokeWidth: 4, strokeDasharray: 1, strokeDashoffset: 1 - pFix }} />
-        {/* 任务 B */}
+        {/* 任務 B */}
         <line x1={xs[0]} y1={Bv} x2={mix(xs[0], xs[3], pB)} y2={Bv} style={{ stroke: "rgba(226,232,255,0.7)", strokeWidth: 4 }} />
         <path d={wrong(Bv, 90)} style={{ fill: "none", stroke: "rgba(255,91,98,0.35)", strokeWidth: 3, strokeDasharray: "8 10", opacity: pRightB }} />
         <path d={right(Bv, 90)} pathLength={1} style={{ fill: "none", stroke: C.green, strokeWidth: 5, strokeDasharray: 1, strokeDashoffset: 1 - pRightB, filter: `drop-shadow(0 0 8px ${C.green})` }} />
-        {/* 记忆 → 分叉的光束 */}
+        {/* 記憶 → 分叉的光束 */}
         {beam > 0 && <line x1={VAULT.x + 60} y1={VAULT.y + 40} x2={xs[3]} y2={Bv - 14} style={{ stroke: C.cyan, strokeWidth: 3, opacity: beam, strokeDasharray: "4 6", strokeDashoffset: -f * 2 }} />}
       </svg>
-      {/* 车道标签 */}
-      <div style={{ position: "absolute", left: 120, top: A - 22, fontFamily: CN, fontSize: 30, fontWeight: 700, color: C.ink, opacity: ap(f, start + 2, 10) }}>任务 A</div>
-      <div style={{ position: "absolute", left: 120, top: Bv - 22, fontFamily: CN, fontSize: 30, fontWeight: 700, color: C.ink, opacity: ap(f, REUSE - 6, 10) }}>任务 B</div>
-      <div style={{ position: "absolute", left: 120, top: Bv + 20, fontFamily: CN, fontSize: 20, color: C.mute, opacity: ap(f, REUSE - 4, 10) }}>相关任务</div>
+      {/* 車道標籤 */}
+      <div style={{ position: "absolute", left: 120, top: A - 22, fontFamily: CN, fontSize: 30, fontWeight: 700, color: C.ink, opacity: ap(f, start + 2, 10) }}>任務 A</div>
+      <div style={{ position: "absolute", left: 120, top: Bv - 22, fontFamily: CN, fontSize: 30, fontWeight: 700, color: C.ink, opacity: ap(f, REUSE - 6, 10) }}>任務 B</div>
+      <div style={{ position: "absolute", left: 120, top: Bv + 20, fontFamily: CN, fontSize: 20, color: C.mute, opacity: ap(f, REUSE - 4, 10) }}>相關任務</div>
       <Node x={xs[0]} y={A} o={ap(f, start + 4, 8)} />
-      <Node x={xs[1]} y={A} o={ap(f, E1 - 2, 8)} label="交互" />
-      <Node x={xs[2]} y={A} o={ap(f, E2 - 2, 8)} label="指导" />
+      <Node x={xs[1]} y={A} o={ap(f, E1 - 2, 8)} label="互動" />
+      <Node x={xs[2]} y={A} o={ap(f, E2 - 2, 8)} label="指導" />
       <Node x={xs[3]} y={A} o={ap(f, E2 + 12, 8)} />
       <Node x={1360} y={A - 90} o={ap(f, E3 - 8, 8) * mix(1, 0.55, pFix)} tone="bad" big label="踩坑" />
-      <div style={{ position: "absolute", left: 1450, top: A - 18, fontFamily: CN, fontSize: 26, fontWeight: 700, color: C.green, opacity: ap(f, E3 + 2, 10) }}>纠错</div>
+      <div style={{ position: "absolute", left: 1450, top: A - 18, fontFamily: CN, fontSize: 26, fontWeight: 700, color: C.green, opacity: ap(f, E3 + 2, 10) }}>糾錯</div>
       <Node x={1360} y={A + 90} o={ap(f, E3 + 10, 8)} tone="good" big />
       <Node x={xs[0]} y={Bv} o={ap(f, REUSE - 4, 8)} />
       <Node x={xs[1]} y={Bv} o={ap(f, REUSE + 2, 8)} />
       <Node x={xs[2]} y={Bv} o={ap(f, REUSE + 6, 8)} />
       <Node x={xs[3]} y={Bv} o={ap(f, REUSE + 12, 8)} />
       <Node x={1360} y={Bv - 90} o={ap(f, REUSE + 18, 8) * 0.35} tone="bad" big />
-      <div style={{ position: "absolute", left: 1410, top: Bv - 108, fontFamily: CN, fontSize: 22, color: "rgba(255,91,98,0.6)", opacity: ap(f, REUSE + 22, 8) }}>已避开</div>
-      <Node x={1360} y={Bv + 90} o={ap(f, REUSE + 28, 8)} tone="good" big label="一次做对" />
-      {/* 记忆库 */}
+      <div style={{ position: "absolute", left: 1410, top: Bv - 108, fontFamily: CN, fontSize: 22, color: "rgba(255,91,98,0.6)", opacity: ap(f, REUSE + 22, 8) }}>已避開</div>
+      <Node x={1360} y={Bv + 90} o={ap(f, REUSE + 28, 8)} tone="good" big label="一次做對" />
+      {/* 記憶庫 */}
       <div
         style={{
           position: "absolute",
@@ -416,15 +416,15 @@ export const S9Exp: React.FC<{ f: number; start: number }> = ({ f, start }) => {
       >
         <Mark w={60} />
         <div>
-          <div style={{ fontFamily: CN, fontSize: 28, fontWeight: 700, color: C.ink }}>内部记忆</div>
-          <div style={{ fontFamily: CN, fontSize: 18, color: C.mute }}>{vaultLit > 0.5 ? "已存入 1 条经验" : "MemT 1.0"}</div>
+          <div style={{ fontFamily: CN, fontSize: 28, fontWeight: 700, color: C.ink }}>內部記憶</div>
+          <div style={{ fontFamily: CN, fontSize: 18, color: C.mute }}>{vaultLit > 0.5 ? "已存入 1 條經驗" : "MemT 1.0"}</div>
         </div>
       </div>
-      {/* 经验晶体 */}
+      {/* 經驗晶體 */}
       {f >= STORE && gemT < 1 && (
         <div style={{ position: "absolute", left: gem.x - 150, top: gem.y - 34, width: 300, height: 68, borderRadius: 16, display: "flex", alignItems: "center", gap: 12, padding: "0 16px", background: GRAD, boxShadow: "0 10px 40px rgba(61,107,245,0.6)", transform: `scale(${mix(1, 0.5, gemT)})`, opacity: 1 - seg(f, STORE + 14, 6) }}>
           <Gem size={30} strokeWidth={1.75} color="#fff" />
-          <div style={{ fontFamily: CN, fontSize: 22, fontWeight: 700, color: "#fff" }}>经验：签名别改</div>
+          <div style={{ fontFamily: CN, fontSize: 22, fontWeight: 700, color: "#fff" }}>經驗：簽名別改</div>
         </div>
       )}
     </AbsoluteFill>

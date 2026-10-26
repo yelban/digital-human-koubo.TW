@@ -1,9 +1,9 @@
-// 标注类：手绘圈 / 箭头 / 下划线（SVG 描边生长）、荧光笔、放大聚焦（屏幕录制 / 截图）、定格标注。
+// 標註類：手繪圈 / 箭頭 / 下劃線（SVG 描邊生長）、熒光筆、放大聚焦（螢幕錄製 / 截圖）、定格標註。
 import React from "react";
 import { AbsoluteFill, Img, interpolate, staticFile } from "remotion";
 import { C, F, FONT, clamp, ease, lerp, sp, stroke, useT } from "./core";
 
-/** 手绘描边：圈（ellipse）、箭头（arrow）、下划线（underline）、打叉（cross）。x,y,w,h 是目标框（像素）。 */
+/** 手繪描邊：圈（ellipse）、箭頭（arrow）、下劃線（underline）、打叉（cross）。x,y,w,h 是目標框（像素）。 */
 export const HandDraw: React.FC<{ kind: "circle" | "arrow" | "underline" | "cross"; at: number; x: number; y: number; w: number; h: number; color?: string; width?: number; dur?: number; from?: [number, number] }> = ({ kind, at, x, y, w, h, color = C.red, width = 9, dur = 0.45, from }) => {
   const { f } = useT();
   if (f < F(at)) return null;
@@ -11,7 +11,7 @@ export const HandDraw: React.FC<{ kind: "circle" | "arrow" | "underline" | "cros
   const jitter = (k: number) => Math.sin(k * 12.9898) * 0.03;
   let d = "";
   if (kind === "circle") {
-    // 不闭合的手绘椭圆：起点偏一点、多绕 1.08 圈
+    // 不閉合的手繪橢圓：起點偏一點、多繞 1.08 圈
     const cx = x + w / 2, cy = y + h / 2, rx = w / 2 + 14, ry = h / 2 + 12;
     const pts = Array.from({ length: 60 }, (_, i) => { const a = -2.2 + (i / 59) * Math.PI * 2 * 1.08; const r = 1 + jitter(i) ; return `${(cx + Math.cos(a) * rx * r).toFixed(1)},${(cy + Math.sin(a) * ry * r).toFixed(1)}`; });
     d = "M" + pts.join(" L");
@@ -35,7 +35,7 @@ export const HandDraw: React.FC<{ kind: "circle" | "arrow" | "underline" | "cros
   );
 };
 
-/** 荧光笔：在一段文字下面从左往右刷黄（文字本身由调用方排版，这个只画底色条） */
+/** 熒光筆：在一段文字下面從左往右刷黃（文字本身由呼叫方排版，這個只畫底色條） */
 export const Highlight: React.FC<{ at: number; dur?: number; color?: string; children: React.ReactNode; style?: React.CSSProperties }> = ({ at, dur = 0.4, color = C.hl, children, style }) => {
   const { f } = useT();
   const p = lerp(f, at, at + dur, 0, 1, ease.inOut);
@@ -47,16 +47,16 @@ export const Highlight: React.FC<{ at: number; dur?: number; color?: string; chi
   );
 };
 
-/** 放大聚焦：一张截图 / 一帧录屏，镜头推到 focus 框，四周压暗 + 圆角高亮框 + 可选标签。 */
+/** 放大聚焦：一張截圖 / 一幀螢幕錄影，鏡頭推到 focus 框，四周壓暗 + 圓角高亮框 + 可選標籤。 */
 export const ZoomFocus: React.FC<{ src: string; at: number; until: number; focus: { x: number; y: number; w: number; h: number }; iw: number; ih: number; label?: string; zoom?: number; box?: { x: number; y: number; w: number; h: number } }> = ({ src, at, until, focus, iw, ih, label, zoom = 2.2, box = { x: 0, y: 0, w: 1920, h: 1080 } }) => {
   const { f } = useT();
   const k = lerp(f, at, at + 0.7, 0, 1, ease.inOut) - lerp(f, until - 0.5, until, 0, 1, ease.inOut);
-  const base = Math.min(box.w / iw, box.h / ih);              // 整图放进框的缩放
-  const S = base * (1 + (zoom - 1) * k);                      // 当前缩放
-  const ux = focus.x + focus.w / 2, uy = focus.y + focus.h / 2; // 焦点（原图坐标）
-  const ox0 = (box.w - iw * base) / 2, oy0 = (box.h - ih * base) / 2;                 // 起始：整图居中
+  const base = Math.min(box.w / iw, box.h / ih);              // 整圖放進框的縮放
+  const S = base * (1 + (zoom - 1) * k);                      // 當前縮放
+  const ux = focus.x + focus.w / 2, uy = focus.y + focus.h / 2; // 焦點（原圖座標）
+  const ox0 = (box.w - iw * base) / 2, oy0 = (box.h - ih * base) / 2;                 // 起始：整圖居中
   const S1 = base * zoom, cl = (v: number, lo: number) => Math.min(0, Math.max(lo, v));
-  const ox1 = cl(box.w / 2 - ux * S1, box.w - iw * S1), oy1 = cl(box.h / 2 - uy * S1, box.h - ih * S1);   // 结束：焦点尽量居中，但画面不越过原图边缘
+  const ox1 = cl(box.w / 2 - ux * S1, box.w - iw * S1), oy1 = cl(box.h / 2 - uy * S1, box.h - ih * S1);   // 結束：焦點盡量居中，但畫面不越過原圖邊緣
   const ox = ox0 + (ox1 - ox0) * k, oy = oy0 + (oy1 - oy0) * k;
   const fw = focus.w * S, fh = focus.h * S, fx = ox + focus.x * S, fy = oy + focus.y * S;
   const ring = sp(f, at + 0.6, 12, 200);
@@ -71,7 +71,7 @@ export const ZoomFocus: React.FC<{ src: string; at: number; until: number; focus
   );
 };
 
-/** 定格标注：画面定住（调用方在 at 处放一张定格图）+ 闪白 + 去色 + 标签「等等」+ 圈注。 */
+/** 定格標註：畫面定住（呼叫方在 at 處放一張定格圖）+ 閃白 + 去色 + 標籤「等等」+ 圈注。 */
 export const FreezeFrame: React.FC<{ src: string; at: number; until: number; label?: string; note?: string; mark?: { x: number; y: number; w: number; h: number } }> = ({ src, at, until, label = "等等！", note, mark }) => {
   const { f } = useT();
   if (f < F(at) || f > F(until)) return null;

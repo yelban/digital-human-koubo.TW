@@ -1,5 +1,13 @@
 """新生成片段：按语言转写 → 与文稿比对 → 裁到说话结束 +0.3s → cut/<id>.mp4（竖 720×1280 / 横 1280×720，30fps，48k 立体声）"""
-import json, subprocess, difflib, re, os, sys
+import json, subprocess, difflib, re, os, shutil, sys
+
+def t2s_table(text):
+    """文稿里繁体字 → 简体字的逐字对照（whisper 只输出简体）。没装 opencc 就是空表"""
+    cs = sorted({c for c in text if not c.isspace()}); oc = shutil.which('opencc')
+    if not oc: return {}
+    out = subprocess.run([oc, '-c', 't2s'], input='\n'.join(cs), capture_output=True, text=True, check=True).stdout.split('\n')
+    return {a: b for a, b in zip(cs, out) if len(b) == 1 and a != b}
+
 P = json.load(open('plan.json'))
 WM = os.environ.get('WHISPER_MODEL') or next((p for p in map(os.path.expanduser, ['~/Library/Application Support/Murmur/models/ggml-medium-q5_0.bin', '~/models/ggml-medium-q5_0.bin', '~/.cache/whisper/ggml-medium-q5_0.bin', '~/models/ggml-medium.bin']) if os.path.exists(p)), '~/models/ggml-medium-q5_0.bin')   # 也可以用环境变量 WHISPER_MODEL 指定
 LANG = {"Mandarin": "zh", "English": "en", "Japanese": "ja", "Korean": "ko", "French": "fr", "Spanish": "es", "Arabic": "ar"}
@@ -23,7 +31,8 @@ for r in P['new']:
     st = min(t['offsets']['from'] for t in d)/1000 if d else 0; en = max(t['offsets']['to'] for t in d)/1000 if d else 0
     w, h = map(int, subprocess.run(['ffprobe','-v','error','-select_streams','v:0','-show_entries','stream=width,height','-of','csv=p=0',src],capture_output=True,text=True).stdout.split(','))
     dur = float(subprocess.run(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',src],capture_output=True,text=True).stdout)
-    acc = difflib.SequenceMatcher(None, clean(r['t']), clean(heard)).ratio()
+    t2s = t2s_table(r['t']); conv = lambda x: ''.join(t2s.get(c, c) for c in x)   # 两边用同一张表，日文汉字也对得上
+    acc = difflib.SequenceMatcher(None, clean(conv(r['t'])), clean(conv(heard))).ratio()
     keep = min(dur, en + 0.35, MAXKEEP.get(sid, 99))
     size = '720:1280' if h > w else '1280:720'
     subprocess.run(['ffmpeg','-loglevel','error','-y','-i',src,'-t',f'{keep:.3f}','-vf',f'scale={size}:flags=lanczos,fps=30,format=yuv420p',

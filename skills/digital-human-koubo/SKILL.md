@@ -1,82 +1,82 @@
 ---
 name: digital-human-koubo
-description: 用固定的数字人形象（白背心数字人 / 用户本人数字人 / 猫狗角色）做口播视频，先按内容推荐剪辑风格让用户选（小林式解说 / 网红花字口播 / 发布解读 / 保姆级教程 / 多主播多语言），自动套上从 MrBeast、MKBHD、影视飓风、Johnny Harris、Vox、半佛、差评等头部博主拆出来的 48 个包装组件（开场钩子、数字钉子、文字在人身后的景深字、证据截图、地图路线、弹幕、投票、复盘板…），再写稿 → 按 15 秒切段 → grok CLI（reference_to_video，Grok Imagine Video 1.5）分段生成（先报占每周额度多少、用户确认才生成）→ 逐段回听 → 对齐 → Remotion 剪辑出片。触发：用我的数字人讲这段、数字人口播、让白背心数字人说、用数字人 Skill、数字人带货 / 解读 / 教程 / 种草视频、做成小林说那样、加花字、加包装 / 加地图 / 加弹幕 / 开场加预告 / 文字放在人身后、做成 MrBeast 那种节奏、有哪些包装手法。不用于：换一个全新形象（先按 references/new-avatar.md 做形象）、冒充真人。
+description: 用固定的數位人形象（白背心數位人 / 使用者本人數位人 / 貓狗角色）做口播影片，先按內容推薦剪輯風格讓使用者選（小林式解說 / 網紅花字口播 / 發布解讀 / 保姆級教學 / 多主播多語言），自動套上從 MrBeast、MKBHD、影視颶風、Johnny Harris、Vox、半佛、差評等頂尖創作者拆出來的 48 個包裝元件（開場鉤子、數字釘子、文字在人身後的景深字、證據截圖、地圖路線、彈幕、投票、復盤板…），再寫稿 → 按 15 秒切段 → grok CLI（reference_to_video，Grok Imagine Video 1.5）分段生成（先報佔每週額度多少、使用者確認才生成）→ 逐段回聽 → 對齊 → Remotion 剪輯出片。觸發：用我的數位人講這段、數位人口播、讓白背心數位人說、用數位人 Skill、數位人帶貨 / 解讀 / 教學 / 種草影片、做成小林說那樣、加花字、加包裝 / 加地圖 / 加彈幕 / 開場加預告 / 文字放在人身後、做成 MrBeast 那種節奏、有哪些包裝手法。不用於：換一個全新形象（先按 references/new-avatar.md 做形象）、冒充真人。
 ---
 
-# 数字人口播
+# 數位人口播
 
-形象、声音、提示词、切段规则固定在 `persona.json`；剪辑风格在 `references/style-menu.md`。每次照这里做，出来的就是同一个人、同一种风格。
+形象、聲音、提示詞、切段規則固定在 `persona.json`；剪輯風格在 `references/style-menu.md`。每次照這裡做，出來的就是同一個人、同一種風格。
 
-## 红线
-- 生成用的是用户 grok 账号的每周额度：跑 grok_generate.py 之前先报「段数 · 秒数 · 预估占每周额度 X–Y%」，请用户在 grok 里输入 /usage 看还剩多少，等用户在对话里明确同意。先拍第 1 段给用户确认音色，再批量。重拍也要先报。
-- grok 的视频工具在 ZDR（零数据保留）下不能用：要用户自己在 grok 里 /privacy 改成 Opt in。关着期间 grok 会话记录会上传 xAI，做完提醒用户改回 Opt out。不要替用户改这个设置。
-- 成片标「内容由 AI 数字人演绎」；场景、动物片段角上标「AI 生成」。
-- 用户本人的形象（persona.json → other_hosts.me）只用在用户自己的片子里。
-- 「小林式」只学结构和剪辑手法：不用真实创作者的脸、声音、布景和原句。
-- 点名评价第三方产品的说法，要有出处或标「网友分析 / 个人体验」。展示素材只用用户自己的作品；带歌词字幕的片子不用。
+## 紅線
+- 生成用的是使用者 grok 帳號的每週額度：跑 grok_generate.py 之前先報「段數 · 秒數 · 預估佔每週額度 X–Y%」，請使用者在 grok 裡輸入 /usage 看還剩多少，等使用者在對話裡明確同意。先拍第 1 段給使用者確認音色，再批次。重拍也要先報。
+- grok 的影片工具在 ZDR（零資料保留）下不能用：要使用者自己在 grok 裡 /privacy 改成 Opt in。關著期間 grok 對話紀錄會上傳 xAI，做完提醒使用者改回 Opt out。不要替使用者改這個設定。
+- 成品標「內容由 AI 數位人演繹」；場景、動物片段角上標「AI 生成」。
+- 使用者本人的形象（persona.json → other_hosts.me）只用在使用者自己的片子裡。
+- 「小林式」只學結構和剪輯手法：不用真實創作者的臉、聲音、佈景和原句。
+- 點名評價第三方產品的說法，要有出處或標「網友分析 / 個人體驗」。展示素材只用使用者自己的作品；帶歌詞字幕的片子不用。
 
 ## 流程
 
-### 准备：先检查，有就跳过，缺才引导安装（每次新对话第一次用时做）
-**原则：已经装好的一句话带过，不让用户重装；缺什么才给装法，装法给多种，先放用户当前用的那种。** 详细装法在 references/install.md。
-1. **本机环境 + grok CLI**：`bash scripts/doctor.sh`。它查 grok 装了没、登录了没，以及 ffmpeg、Python、Node、whisper。有的打 ✓ 不提；缺的它会按 macOS / Windows / Linux 列出多种装法（详见 references/install.md）。系统软件让用户自己装，Python 包可以在用户同意后帮装。
-2. **grok 里的两项设置**（只能用户自己在 grok 交互界面看）：`/privacy` 要是 Opt in（ZDR 关着）；`/usage` 看本周额度还剩多少。请用户确认后再往下。
-3. **数字人形象**：persona.json 的 grok.reference_image（默认 assets/avatar_ref.jpg）在就直接用；要换形象 → 按 references/new-avatar.md 用用户自己的照片。
+### 準備：先檢查，有就跳過，缺才引導安裝（每次新對話第一次用時做）
+**原則：已經裝好的一句話帶過，不讓使用者重新安裝；缺什麼才給裝法，裝法給多種，先放使用者當前用的那種。** 詳細裝法在 references/install.md。
+1. **本機環境 + grok CLI**：`bash scripts/doctor.sh`。它查 grok 裝了沒、登入了沒，以及 ffmpeg、Python、Node、whisper。有的打 ✓ 不提；缺的它會按 macOS / Windows / Linux 列出多種裝法（詳見 references/install.md）。系統軟體讓使用者自己裝，Python 套件可以在使用者同意後幫裝。
+2. **grok 裡的兩項設定**（只能使用者自己在 grok 互動介面看）：`/privacy` 要是 Opt in（ZDR 關著）；`/usage` 看本週額度還剩多少。請使用者確認後再往下。
+3. **數位人形象**：persona.json 的 grok.reference_image（預設 assets/avatar_ref.jpg）在就直接用；要換形象 → 按 references/new-avatar.md 用使用者自己的照片。
 
-### 0. 看内容 → 推荐风格 → 让用户选
+### 0. 看內容 → 推薦風格 → 讓使用者選
 按 `references/style-menu.md`：
-1. 一行诊断（内容类型、有没有可展示的素材、适合的平台和时长）。
-2. 推荐 2 个风格并说理由，把 `assets/styles/` 里对应的预览图发给用户。
-3. 一次问完：风格 · 比例和时长 · 花字强度（克制 / 标准 / 热闹）· 主播（白背心 / 用户本人 / 两人接力 / 动物）。每题第一个选项是推荐项。Claude Code 用 AskUserQuestion，其他工具列编号。
-4. 用户回「你定」就按推荐，并说一句按了什么。结果写进 `brief.json`，后面每一步按它来。
+1. 一行診斷（內容類型、有沒有可展示的素材、適合的平台和時長）。
+2. 推薦 2 個風格並說理由，把 `assets/styles/` 裡對應的預覽圖發給使用者。
+3. 一次問完：風格 · 比例和時長 · 花字強度（克制 / 標準 / 熱鬧）· 主播（白背心 / 使用者本人 / 兩人接力 / 動物）。每題第一個選項是推薦項。Claude Code 用 AskUserQuestion，其他工具列編號。
+4. 使用者回「你定」就按推薦，並說一句按了什麼。結果寫進 `brief.json`，後面每一步按它來。
 
-| 风格 | 比例 | 时长 | 剪辑实现 |
+| 風格 | 比例 | 時長 | 剪輯實現 |
 |---|---|---|---|
-| A 小林式解说 | 16:9 | 3–20 分钟 | finance-explainer skill 的引擎（episode.json 拍表） |
-| B 网红花字口播 | 9:16 | 30–120 秒 | `templates/huazi-916`（edit.json 驱动，三档花字） |
-| C 发布解读 | 16:9 | 30–90 秒 | 参考实现 `templates/reference/launch-169` |
-| D 保姆级教程 | 16:9 | 3–8 分钟 | 参考实现 `templates/reference/tutorial-169` |
-| E 多主播多语言 | 16:9 | 3–7 分钟 | 参考实现 `templates/reference/multihost-169` |
+| A 小林式解說 | 16:9 | 3–20 分鐘 | finance-explainer skill 的引擎（episode.json 拍表） |
+| B 網紅花字口播 | 9:16 | 30–120 秒 | `templates/huazi-916`（edit.json 驅動，三檔花字） |
+| C 發布解讀 | 16:9 | 30–90 秒 | 參考實現 `templates/reference/launch-169` |
+| D 保姆級教學 | 16:9 | 3–8 分鐘 | 參考實現 `templates/reference/tutorial-169` |
+| E 多主播多語言 | 16:9 | 3–7 分鐘 | 參考實現 `templates/reference/multihost-169` |
 
-### 1. 写稿 → script.json
-按选定风格的稿子写法（style-menu.md 里每种都有）。每段一句或两句，10 秒左右（约 40–55 字，Grok 中文约 5.4 字/秒），标 `shot`：`full`（全屏出镜）/ `pip`（画中画讲解）/ `vlog`（随意自拍口吻）/ `depth`（要做「文字在人身后」的段：中景、头顶两侧留背景）。英文缩写、网址写成好念的样子。外语段直接写目标语言的台词。
+### 1. 寫稿 → script.json
+按選定風格的稿子寫法（style-menu.md 裡每種都有）。每段一句或兩句，10 秒左右（約 40–55 字，Grok 中文約 5.4 字/秒），標 `shot`：`full`（全螢幕出鏡）/ `pip`（畫中畫講解）/ `vlog`（隨意自拍口吻）/ `depth`（要做「文字在人身後」的段：中景、頭頂兩側留背景）。英文縮寫、網址寫成好唸的樣子。外語段直接寫目標語言的台詞。
 
-### 2. 切段 + 报价
+### 2. 切段 + 報價
 `python3 scripts/build_tasks.py script.json tasks.json --purpose "teaching a beginner tutorial step by step"`
-→ 打印段数、秒数、预估占 grok 每周额度的百分比（720p 实测每秒 0.25–0.35%）。full 段 720p，pip 段 480p（480p 没实测，按 720p 估，偏高）。报给用户等确认。用户本人或动物主播用 persona.json → other_hosts 里的提示词模板和参考图。
+→ 印出段數、秒數、預估佔 grok 每週額度的百分比（720p 實測每秒 0.25–0.35%）。full 段 720p，pip 段 480p（480p 沒實測，按 720p 估，偏高）。報給使用者等確認。使用者本人或動物主播用 persona.json → other_hosts 裡的提示詞模板和參考圖。
 
 ### 3. 生成
-`python3 scripts/grok_generate.py tasks.json`：逐段调 grok CLI 的 reference_to_video，存成 `gen/<段 id>.mp4`，每段约 1–1.5 分钟。已经存在的段跳过；重拍就删掉那个文件再跑，`--only s3` 只跑某段。
-- 它只开放 reference_to_video 一个工具；grok 升级后多出新工具会在生成前中止，照提示把工具名补进脚本的 DISALLOWED。
-- 报 ZDR 开着 → 请用户在 grok 里 /privacy 改成 Opt in 再跑。
-- 标 ⚠ 的段是 grok 实际传的参数和任务不一致，先看那段再决定要不要重拍。
-- 要进场景（直播间、门店、街景）时，先用 grok 的 image_edit 合成开场画面（人物参考图 + 场景描述），存进工程后在 script.json 那几段写 `"ref": "图片路径"`，build_tasks.py 就会拿它当参考图。
+`python3 scripts/grok_generate.py tasks.json`：逐段調 grok CLI 的 reference_to_video，存成 `gen/<段 id>.mp4`，每段約 1–1.5 分鐘。已經存在的段跳過；重拍就刪掉那個檔案再跑，`--only s3` 只跑某段。
+- 它只開放 reference_to_video 一個工具；grok 升級後多出新工具會在生成前中止，照提示把工具名補進腳本的 DISALLOWED。
+- 報 ZDR 開著 → 請使用者在 grok 裡 /privacy 改成 Opt in 再跑。
+- 標 ⚠ 的段是 grok 實際傳的參數和任務不一致，先看那段再決定要不要重拍。
+- 要進場景（直播間、門店、街景）時，先用 grok 的 image_edit 合成開場畫面（人物參考圖 + 場景描述），存進工程後在 script.json 那幾段寫 `"ref": "圖片路徑"`，build_tasks.py 就會拿它當參考圖。
 
-### 4. 回听 + 抽帧 + 拼接
-`python3 scripts/assemble.py script.json --out 成片_完整版.mp4`（读 gen/<段 id>.mp4）：whisper 逐段转写比对文稿、只保留到说完后 0.25 秒、拼接、loudnorm -16。
-- whisper `--prompt 原文` 会让个别段漏掉前半句，用中性提示「以下是普通话的句子。」。外语段按语言转写；日韩阿拉伯语不要加 `-ml 1`（会把多字节字符截断成乱码）。
-- **每段抽 4 帧看一眼**：Grok 横屏口播偶尔自己烧字幕（提示词写了也挡不住），有就重拍那段。
-- Grok 有时漏念开头的语气词：没影响意思就按实际口播改字幕，别为这个重拍。
+### 4. 回聽 + 抽幀 + 拼接
+`python3 scripts/assemble.py script.json --out 成品_完整版.mp4`（讀 gen/<段 id>.mp4）：whisper 逐段轉寫比對文稿、只保留到說完後 0.25 秒、拼接、loudnorm -16。
+- whisper `--prompt 原文` 會讓個別段漏掉前半句，用中性提示「以下是普通話的句子。」。外語段按語言轉寫；日韓阿拉伯語不要加 `-ml 1`（會把多位元組字元截斷成亂碼）。
+- **每段抽 4 幀看一眼**：Grok 橫式口播偶爾自己燒字幕（提示詞寫了也擋不住），有就重拍那段。
+- Grok 有時漏念開頭的語氣詞：沒影響意思就按實際口播改字幕，別為這個重拍。
 
-### 5. 对齐 + 剪辑
-`python3 scripts/align.py script.json --out <工程>/src/tl.json` 出逐字时间轴，然后按 brief.json 的风格剪：
-- **B 花字口播**：`bash scripts/new_edit.sh huazi-916 <工程>` → 写 `src/edit.json`（关键词、表情、卡片、作品展示、号召，字段见 references/huazi.md）→ `python3 scripts/check_edit.py <工程>/src` → 抽帧 → 渲染。
-- **A 小林式**：`bash ~/.claude/skills/finance-explainer/scripts/setup_engine.sh <工程>`，按那边的拍表和画面语法做；数字人口播片段放进 host.json。
-- **C / D / E**：`bash scripts/new_edit.sh reference/<目录> <工程>`，换 tl.json，按段重写 Scene（templates/reference/README.md）。
-- **包装（每种风格都做）**：按 `references/packaging-presets.json` 里这个风格的默认包装排——开场 30 秒按 open 顺序、正文保证 stimulus_every_s 秒内有一个新视觉事件、讲到 per_beat 里那类内容就用对应组件、recurring 全片挂着。组件写进 `pack` 数组（字段见 references/packaging.md），手法依据见 references/packaging-playbook.md。用户点名要的手法（「加地图」「开场加预告」「加弹幕」「换成 MrBeast 那种」）在默认基础上加减。用户问「有哪些包装」先发 `assets/packaging/图鉴.jpg`。景深字（文字在人身后）要先跑 `scripts/cutout_video.py` 抠像，见 references/packaging.md。
-- 声音：数字人视频轨一定 `muted`，人声单独铺一条；多段 Grok 原声用 `python3 scripts/voicefx/unify.py <输出目录> <片段…>` 统一频谱 + 同一个小房间混响（复用旧段时加 `--ref 旧片段目录`，场景/动物片段加 `--scene`）。BGM 压在人声下约 20 dB。
-- 抽帧检查一定看过渡的中间帧和零间隔衔接处（上一条的尾巴会盖住下一条）。
+### 5. 對齊 + 剪輯
+`python3 scripts/align.py script.json --out <工程>/src/tl.json` 出逐字時間軸，然後按 brief.json 的風格剪：
+- **B 花字口播**：`bash scripts/new_edit.sh huazi-916 <工程>` → 寫 `src/edit.json`（關鍵詞、表情、卡片、作品展示、號召，欄位見 references/huazi.md）→ `python3 scripts/check_edit.py <工程>/src` → 抽幀 → 渲染。
+- **A 小林式**：`bash ~/.claude/skills/finance-explainer/scripts/setup_engine.sh <工程>`，按那邊的拍表和畫面語法做；數位人口播片段放進 host.json。
+- **C / D / E**：`bash scripts/new_edit.sh reference/<目錄> <工程>`，換 tl.json，按段重寫 Scene（templates/reference/README.md）。
+- **包裝（每種風格都做）**：按 `references/packaging-presets.json` 裡這個風格的預設包裝排——開場 30 秒按 open 順序、正文保證 stimulus_every_s 秒內有一個新視覺事件、講到 per_beat 裡那類內容就用對應元件、recurring 全片掛著。元件寫進 `pack` 陣列（欄位見 references/packaging.md），手法依據見 references/packaging-playbook.md。使用者點名要的手法（「加地圖」「開場加預告」「加彈幕」「換成 MrBeast 那種」）在預設基礎上加減。使用者問「有哪些包裝」先發 `assets/packaging/图鉴.jpg`。景深字（文字在人身後）要先跑 `scripts/cutout_video.py` 去背，見 references/packaging.md。
+- 聲音：數位人影片軌一定 `muted`，人聲單獨鋪一條；多段 Grok 原聲用 `python3 scripts/voicefx/unify.py <輸出目錄> <片段…>` 統一頻譜 + 同一個小房間混響（複用舊段時加 `--ref 舊片段目錄`，場景/動物片段加 `--scene`）。BGM 壓在人聲下約 20 dB。
+- 抽幀檢查一定看過渡的中間幀和零間隔銜接處（上一條的尾巴會蓋住下一條）。
 
-## 参考
-- references/install.md：grok CLI 和本机环境的多种装法（只在缺的时候用）
-- references/style-menu.md：五种风格、内容诊断、怎么问用户、brief.json
-- references/packaging.md：47 个包装组件的用法和参数（pack 写法、9:16 自动适配）
-- references/packaging-playbook.md：头部博主实测结论（节奏、开场公式、字幕、声音、号召、红线），完整报告在 references/research/
-- references/packaging-presets.json：五种风格各自的默认包装
-- references/huazi.md：花字模板 edit.json 字段、九种卡片、三档强度、写法习惯
-- persona.json：白背心数字人 + 其他主播（用户本人、橘猫店长、柴犬主播）、提示词模板、动作库、多语言实测
-- references/voice.md：换声音（MiMo 克隆 / 音色设计）
-- references/new-avatar.md：从一张照片做新形象
-- references/edit-styles.md：各剪辑工程的入口文件和声音统一做法
-- assets/styles/：五种风格的预览图（给用户选的时候发）
-- assets/packaging/：包装组件图鉴（47 格总览 + 每个组件一张）
+## 參考
+- references/install.md：grok CLI 和本機環境的多種裝法（只在缺的時候用）
+- references/style-menu.md：五種風格、內容診斷、怎麼問使用者、brief.json
+- references/packaging.md：47 個包裝元件的用法和參數（pack 寫法、9:16 自動適配）
+- references/packaging-playbook.md：頂尖創作者實測結論（節奏、開場公式、字幕、聲音、號召、紅線），完整報告在 references/research/
+- references/packaging-presets.json：五種風格各自的預設包裝
+- references/huazi.md：花字模板 edit.json 欄位、九種卡片、三檔強度、寫法習慣
+- persona.json：白背心數位人 + 其他主播（使用者本人、橘貓店長、柴犬主播）、提示詞模板、動作庫、多語言實測
+- references/voice.md：換聲音（MiMo 克隆 / 音色設計）
+- references/new-avatar.md：從一張照片做新形象
+- references/edit-styles.md：各剪輯工程的入口檔案和聲音統一做法
+- assets/styles/：五種風格的預覽圖（給使用者選的時候發）
+- assets/packaging/：包裝元件圖鑑（47 格總覽 + 每個元件一張）

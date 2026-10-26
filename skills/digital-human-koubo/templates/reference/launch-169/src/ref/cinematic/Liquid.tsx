@@ -116,7 +116,7 @@ export const LiquidWipe: React.FC<{ p: number; color: string; from?: "top" | "bo
 };
 
 /** Text that condenses out of liquid: blobs on each glyph melt into the letters. p: 0 → 1. */
-export const LiquidText: React.FC<{ p: number; text: string; size?: number; color?: string; font?: string; weight?: number; id?: string; letterGap?: number }> = ({ p, text, size = 220, color = "#fff", font = '"SF Pro Display", "PingFang SC", sans-serif', weight = 900, id = "goo-text", letterGap = 0.62 }) => {
+export const LiquidText: React.FC<{ p: number; text: string; size?: number; color?: string; font?: string; weight?: number; id?: string; letterGap?: number }> = ({ p, text, size = 220, color = "#fff", font = '"SF Pro Display", "PingFang TC", sans-serif', weight = 900, id = "goo-text", letterGap = 0.62 }) => {
   const chars = Array.from(text);
   const w = chars.length * size * letterGap;
   const blobP = 1 - E.out(clamp01((p - 0.35) / 0.65));

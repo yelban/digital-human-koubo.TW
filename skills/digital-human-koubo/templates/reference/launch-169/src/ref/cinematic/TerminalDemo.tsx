@@ -15,7 +15,7 @@ export type TerminalDemoProps = {
   caption?: string;
 };
 
-const MONO = "'SF Mono', Menlo, 'PingFang SC', monospace";
+const MONO = "'SF Mono', Menlo, 'PingFang TC', monospace";
 const TYPE_AT = 16;
 const PER_CHAR = 1.1;
 const STEP_GAP = 13;

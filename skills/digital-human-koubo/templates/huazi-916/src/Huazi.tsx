@@ -1,6 +1,6 @@
-// 9:16 网红花字口播（数据驱动）：数字人口播 + 逐字弹跳字幕 + 关键词放大变色 + 动态表情 + 跳切推近 + 卡片/盖章/大字 + 作品画中画 + 号召。
-// 内容全写在 edit.json，时间全部来自 tl.json（scripts/align.py 逐字对齐）。改稿只改这两个文件，不用碰代码。
-// 时间写法（edit.json 里所有 at / until）："3:" = 第 3 段开头；"3:end" = 第 3 段结束；"3:关键词" = 第 3 段里这个词开始；"3:关键词#2" = 第 2 次出现；数字 = 绝对秒。
+// 9:16 網紅花字口播（資料驅動）：數位人口播 + 逐字彈跳字幕 + 關鍵詞放大變色 + 動態表情 + 跳切推近 + 卡片/蓋章/大字 + 作品畫中畫 + 號召。
+// 內容全寫在 edit.json，時間全部來自 tl.json（scripts/align.py 逐字對齊）。改稿只改這兩個檔案，不用碰程式碼。
+// 時間寫法（edit.json 裡所有 at / until）："3:" = 第 3 段開頭；"3:end" = 第 3 段結束；"3:關鍵詞" = 第 3 段裡這個詞開始；"3:關鍵詞#2" = 第 2 次出現；數字 = 絕對秒。
 import React from "react";
 import { AbsoluteFill, Audio, Easing, Img, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame } from "remotion";
 import tl from "./tl.json";
@@ -11,7 +11,7 @@ import { PackLayer, type PackItem } from "./kit/registry";
 const FPS = 30;
 const F = (s: number) => Math.round(s * FPS);
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
-const ZH = '"PingFang SC","Hiragino Sans GB",sans-serif';
+const ZH = '"PingFang TC","Heiti TC",sans-serif';
 const EN = '"Avenir Next","Helvetica Neue",Arial,sans-serif';
 const COLORS: Record<string, string> = { yellow: "#FFE14D", pink: "#FF5A8A", cyan: "#3EE6FF", red: "#FF4D4F", green: "#38E08C", orange: "#FF7A1A", purple: "#A78BFA", white: "#FFFFFF" };
 const col = (c?: string, d = "yellow") => COLORS[c ?? d] ?? c ?? COLORS[d];
@@ -19,13 +19,13 @@ const col = (c?: string, d = "yellow") => COLORS[c ?? d] ?? c ?? COLORS[d];
 type Seg = { i: number; start: number; end: number; text: string; chars: Record<string, number> };
 type TRef = string | number;
 type E = {
-  title?: { left?: string; right?: string }; preset?: "克制" | "标准" | "热闹"; badge?: string; brand?: string; tail?: number;
+  title?: { left?: string; right?: string }; preset?: "克制" | "標準" | "熱鬧"; badge?: string; brand?: string; tail?: number;
   chapters?: Array<{ at: TRef; t: string }>; keys?: string[]; emojis?: Array<{ at: TRef; e: string; side?: "l" | "r"; y?: number }>; punch?: TRef[];
   cards?: Array<Record<string, any> & { type: string; at: TRef; until?: TRef }>;
   showcase?: Array<{ from: TRef; to: TRef; note?: string; items: Array<{ src: string; label?: string; ratio?: "16:9" | "9:16" | "1:1"; fit?: "cover" | "contain"; at?: TRef }> }>;
   cta?: { at: TRef; text: string; sub?: string; subAt?: TRef };
   music?: { src: string; vol?: number }; voice?: string; video?: string; videoCrop?: number; credits?: string;
-  /** 包装组件（templates/packaging 组件库，字段见 references/packaging.md）：[{ use: "Counter", at: "3:积分", ... }] */
+  /** 包裝元件（templates/packaging 元件庫，欄位見 references/packaging.md）：[{ use: "Counter", at: "3:積分", ... }] */
   pack?: PackItem[];
 };
 const SEGS = tl.segs as unknown as Seg[];
@@ -34,22 +34,22 @@ const TAIL = ED.tail ?? 1.2;
 export const TOTAL_FRAMES = F(tl.total + TAIL);
 const BRAND = col(ED.brand, "orange");
 
-/* ---------- 预设：花字强度 ---------- */
+/* ---------- 預設：花字強度 ---------- */
 const PRESETS = {
   克制: { cap: 66, key: 76, pop: 0.12, emoji: 0.75, emojiAll: false, punch: 0.06, alt: 1.0, flash: 0.0, sfx: 0.6, keyColors: ["yellow"] },
-  标准: { cap: 76, key: 92, pop: 0.3, emoji: 1.0, emojiAll: true, punch: 0.14, alt: 1.09, flash: 0.28, sfx: 1.0, keyColors: ["yellow"] },
-  热闹: { cap: 82, key: 106, pop: 0.45, emoji: 1.15, emojiAll: true, punch: 0.2, alt: 1.11, flash: 0.4, sfx: 1.2, keyColors: ["yellow", "pink", "cyan"] },
+  標準: { cap: 76, key: 92, pop: 0.3, emoji: 1.0, emojiAll: true, punch: 0.14, alt: 1.09, flash: 0.28, sfx: 1.0, keyColors: ["yellow"] },
+  熱鬧: { cap: 82, key: 106, pop: 0.45, emoji: 1.15, emojiAll: true, punch: 0.2, alt: 1.11, flash: 0.4, sfx: 1.2, keyColors: ["yellow", "pink", "cyan"] },
 };
-const P = PRESETS[ED.preset ?? "标准"];
+const P = PRESETS[ED.preset ?? "標準"];
 
-/* ---------- 时间解析 ---------- */
+/* ---------- 時間解析 ---------- */
 const T = (r: TRef | undefined, fallback = 0): number => {
   if (r === undefined) return fallback;
   if (typeof r === "number") return r;
   const m = /^(\d+):(.*)$/.exec(r);
-  if (!m) throw new Error(`时间写法不对：${r}`);
+  if (!m) throw new Error(`時間寫法不對：${r}`);
   const s = SEGS[Number(m[1]) - 1];
-  if (!s) throw new Error(`没有第 ${m[1]} 段：${r}`);
+  if (!s) throw new Error(`沒有第 ${m[1]} 段：${r}`);
   const w = m[2];
   if (!w) return s.start;
   if (w === "end") return s.end;
@@ -70,7 +70,7 @@ const SHOWS = (ED.showcase ?? []).map((s) => ({ ...s, a: T(s.from), b: T(s.to) }
 const inShow = (t: number) => SHOWS.some((s) => t >= s.a && t < s.b);
 const shrinkAt = (f: number) => Math.max(0, ...SHOWS.map((s) => interpolate(f, [F(s.a) - 2, F(s.a) + 10, F(s.b) - 10, F(s.b)], [0, 1, 1, 0], { ...clamp, easing: Easing.inOut(Easing.cubic) })));
 const KEYS = (ED.keys ?? []).slice().sort((a, b) => b.length - a.length);
-/** 没写 punch 时：每段第一个关键词推一下 */
+/** 沒寫 punch 時：每段第一個關鍵詞推一下 */
 const PUNCH = (ED.punch ?? SEGS.map((s) => { const k = KEYS.find((k) => s.text.includes(k)); return k ? `${s.i}:${k}` : null; }).filter(Boolean) as string[]).map((r) => T(r));
 
 /* ================= 主播 ================= */
@@ -97,7 +97,7 @@ const Host: React.FC = () => {
   );
 };
 
-/* ================= 顶部：标题 + 章节 + AI 标识 ================= */
+/* ================= 頂部：標題 + 章節 + AI 標識 ================= */
 const CH = (ED.chapters ?? []).map((c, k) => ({ at: T(c.at), t: c.t, n: "①②③④⑤⑥⑦⑧⑨"[k] }));
 const TopBar: React.FC = () => {
   const f = useCurrentFrame();
@@ -119,7 +119,7 @@ const TopBar: React.FC = () => {
           <div style={{ transform: `scale(${0.6 + 0.4 * sp(f, cur.at, 11, 200)})`, padding: "6px 22px", borderRadius: 12, background: BRAND, fontFamily: ZH, fontWeight: 600, fontSize: 30, color: "#fff", boxShadow: `0 6px 20px ${BRAND}77` }}>{cur.n} {cur.t}</div>
         </div>
       )}
-      <div style={{ position: "absolute", left: 30, top: 40, fontFamily: ZH, fontSize: 22, color: "rgba(255,255,255,.8)", padding: "4px 12px", borderRadius: 8, background: "rgba(0,0,0,.35)" }}>{ED.badge ?? "内容由 AI 数字人演绎"}</div>
+      <div style={{ position: "absolute", left: 30, top: 40, fontFamily: ZH, fontSize: 22, color: "rgba(255,255,255,.8)", padding: "4px 12px", borderRadius: 8, background: "rgba(0,0,0,.35)" }}>{ED.badge ?? "內容由 AI 數位人演繹"}</div>
     </>
   );
 };
@@ -204,7 +204,7 @@ const Emojis: React.FC = () => {
   );
 };
 
-/* ================= 卡片库 ================= */
+/* ================= 卡片庫 ================= */
 const Panel: React.FC<{ p: number; style?: React.CSSProperties; children: React.ReactNode }> = ({ p, style, children }) => (
   <div style={{ position: "absolute", left: 70, top: 900, width: 940, padding: "30px 34px", borderRadius: 32, background: "rgba(18,18,26,.86)", border: "2px solid rgba(255,255,255,.16)", boxShadow: "0 24px 70px rgba(0,0,0,.5)",
     opacity: Math.min(1, p * 1.5), transform: `translateY(${(1 - p) * 70}px) scale(${0.82 + 0.18 * p})`, ...style }}>{children}</div>
@@ -295,7 +295,7 @@ const CardView: React.FC<{ c: Card }> = ({ c }) => {
   }
 };
 
-/* ================= 作品展示（主播缩成小窗） ================= */
+/* ================= 作品展示（主播縮成小窗） ================= */
 const Showcase: React.FC<{ s: (typeof SHOWS)[number] }> = ({ s }) => {
   const f = useCurrentFrame();
   const per = (s.b - s.a) / s.items.length;
@@ -328,7 +328,7 @@ const Showcase: React.FC<{ s: (typeof SHOWS)[number] }> = ({ s }) => {
   );
 };
 
-/* ================= 号召 ================= */
+/* ================= 號召 ================= */
 const Cta: React.FC = () => {
   const f = useCurrentFrame();
   const c = ED.cta!; const a = T(c.at), b = T(c.subAt, a + 0.6);
@@ -341,7 +341,7 @@ const Cta: React.FC = () => {
   );
 };
 
-/* ================= 声音：卡片/表情/章节自动配音效 ================= */
+/* ================= 聲音：卡片/表情/章節自動配音效 ================= */
 const SFX: Array<[number, string, number]> = (() => {
   const s: Array<[number, string, number]> = [];
   const snd: Record<string, string> = { stamp: "slam-2", big: "impact", slam: "slam-1", tags: "whoosh", bars: "swish-2", list: "page-1", number: "ding", image: "swish-1", vs: "pop" };

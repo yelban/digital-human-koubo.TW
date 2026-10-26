@@ -1,10 +1,10 @@
-// 叠加 / 结构类：弹幕、梗图反应贴纸、进度条章节、开场预告闪回、前后对比擦除、纸张拼贴。
+// 疊加 / 結構類：彈幕、梗圖反應貼紙、進度條章節、開場預告閃回、前後對比擦除、紙張拼貼。
 import React from "react";
 import { AbsoluteFill, Img, OffthreadVideo, Sequence, interpolate, staticFile } from "remotion";
 import { C, F, FONT, clamp, ease, lerp, sp, stroke, useT } from "./core";
 import { NotoEmoji } from "./NotoEmoji";
 
-/** 弹幕：从右往左飘的评论，轨道自动分配；hot=true 的高亮加粗。用来「替观众说出质疑 / 起哄」。 */
+/** 彈幕：從右往左飄的評論，軌道自動分配；hot=true 的高亮加粗。用來「替觀眾說出質疑 / 起鬨」。 */
 export const Danmaku: React.FC<{ items: Array<{ t: string; at: number; hot?: boolean; color?: string }>; top?: number; lanes?: number; laneH?: number; speed?: number; width?: number }> = ({ items, top = 90, lanes = 5, laneH = 64, speed = 420, width = 1920 }) => {
   const { t } = useT();
   return (
@@ -22,7 +22,7 @@ export const Danmaku: React.FC<{ items: Array<{ t: string; at: number; hot?: boo
   );
 };
 
-/** 反应贴纸：动态表情 / 原创贴纸图 + 一句吐槽，弹出 → 轻晃 → 缩回。meme 不用影视剧截图，用 Noto 表情或 AI 生成贴纸。 */
+/** 反應貼紙：動態表情 / 原創貼紙圖 + 一句吐槽，彈出 → 輕晃 → 縮回。meme 不用影視劇截圖，用 Noto 表情或 AI 生成貼紙。 */
 export const ReactionPop: React.FC<{ at: number; dur?: number; emoji?: string; img?: string; caption?: string; x?: number; y?: number; size?: number; rot?: number }> = ({ at, dur = 1.6, emoji, img, caption, x = 1350, y = 520, size = 300, rot = 8 }) => {
   const { f } = useT();
   if (f < F(at) - 1 || f > F(at + dur) + 6) return null;
@@ -37,7 +37,7 @@ export const ReactionPop: React.FC<{ at: number; dur?: number; emoji?: string; i
   );
 };
 
-/** 进度条章节：顶部细条 + 章节刻度，当前章节名胶囊。整片都挂着，帮观众知道「还剩多少」。 */
+/** 進度條章節：頂部細條 + 章節刻度，當前章節名膠囊。整片都掛著，幫觀眾知道「還剩多少」。 */
 export const ProgressChapters: React.FC<{ chapters: Array<{ at: number; t: string }>; total: number; color?: string; y?: number; show?: boolean }> = ({ chapters, total, color = C.orange, y = 0, show = true }) => {
   const { t } = useT();
   if (!show) return null;
@@ -53,8 +53,8 @@ export const ProgressChapters: React.FC<{ chapters: Array<{ at: number; t: strin
   );
 };
 
-/** 开场预告闪回：把后面最炸的 3–5 个瞬间各闪 0.4–0.8 秒，配「接下来」角标 + 快门音效，最后定在问题字卡上。 */
-export const TeaserColdOpen: React.FC<{ clips: Array<{ src: string; offset?: number; dur?: number; label?: string; img?: boolean }>; question?: string; badge?: string }> = ({ clips, question, badge = "接下来" }) => {
+/** 開場預告閃回：把後面最炸的 3–5 個瞬間各閃 0.4–0.8 秒，配「接下來」角標 + 快門音效，最後定在問題字卡上。 */
+export const TeaserColdOpen: React.FC<{ clips: Array<{ src: string; offset?: number; dur?: number; label?: string; img?: boolean }>; question?: string; badge?: string }> = ({ clips, question, badge = "接下來" }) => {
   const { f } = useT();
   let acc = 0;
   const spans = clips.map((c) => { const s = acc; const d = c.dur ?? 0.6; acc += d; return { ...c, s, d }; });
@@ -83,8 +83,8 @@ export const TeaserColdOpen: React.FC<{ clips: Array<{ src: string; offset?: num
   );
 };
 
-/** 前后对比擦除：左右两张图（或两段视频的定格），竖线从左扫到 split，标签 BEFORE / AFTER。 */
-export const CompareWipe: React.FC<{ at: number; a: string; b: string; la?: string; lb?: string; split?: number; dur?: number; box?: { x: number; y: number; w: number; h: number } }> = ({ at, a, b, la = "之前", lb = "之后", split = 0.5, dur = 0.9, box = { x: 0, y: 0, w: 1920, h: 1080 } }) => {
+/** 前後對比擦除：左右兩張圖（或兩段影片的定格），豎線從左掃到 split，標籤 BEFORE / AFTER。 */
+export const CompareWipe: React.FC<{ at: number; a: string; b: string; la?: string; lb?: string; split?: number; dur?: number; box?: { x: number; y: number; w: number; h: number } }> = ({ at, a, b, la = "之前", lb = "之後", split = 0.5, dur = 0.9, box = { x: 0, y: 0, w: 1920, h: 1080 } }) => {
   const { f } = useT();
   const s = lerp(f, at, at + dur, 0, split, ease.inOut);
   const lp = sp(f, at + dur * 0.6, 12, 200);
@@ -101,7 +101,7 @@ export const CompareWipe: React.FC<{ at: number; a: string; b: string; la?: stri
   );
 };
 
-/** 纸张拼贴：米色纸底 + 颗粒，照片带白边斜贴、胶带固定，手写批注。知识解说派的招牌质感。 */
+/** 紙張拼貼：米色紙底 + 顆粒，照片帶白邊斜貼、膠帶固定，手寫批註。知識解說派的招牌質感。 */
 export const PaperCollage: React.FC<{ at: number; items: Array<{ src: string; x: number; y: number; w: number; rot?: number; at?: number; caption?: string }>; title?: string; note?: { text: string; x: number; y: number; at?: number } }> = ({ at, items, title, note }) => {
   const { f } = useT();
   const grain = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='${Math.floor(f / 2) % 6}'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")`;
@@ -124,7 +124,7 @@ export const PaperCollage: React.FC<{ at: number; items: Array<{ src: string; x:
         );
       })}
       {note && f >= F(note.at ?? at + 1) && (
-        <div style={{ position: "absolute", left: note.x, top: note.y, fontFamily: '"Kaiti SC","STKaiti",serif', fontWeight: 700, fontSize: 52, color: C.red, transform: "rotate(-6deg)", clipPath: `inset(0 ${(1 - lerp(f, note.at ?? at + 1, (note.at ?? at + 1) + 0.6, 0, 1)) * 100}% 0 0)` }}>{note.text}</div>
+        <div style={{ position: "absolute", left: note.x, top: note.y, fontFamily: '"Kaiti TC","BiauKaiTC","STKaiti",serif', fontWeight: 700, fontSize: 52, color: C.red, transform: "rotate(-6deg)", clipPath: `inset(0 ${(1 - lerp(f, note.at ?? at + 1, (note.at ?? at + 1) + 0.6, 0, 1)) * 100}% 0 0)` }}>{note.text}</div>
       )}
     </AbsoluteFill>
   );

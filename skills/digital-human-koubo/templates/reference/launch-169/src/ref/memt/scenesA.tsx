@@ -1,24 +1,24 @@
-// 开场三条路 → 第四条路「记忆」→ Logo 发布 → 失忆聊天窗 → model card 真实代码 → 团队时间线
+// 開場三條路 → 第四條路「記憶」→ Logo 發布 → 失憶聊天窗 → model card 真實程式碼 → 團隊時間線
 import React from "react";
 import { AbsoluteFill, staticFile } from "remotion";
 import { clamp01, E, mix, seg, track, typed, typingSchedule } from "../cinematic/motion";
 import { random } from "remotion";
 import { ap, Backdrop, C, CN, EN, GRAD, GradText, Kicker, Mark, MONO, out, Rise, Shatter, slamStyle, T, TE, Wd, Win } from "./kit";
 
-// ── 场景边界（帧） ──
+// ── 場景邊界（幀） ──
 export const B2 = T("b03");
 export const B3 = T("b04") - 4;
 export const B4 = T("b05") - 2;
 export const B5 = T("b06") - 4;
 export const NAME = Wd("b03", "MemT");
-export const MEM = Wd("b02", "记忆");
+export const MEM = Wd("b02", "記憶");
 
-// ═════════ S1 三条路 + 第四条路 ═════════
+// ═════════ S1 三條路 + 第四條路 ═════════
 const ORIGIN = { x: 240, y: 900 };
 const OLD = [
-  { label: "更多参数", en: "Parameters", w: "参数", H: 330, k: 230 },
-  { label: "更多数据", en: "Data", w: "数据", H: 270, k: 270 },
-  { label: "更长的上下文", en: "Context", w: "上下文", H: 210, k: 310 },
+  { label: "更多參數", en: "Parameters", w: "參數", H: 330, k: 230 },
+  { label: "更多資料", en: "Data", w: "資料", H: 270, k: 270 },
+  { label: "更長的上下文", en: "Context", w: "上下文", H: 210, k: 310 },
 ];
 const oldPath = (H: number, k: number) => {
   const pts: string[] = [];
@@ -28,7 +28,7 @@ const oldPath = (H: number, k: number) => {
 const newY = (p: number) => ORIGIN.y - 760 * Math.pow(p, 2.2);
 const newX = (p: number) => ORIGIN.x + 1300 * p;
 const NEW_PATH = "M" + Array.from({ length: 61 }, (_, i) => `${newX(i / 60).toFixed(1)},${newY(i / 60).toFixed(1)}`).join(" L");
-const L4 = Wd("b02", "第四条路") - 8;
+const L4 = Wd("b02", "第四條路") - 8;
 export const s1Cues = () => [
   ...OLD.map((o, i) => ({ at: Wd("b01", o.w), name: `swish-${i + 1}`, volume: 0.45 })),
   { at: L4, name: "whoosh", volume: 0.55 },
@@ -86,20 +86,20 @@ export const S1Paths: React.FC<{ f: number }> = ({ f }) => {
           );
         })}
         <div style={{ position: "absolute", left: 330, top: 150, opacity: ap(f, T("b01"), 16) * out(f, L4, 12) }}>
-          <Kicker>Scaling · 三条老路</Kicker>
+          <Kicker>Scaling · 三條老路</Kicker>
         </div>
         <div style={{ position: "absolute", left: 330, top: 150, opacity: ap(f, L4 + 4, 14) }}>
-          <Kicker>第四条路</Kicker>
+          <Kicker>第四條路</Kicker>
         </div>
         <div style={{ position: "absolute", left: 312, top: 196 }}>
-          <Rise f={f} at={MEM - 4} parts={[{ t: "记忆", accent: true }]} size={230} weight={900} step={3} align="left" />
+          <Rise f={f} at={MEM - 4} parts={[{ t: "記憶", accent: true }]} size={230} weight={900} step={3} align="left" />
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
   );
 };
 
-// ═════════ S2 发布：Logo → MemT 1.0 ═════════
+// ═════════ S2 發布：Logo → MemT 1.0 ═════════
 const DATE = Wd("b03", "十月");
 const FIRST = Wd("b03", "全球");
 export const s2Cues = () => [
@@ -132,7 +132,7 @@ export const S2Launch: React.FC<{ f: number }> = ({ f }) => {
       />
       <div style={{ position: "absolute", left: 0, right: 0, top: 168, display: "flex", justifyContent: "center", opacity: ap(f, DATE, 10), transform: `translateY(${(1 - ap(f, DATE, 10)) * 16}px)` }}>
         <div style={{ padding: "10px 26px", borderRadius: 40, border: "1px solid rgba(39,185,243,0.45)", background: "rgba(39,185,243,0.08)", fontFamily: EN, fontSize: 26, color: C.ink, letterSpacing: "0.04em" }}>
-          2026.10.20 <span style={{ color: C.mute }}>· MemOS 团队发布</span>
+          2026.10.20 <span style={{ color: C.mute }}>· MemOS 團隊發布</span>
         </div>
       </div>
       <div style={{ position: "absolute", left: 960 - 150, top: 250, width: 300, height: 203, opacity: clamp01(q * 1.5), transform: `scale(${mix(0.55, 1, q)})`, filter: q < 1 ? `blur(${(1 - q) * 18}px)` : undefined }}>
@@ -154,26 +154,26 @@ export const S2Launch: React.FC<{ f: number }> = ({ f }) => {
         MemT <GradText>1.0</GradText>
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, top: 712 }}>
-        <Rise f={f} at={FIRST} parts={[{ t: "全球首个" }, { t: "记忆原生", accent: true }, { t: "大模型" }]} size={64} weight={700} step={1.6} />
+        <Rise f={f} at={FIRST} parts={[{ t: "全球首個" }, { t: "記憶原生", accent: true }, { t: "大模型" }]} size={64} weight={700} step={1.6} />
       </div>
     </AbsoluteFill>
   );
 };
 
-// ═════════ S3+S4 同一个窗口：失忆聊天 → model card 代码 ═════════
+// ═════════ S3+S4 同一個視窗：失憶聊天 → model card 程式碼 ═════════
 const WIN = { x: 360, y: 236, w: 1200, h: 700 };
-const NC = Wd("b04", "新开");
+const NC = Wd("b04", "新開");
 const FG = Wd("b04", "全忘");
 const RULES = [
-  { t: "改代码时，别动公开 API 的签名。", at: Wd("b04", "规矩") },
-  { t: "再说一次：updateUser() 的签名不要改。", at: Wd("b04", "讲了") },
-  { t: "第三遍：API 签名保持不变！", at: Wd("b04", "三遍") },
+  { t: "改程式碼時，別動公開 API 的簽名。", at: Wd("b04", "規矩") },
+  { t: "再說一次：updateUser() 的簽名不要改。", at: Wd("b04", "講了") },
+  { t: "第三遍：API 簽名保持不變！", at: Wd("b04", "三遍") },
 ];
 const textW = (s: string, px: number) => Array.from(s).reduce((a, ch) => a + (ch.charCodeAt(0) < 128 ? px * 0.56 : px), 0);
 const REPLY = "好的！已把 updateUser(id, data) 改成 updateUser(id, data, options)。";
 const replyType = typingSchedule(REPLY, FG - 16, 0.55, (i) => random(`r${i}`));
-const CL = Wd("b05", "对话记录");
-const ST = Wd("b05", "记忆还在");
+const CL = Wd("b05", "對話記錄");
+const ST = Wd("b05", "記憶還在");
 const Q = 'restored.chat("How old is my kitten?")';
 const qType = typingSchedule(Q, CL + 8, 0.42, (i) => random(`q${i}`));
 
@@ -210,7 +210,7 @@ const Bubble: React.FC<{ text: string; right?: boolean; o: number; tone?: string
 );
 
 const codeLine = (s: string) => {
-  // 极简语法着色：字符串、注释、关键字参数
+  // 極簡語法著色：字串、註解、關鍵字參數
   const parts: React.ReactNode[] = [];
   const re = /("[^"]*"|#.*$|\benable_memory\b|\bTrue\b|\bprint\b|\blen\b)/g;
   let last = 0;
@@ -264,32 +264,32 @@ export const S34Window: React.FC<{ f: number }> = ({ f }) => {
   const cur = { x: mix(1320, 480, clickP), y: mix(820, 326, clickP) };
   const press = f >= NC && f < NC + 5 ? 0.86 : 1;
   const chatO = 1 - toCode;
-  // 头条
+  // 頭條
   const head1 = ap(f, RULES[0].at - 6, 6) * out(f, NC - 6, 8);
   const head2 = f >= NC - 2 && f < B4 + 2;
   return (
     <AbsoluteFill style={{ opacity: inQ * (1 - exit), transform: `translateY(${(1 - inQ) * 40 - exit * 60}px) scale(${mix(0.96, 1, inQ)})` }}>
-      {/* 头条：聊天阶段 */}
+      {/* 頭條：聊天階段 */}
       <div style={{ position: "absolute", left: 0, right: 0, top: 112, opacity: out(f, RULES[0].at - 10, 6) }}>
-        <Rise f={f} at={T("b04") + 2} parts={[{ t: "你一定遇到过" }]} size={60} weight={800} />
+        <Rise f={f} at={T("b04") + 2} parts={[{ t: "你一定遇到過" }]} size={60} weight={800} />
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, top: 112, opacity: head1 }}>
-        <Rise f={f} at={RULES[0].at - 6} parts={[{ t: "同一条规矩，讲了" }, { t: "三遍", accent: true }]} size={60} weight={800} />
+        <Rise f={f} at={RULES[0].at - 6} parts={[{ t: "同一條規矩，講了" }, { t: "三遍", accent: true }]} size={60} weight={800} />
       </div>
       {head2 && (
         <div style={{ position: "absolute", left: 0, right: 0, top: 112, opacity: out(f, B4 - 6, 8) }}>
-          <Rise f={f} at={NC - 2} parts={[{ t: "新开一个对话，它" }, { t: "全忘了", color: C.red }]} size={60} weight={800} step={1.1} />
+          <Rise f={f} at={NC - 2} parts={[{ t: "新開一個對話，它" }, { t: "全忘了", color: C.red }]} size={60} weight={800} step={1.1} />
         </div>
       )}
-      {/* 头条：代码阶段 */}
+      {/* 頭條：程式碼階段 */}
       {f >= CL - 4 && (
         <div style={{ position: "absolute", left: 0, right: 0, top: 112, display: "flex", justifyContent: "center", gap: 0 }}>
-          <Rise f={f} at={CL - 4} parts={[{ t: "对话记录清空，" }]} size={60} weight={800} />
-          <Rise f={f} at={ST - 4} parts={[{ t: "记忆还在", accent: true }]} size={60} weight={800} step={2} />
+          <Rise f={f} at={CL - 4} parts={[{ t: "對話記錄清空，" }]} size={60} weight={800} />
+          <Rise f={f} at={ST - 4} parts={[{ t: "記憶還在", accent: true }]} size={60} weight={800} step={2} />
         </div>
       )}
 
-      <Win x={WIN.x} y={WIN.y} w={WIN.w} h={WIN.h} title={toCode < 0.5 ? (shattered ? "新对话" : "重构用户模块 · 第 3 天") : "MemT-1.0 · Quick Start"}>
+      <Win x={WIN.x} y={WIN.y} w={WIN.w} h={WIN.h} title={toCode < 0.5 ? (shattered ? "新對話" : "重構使用者模組 · 第 3 天") : "MemT-1.0 · Quick Start"}>
         {/* 聊天 */}
         <div style={{ position: "absolute", inset: 0, opacity: chatO, display: chatO > 0.01 ? "block" : "none" }}>
           <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 250, borderRight: "1px solid rgba(160,180,255,0.1)", background: "rgba(255,255,255,0.02)" }}>
@@ -310,7 +310,7 @@ export const S34Window: React.FC<{ f: number }> = ({ f }) => {
                 transform: `scale(${press})`,
               }}
             >
-              ＋ 新对话
+              ＋ 新對話
             </div>
             {[0, 1, 2, 3].map((i) => (
               <div key={i} style={{ margin: "0 20px 14px", height: 40, borderRadius: 10, background: i === 0 && !shattered ? "rgba(61,107,245,0.18)" : "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", padding: "0 14px" }}>
@@ -321,48 +321,48 @@ export const S34Window: React.FC<{ f: number }> = ({ f }) => {
           <div style={{ position: "absolute", left: 290, right: 40, top: 30, display: "flex", flexDirection: "column", gap: 22 }}>
             {!shattered &&
               RULES.map((r, i) => <Bubble key={i} text={r.t} right o={ap(f, r.at - 3, 9)} />)}
-            {!shattered && <Bubble text="好的，记住了。" o={ap(f, RULES[2].at + 7, 9)} />}
+            {!shattered && <Bubble text="好的，記住了。" o={ap(f, RULES[2].at + 7, 9)} />}
             {shattered && f < FG - 18 && (
-              <div style={{ marginTop: 200, textAlign: "center", fontFamily: CN, fontSize: 28, color: "rgba(226,232,255,0.35)", opacity: ap(f, NC + 6, 10) }}>有什么可以帮你？</div>
+              <div style={{ marginTop: 200, textAlign: "center", fontFamily: CN, fontSize: 28, color: "rgba(226,232,255,0.35)", opacity: ap(f, NC + 6, 10) }}>有什麼可以幫你？</div>
             )}
             {f >= FG - 18 && (
               <>
-                <Bubble text="帮我给 updateUser() 加一个日志参数。" right o={ap(f, FG - 18, 6)} />
+                <Bubble text="幫我給 updateUser() 加一個日誌參數。" right o={ap(f, FG - 18, 6)} />
                 <Bubble text="" o={ap(f, FG - 16, 6)}>
                   {typed(REPLY, replyType.times, f)}
                 </Bubble>
                 <div style={{ display: "flex", ...slamStyle(f, FG + 14), transformOrigin: "left center" }}>
-                  <div style={{ padding: "8px 18px", borderRadius: 10, background: "rgba(255,91,98,0.14)", border: `1px solid ${C.red}`, color: C.red, fontFamily: CN, fontSize: 24, fontWeight: 700 }}>✕ 签名又被改了</div>
+                  <div style={{ padding: "8px 18px", borderRadius: 10, background: "rgba(255,91,98,0.14)", border: `1px solid ${C.red}`, color: C.red, fontFamily: CN, fontSize: 24, fontWeight: 700 }}>✕ 簽名又被改了</div>
                 </div>
               </>
             )}
           </div>
         </div>
-        {/* 代码 */}
+        {/* 程式碼 */}
         {toCode > 0 && (
           <div style={{ position: "absolute", inset: 0, padding: "34px 44px", opacity: toCode, display: "flex", flexDirection: "column", gap: 16 }}>
-            <Cell n={1} o={ap(f, B4 + 2, 8)} lines={['session.chat("I have a three-month-old kitten named memmy ...",', "             enable_memory=True)   # 写进内部记忆"]} />
+            <Cell n={1} o={ap(f, B4 + 2, 8)} lines={['session.chat("I have a three-month-old kitten named memmy ...",', "             enable_memory=True)   # 寫進內部記憶"]} />
             <Cell n={2} o={ap(f, B4 + 7, 8)} lines={['session.save_state("memmy_memory.safetensors"); session.close()']} />
             <Cell n={3} o={ap(f, B4 + 12, 8)} hl={ap(f, CL - 2, 8) * out(f, ST - 8, 8)} lines={["restored = model.create_session(tokenizer, state=state_path)", "print(len(restored.messages))"]} />
             <div style={{ display: "flex", alignItems: "center", gap: 18, paddingLeft: 88, height: 64, opacity: ap(f, CL - 2, 6) }}>
               <div style={{ fontFamily: MONO, fontSize: 52, fontWeight: 700, color: C.ink, ...slamStyle(f, CL) }}>0</div>
-              <div style={{ fontFamily: CN, fontSize: 24, color: C.mute }}>← 明文对话记录：0 条</div>
+              <div style={{ fontFamily: CN, fontSize: 24, color: C.mute }}>← 明文對話記錄：0 條</div>
             </div>
             <Cell n={4} o={ap(f, CL + 4, 8)} hl={ap(f, ST - 6, 8)} lines={[typed(Q, qType.times, f) + (f < qType.end + 2 && Math.floor(f / 8) % 2 === 0 ? "▍" : "")]} />
             <div style={{ display: "flex", alignItems: "center", gap: 18, paddingLeft: 88, height: 60, opacity: ap(f, ST - 2, 8) }}>
               <div style={{ fontFamily: MONO, fontSize: 30, color: C.green, padding: "6px 16px", borderRadius: 10, background: "rgba(62,220,155,0.1)", border: "1px solid rgba(62,220,155,0.4)" }}>Your kitten is 3 months old.</div>
-              <div style={{ fontFamily: CN, fontSize: 24, color: C.mute }}>← 从内部记忆里答出来</div>
+              <div style={{ fontFamily: CN, fontSize: 24, color: C.mute }}>← 從內部記憶裡答出來</div>
             </div>
           </div>
         )}
       </Win>
-      {/* 碎片：盖在窗口上 */}
+      {/* 碎片：蓋在視窗上 */}
       {RULES.map((r, i) => {
         const w = Math.min(textW(r.t, 26) + 44, 760);
         return <Shatter key={i} f={f} at={NC + 1 + i * 2} x={WIN.x + WIN.w - 40 - w} y={WIN.y + 52 + 30 + i * (59 + 22)} w={w} h={59} color="#4A5BF0" seed={`s${i}`} />;
       })}
-      <Shatter f={f} at={NC + 7} x={WIN.x + 290} y={WIN.y + 52 + 30 + 3 * 81} w={textW("好的，记住了。", 26) + 44} h={59} color="rgba(255,255,255,0.18)" seed="s4" />
-      {/* 光标 */}
+      <Shatter f={f} at={NC + 7} x={WIN.x + 290} y={WIN.y + 52 + 30 + 3 * 81} w={textW("好的，記住了。", 26) + 44} h={59} color="rgba(255,255,255,0.18)" seed="s4" />
+      {/* 游標 */}
       {f > NC - 26 && f < NC + 12 && (
         <svg width={34} height={40} style={{ position: "absolute", left: cur.x, top: cur.y, transform: `scale(${press})`, filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.5))" }}>
           <path d="M2 2 L2 30 L10 23 L15 35 L20 33 L15 21 L26 21 Z" style={{ fill: "#fff", stroke: "#111", strokeWidth: 1.5 }} />
@@ -372,21 +372,21 @@ export const S34Window: React.FC<{ f: number }> = ({ f }) => {
         <div style={{ position: "absolute", left: 480 - 40, top: 326 - 40, width: 80, height: 80, borderRadius: 40, border: "2px solid rgba(255,255,255,0.8)", transform: `scale(${mix(0.2, 1.6, seg(f, NC, 14))})`, opacity: 1 - seg(f, NC, 14) }} />
       )}
       <div style={{ position: "absolute", left: WIN.x, width: WIN.w, top: WIN.y + WIN.h + 18, textAlign: "right", fontFamily: CN, fontSize: 18, color: "rgba(226,232,255,0.42)", opacity: toCode }}>
-        代码来自 Hugging Face · MemTensor/MemT-1.0-Flash model card
+        程式碼來自 Hugging Face · MemTensor/MemT-1.0-Flash model card
       </div>
     </AbsoluteFill>
   );
 };
 export const s3KeyText = { text: REPLY, times: replyType.times, q: Q, qTimes: qType.times };
 
-// ═════════ S5 团队时间线 ═════════
+// ═════════ S5 團隊時間線 ═════════
 const MEMOS = Wd("b06", "MemOS");
-const TEAM = Wd("b06", "记忆张量");
+const TEAM = Wd("b06", "記憶張量");
 const DIG = Wd("b06", "一直在");
 const NODES = [
-  { x: 330, at: B5 + 18, year: "2024", name: "Memory³", desc: "记忆分层大模型" },
-  { x: 900, at: MEMOS, year: "2025", name: "MemOS", desc: "开源记忆操作系统" },
-  { x: 1470, at: DIG, year: "2026.10", name: "MemT 1.0", desc: "记忆原生大模型", mark: true },
+  { x: 330, at: B5 + 18, year: "2024", name: "Memory³", desc: "記憶分層大模型" },
+  { x: 900, at: MEMOS, year: "2025", name: "MemOS", desc: "開源記憶作業系統" },
+  { x: 1470, at: DIG, year: "2026.10", name: "MemT 1.0", desc: "記憶原生大模型", mark: true },
 ];
 export const s5Cues = () => [...NODES.map((n, i) => ({ at: n.at, name: i === 2 ? "slam-2" : "tap", volume: 0.6 })), { at: TEAM, name: "slam-1", volume: 0.6 }];
 
@@ -404,12 +404,12 @@ export const S5Team: React.FC<{ f: number; end: number }> = ({ f, end }) => {
   return (
     <AbsoluteFill style={{ opacity: inQ }}>
       <div style={{ position: "absolute", left: 0, right: 0, top: 150, textAlign: "center", opacity: ap(f, B5 + 4, 12) }}>
-        <Kicker style={{ textTransform: "none", letterSpacing: "0.16em" }}>开源记忆操作系统 MemOS 背后的团队</Kicker>
+        <Kicker style={{ textTransform: "none", letterSpacing: "0.16em" }}>開源記憶作業系統 MemOS 背後的團隊</Kicker>
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, top: 196, textAlign: "center", fontFamily: CN, fontWeight: 800, fontSize: 96, color: C.ink, ...slamStyle(f, TEAM) }}>
-        记忆张量 <GradText style={{ fontFamily: EN }}>MemTensor</GradText>
+        記憶張量 <GradText style={{ fontFamily: EN }}>MemTensor</GradText>
       </div>
-      <div style={{ position: "absolute", left: 0, right: 0, top: 334, textAlign: "center", fontFamily: CN, fontSize: 28, color: C.mute, opacity: ap(f, TEAM + 8, 12) }}>上海算法创新研究院孵化 · 鄂维南院士任首席科学顾问</div>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 334, textAlign: "center", fontFamily: CN, fontSize: 28, color: C.mute, opacity: ap(f, TEAM + 8, 12) }}>上海演算法創新研究院孵化 · 鄂維南院士任首席科學顧問</div>
       <div style={{ position: "absolute", inset: 0, transform: `translateX(${pan}px)` }}>
         <div style={{ position: "absolute", left: -100, width: 2200, top: Y - 1, height: 2, background: C.faint }} />
         <div style={{ position: "absolute", left: -100, width: Math.max(0, hx + 100), top: Y - 3, height: 6, borderRadius: 3, background: GRAD, boxShadow: `0 0 24px ${C.blue}` }} />

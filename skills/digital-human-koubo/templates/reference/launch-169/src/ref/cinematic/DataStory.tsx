@@ -21,7 +21,7 @@ export type RaceRow = { label: string; color: string; values: number[]; icon?: R
  * Bar chart race. values[k] is the row's value at step k; step k starts at frame start + k * stepFrames.
  * Rows re-rank on a spring, bars grow on a spring, numbers count along with the bar.
  */
-export const BarRace: React.FC<{ f: number; rows: RaceRow[]; start?: number; stepFrames: number; stepLabels?: string[]; top?: number; width?: number; rowH?: number; gap?: number; fps?: number; font?: string; text?: string; muted?: string; decimals?: number; prefix?: string; suffix?: string }> = ({ f, rows, start = 0, stepFrames, stepLabels, top = 8, width = 1400, rowH = 64, gap = 16, fps = 30, font = '"SF Pro Display", "PingFang SC", sans-serif', text = "#fff", muted = "rgba(255,255,255,0.5)", decimals = 0, prefix = "", suffix = "" }) => {
+export const BarRace: React.FC<{ f: number; rows: RaceRow[]; start?: number; stepFrames: number; stepLabels?: string[]; top?: number; width?: number; rowH?: number; gap?: number; fps?: number; font?: string; text?: string; muted?: string; decimals?: number; prefix?: string; suffix?: string }> = ({ f, rows, start = 0, stepFrames, stepLabels, top = 8, width = 1400, rowH = 64, gap = 16, fps = 30, font = '"SF Pro Display", "PingFang TC", sans-serif', text = "#fff", muted = "rgba(255,255,255,0.5)", decimals = 0, prefix = "", suffix = "" }) => {
   const steps = rows[0].values.length;
   const at = (k: number) => start + k * stepFrames;
   const rankAt = (k: number) => {
@@ -66,7 +66,7 @@ export type Series = { points: number[]; color: string; label?: string };
  * Line chart that draws itself; a glowing head dot carries a live value tag.
  * The x-range reveals over `dur` frames from `start`.
  */
-export const LineReveal: React.FC<{ f: number; series: Series[]; start?: number; dur: number; width?: number; height?: number; min?: number; max?: number; xLabels?: string[]; grid?: number; font?: string; text?: string; muted?: string; decimals?: number; prefix?: string; suffix?: string; area?: boolean }> = ({ f, series, start = 0, dur, width = 1400, height = 600, min, max, xLabels, grid = 4, font = '"SF Pro Display", "PingFang SC", sans-serif', text = "#fff", muted = "rgba(255,255,255,0.35)", decimals = 0, prefix = "", suffix = "", area = true }) => {
+export const LineReveal: React.FC<{ f: number; series: Series[]; start?: number; dur: number; width?: number; height?: number; min?: number; max?: number; xLabels?: string[]; grid?: number; font?: string; text?: string; muted?: string; decimals?: number; prefix?: string; suffix?: string; area?: boolean }> = ({ f, series, start = 0, dur, width = 1400, height = 600, min, max, xLabels, grid = 4, font = '"SF Pro Display", "PingFang TC", sans-serif', text = "#fff", muted = "rgba(255,255,255,0.35)", decimals = 0, prefix = "", suffix = "", area = true }) => {
   const all = series.flatMap((s) => s.points);
   const lo = min ?? Math.min(...all);
   const hi = max ?? Math.max(...all);
@@ -158,7 +158,7 @@ export const LineReveal: React.FC<{ f: number; series: Series[]; start?: number;
 
 export type Slice = { value: number; color: string; label: string };
 /** Donut that builds slice by slice, each slice on its own spring; center shows the running total. */
-export const DonutBuild: React.FC<{ f: number; slices: Slice[]; start?: number; each?: number; size?: number; thick?: number; fps?: number; font?: string; text?: string; center?: (total: number) => React.ReactNode; gapDeg?: number }> = ({ f, slices, start = 0, each = 8, size = 520, thick = 70, fps = 30, font = '"SF Pro Display", "PingFang SC", sans-serif', text = "#fff", center, gapDeg = 1.5 }) => {
+export const DonutBuild: React.FC<{ f: number; slices: Slice[]; start?: number; each?: number; size?: number; thick?: number; fps?: number; font?: string; text?: string; center?: (total: number) => React.ReactNode; gapDeg?: number }> = ({ f, slices, start = 0, each = 8, size = 520, thick = 70, fps = 30, font = '"SF Pro Display", "PingFang TC", sans-serif', text = "#fff", center, gapDeg = 1.5 }) => {
   const total = slices.reduce((a, s) => a + s.value, 0);
   const R = size / 2 - thick / 2;
   const C = 2 * Math.PI * R;
