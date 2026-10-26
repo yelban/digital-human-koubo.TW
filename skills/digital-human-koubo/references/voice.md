@@ -2,6 +2,14 @@
 
 默认用 Grok 原生配音（persona.json 里的 voice.desc，每段一字不改，整片音色才统一）。
 
+## 用 grok 内置音色
+grok 按 desc 配音时，每段的声音可能有细微差别。要每段固定同一个声音，就指定内置音色：
+- persona.json 的 `voice.preset` 填音色名（第二位主播填 `other_hosts.me.voice_preset`），例如 `"eve"`。null = 照 desc 配音。
+- build_tasks.py 会在任务里带 `"voices": ["eve"]`，提示词的声音描述改成 `the voice from <AUDIO_0>`；grok_generate.py 会核对 grok 实际传的音色。
+- 可用的名字（2026-10-27 用不存在的音色名问 grok 拿到的清单）：ara、eve、leo、rex、sal、carina、zagan、helix、orion、luna、iris、altair、zenith、perseus、helios、lux、kepler、rigel、cosmo、celeste、ursa、sirius、lumen、castor、naksh、atlas。名字填错时，grok_generate.py 会印出最新清单。
+- xAI 文档说每个音色都能说所有支持的语言，中文只有一个代码 `zh`，没有地区口音的选项；eve、leo 标的是英国腔。官方没写性别，中文听起来怎样也没测过：先拍第 1 段给用户听，再批量。
+- 自己的声音：grok 的错误消息说 `/v1/custom-voices` API 建的自定义音色也能用，但要 xAI API 密钥，这个技能没接、也没测过。
+
 ## 换成自己的声音（MiMo 克隆）
 - 录 12–20 秒干净的朗读（安静房间、离嘴 20 厘米），发给 Claude Code，说「用我的声音配这段话」。
 - Claude 调用小米 MiMo：`mimo-v2.5-tts-voiceclone`，assistant 消息放正文，user 消息放语气说明；密钥只放在 ~/.config/ai-teardown/mimo.env。
@@ -15,4 +23,3 @@
 Grok 只吃图片，不吃音频，口型跟的是它自己的配音。grok CLI 没有「音频驱动口型」的模式，所以要口型对上自己的声音：
 - 另外用支持音频驱动的服务（例如 Wan 3.0、OmniHuman；这个技能目前没接）。
 - 或者只在画中画、空镜段落用新声音做旁白，全屏出镜段保留 Grok 原声。
-- grok 的 reference_to_video 还能指定预设音色（`voices`，例如 eve、ara），让每段同一个声音；中文效果没测过，build_tasks.py 目前没接。
