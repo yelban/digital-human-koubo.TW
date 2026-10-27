@@ -10,6 +10,7 @@ description: 用固定的数字人形象（白背心数字人 / 用户本人数�
 ## 红线
 - 生成用的是用户 grok 账号的每周额度：跑 grok_generate.py 之前先报「段数 · 秒数 · 预估占每周额度 X–Y%」，请用户在 grok 里输入 /usage 看还剩多少，等用户在对话里明确同意。先拍第 1 段给用户确认音色，再批量。重拍也要先报。
 - grok 的视频工具在 ZDR（零数据保留）下不能用：要用户自己在 grok 里 /privacy 改成 Opt in。关着期间 grok 会话记录会上传 xAI，做完提醒用户改回 Opt out。不要替用户改这个设置。
+- 用 comfy 后端（ComfyUI 上的 MiniMax H3）时不占 grok 额度，也不用动 /privacy：报段数、秒数和预估耗时就可以跑。
 - 成片标「内容由 AI 数字人演绎」；场景、动物片段角上标「AI 生成」。
 - 用户本人的形象（persona.json → other_hosts.me）只用在用户自己的片子里。
 - 「小林式」只学结构和剪辑手法：不用真实创作者的脸、声音、布景和原句。
@@ -44,12 +45,14 @@ description: 用固定的数字人形象（白背心数字人 / 用户本人数�
 ### 2. 切段 + 报价
 `python3 scripts/build_tasks.py script.json tasks.json --purpose "teaching a beginner tutorial step by step"`
 → 打印段数、秒数、预估占 grok 每周额度的百分比（720p 实测每秒 0.25–0.35%）。full 段 720p，pip 段 480p（480p 没实测，按 720p 估，偏高）。报给用户等确认。用户本人或动物主播用 persona.json → other_hosts 里的提示词模板和参考图。
+- 加 `--backend comfy` 就给 ComfyUI 上的 MiniMax H3 用：每段在 script.json 写 `"audio"`（这段的音轨，MiMo 克隆声或录音，见 references/voice.md），时长按音轨算，提示词用 h3_prompt_template（不写台词）。
 
 ### 3. 生成
 `python3 scripts/grok_generate.py tasks.json`：逐段调 grok CLI 的 reference_to_video，存成 `gen/<段 id>.mp4`，每段约 1–1.5 分钟。已经存在的段跳过；重拍就删掉那个文件再跑，`--only s3` 只跑某段。
 - 它只开放 reference_to_video 一个工具；grok 升级后多出新工具会在生成前中止，照提示把工具名补进脚本的 DISALLOWED。
 - 报 ZDR 开着 → 请用户在 grok 里 /privacy 改成 Opt in 再跑。
 - 标 ⚠ 的段是 grok 实际传的参数和任务不一致，先看那段再决定要不要重拍。
+- comfy 后端改跑 `python3 scripts/comfy_generate.py tasks.json`：参考图当第一帧，锁住每段的音轨，H3 只生成画面，口型跟着音轨。ComfyUI 的 URL 和模型文件名在 persona.json 的 comfy 那一节（环境变量 COMFY_URL 优先），576×1024 的 10 秒段约 3 分钟。
 - 要进场景（直播间、门店、街景）时，先用 grok 的 image_edit 合成开场画面（人物参考图 + 场景描述），存进工程后在 script.json 那几段写 `"ref": "图片路径"`，build_tasks.py 就会拿它当参考图。
 
 ### 4. 回听 + 抽帧 + 拼接

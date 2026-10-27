@@ -21,5 +21,5 @@ grok 按 desc 配音时，每段的声音可能有细微差别。要每段固定
 
 ## 让数字人用新声音开口
 Grok 只吃图片，不吃音频，口型跟的是它自己的配音。grok CLI 没有「音频驱动口型」的模式，所以要口型对上自己的声音：
-- 另外用支持音频驱动的服务（例如 Wan 3.0、OmniHuman；这个技能目前没接）。
+- 用 comfy 后端：ComfyUI 上的 MiniMax H3 锁住给定的音轨、只生成画面（scripts/comfy_generate.py）。先把每段配好音存成文件，在 script.json 那段写 `"audio"`，再 `build_tasks.py --backend comfy`。2026-10-27 用 grok luna 的音轨试拍，口型用户看过可以接受。
 - 或者只在画中画、空镜段落用新声音做旁白，全屏出镜段保留 Grok 原声。
