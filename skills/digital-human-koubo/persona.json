@@ -26,6 +26,21 @@
   },
   "allowance_note": "佔 grok 每週額度的百分比。2026-10-26 實測（X Premium+）：3 段共 28 秒 720p 用掉 7–9%（/usage 只顯示整數）。480p 未實測。"
  },
+ "comfy": {
+  "url": "http://192.168.0.150:8188",
+  "note": "另一個後端：ComfyUI 上的 MiniMax H3（scripts/comfy_generate.py，build_tasks.py --backend comfy）。鎖住每段給的音軌、只生成畫面，提示詞用 h3_prompt_template（不寫台詞，寫了會燒字幕）。url 是內網 aikol，環境變數 COMFY_URL 優先。2026-10-27 用 10Eros 社群合併版實測（RTX 3090 Ti）：576×1024、10 秒一段約 186 秒；換官方權重就改下面的檔名，耗時和畫質要重測。",
+  "unet": "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors",
+  "clip": "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+  "video_vae": "minimax_h3_video_vae_fp16.safetensors",
+  "audio_vae": "minimax_h3_audio_vae_fp32.safetensors",
+  "sampler": "res_multistep",
+  "scheduler": "simple",
+  "steps": 6,
+  "seed": 42,
+  "fps": 24,
+  "sizes": {"9:16": [576, 1024], "16:9": [1024, 576]},
+  "gen_sec_per_video_sec": 18.4
+ },
  "acts": {
   "full": "warm eye contact, expressive face, natural hand gestures",
   "pip": "calm explaining tone, small nods, occasionally glancing down as if reading a screen, small pointing gestures",
@@ -33,6 +48,7 @@
   "depth": "medium shot with generous headroom and plain background visible on both sides of the head and shoulders (for text-behind-subject graphics), calm confident delivery"
  },
  "prompt_template": "The young woman in {ref} talks straight into her phone's front camera, same selfie framing, lighting and outfit as the reference, like a friendly Chinese tech vlogger {purpose}: {act}. Handheld selfie feel with only a very slight natural sway. She speaks Mandarin Chinese, clearly lip-synced, in {voice}:\n“{line}”\nSound: only her voice and quiet room tone, no music, no subtitles, no on-screen text.",
+ "h3_prompt_template": "No captions, subtitles or any text appear in the frame at any time. The young woman in the first frame talks straight into her phone's front camera, same selfie framing, lighting and outfit as the first frame, like a friendly Taiwanese tech vlogger {purpose}: {act}. Handheld selfie feel with only a very slight natural sway. She is speaking {language}, her lips clearly synced to every syllable of her voice. Sound: only her voice and quiet room tone, no music.",
  "disclosure": "內容由 AI 數位人演繹",
  "other_hosts": {
   "me": {
@@ -42,7 +58,8 @@
    "note": "使用者本人照片，只給使用者自己的片子用；橫式照直接出橫式口播。倉庫裡沒有這張圖，用前放入你本人的照片。",
    "voice": "warm, steady, confident male voice around 35 years old, natural pace",
    "voice_preset": null,
-   "prompt_template": "The man in {ref} talks straight to the camera, same framing, gray studio backdrop, navy polo shirt, glasses and soft lighting as the reference, like a friendly tech blogger {purpose}: {act}. Locked-off camera, no zoom. He speaks {language}, clearly lip-synced, in {voice}:\n“{line}”\nSound: only his voice and quiet room tone, no music, no subtitles, no captions, no on-screen text of any kind."
+   "prompt_template": "The man in {ref} talks straight to the camera, same framing, gray studio backdrop, navy polo shirt, glasses and soft lighting as the reference, like a friendly tech blogger {purpose}: {act}. Locked-off camera, no zoom. He speaks {language}, clearly lip-synced, in {voice}:\n“{line}”\nSound: only his voice and quiet room tone, no music, no subtitles, no captions, no on-screen text of any kind.",
+   "h3_prompt_template": "No captions, subtitles or any text appear in the frame at any time. The man in the first frame talks straight to the camera, same framing, gray studio backdrop, navy polo shirt, glasses and soft lighting as the first frame, like a friendly tech blogger {purpose}: {act}. Locked-off camera, no zoom. He is speaking {language}, his lips clearly synced to every syllable of his voice. Sound: only his voice and quiet room tone, no music."
   },
   "cat": {
    "name": "橘貓店長",
