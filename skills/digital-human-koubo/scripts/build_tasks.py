@@ -4,8 +4,9 @@
 用法：
   python3 build_tasks.py script.json out_tasks.json [--backend grok|comfy] [--purpose "teaching a beginner tutorial step by step"] [--all-720p]
 
-script.json：[{"id": "s1", "shot": "full|pip|vlog", "t": "这一段要念的台词", "host": "tank|me", "lang": "Mandarin Chinese|English|Japanese|…", "ref": "可选：这一段改用的参考图", "audio": "comfy 后端必填：这一段的音轨"}, ...]
+script.json：[{"id": "s1", "shot": "full|pip|vlog", "t": "这一段要念的台词", "host": "tank|me", "lang": "Mandarin Chinese|English|Japanese|…", "ref": "可选：这一段改用的参考图", "audio": "comfy 后端必填：这一段的音轨", "gesture": "可选：liyifan|qiuzhi|muzi|xiaolin|dashi"}, ...]
 - host：tank = 白背心数字人（9:16，默认）；me = 用户本人数字人（16:9，persona.json → other_hosts.me）
+- gesture：这一段用 persona.json 手势库（gestures.styles）里的哪一种；没写的 full 段用 gestures.default，pip / vlog / depth 段沿用 acts。用法见 SKILL.md 第 1 步
 - lang：不写就是普通话；外语段台词直接写目标语言
 - ref：进场景的段落（先用 grok image_edit 合成好的开场画面），不写就用主播的参考图
 - 每段时长 = ceil(汉字和数字 / 5.4 + 英文词数 / 2.6 + 1.0)，夹在 4–15 秒（Grok 单段上限 15 秒；5.4 字/秒是实测语速，中英混杂的句子英文按词算）
@@ -51,8 +52,8 @@ def main():
         if d > P["model"]["max_seconds"]:
             sys.exit(f"{s['id']} 约 {d:g} 秒，超过 15 秒：拆成两段再跑")
         shot = s.get("shot", "full")
-        act = P["acts"].get(shot, P["acts"]["full"])
         H = P["other_hosts"]["me"] if s.get("host", "tank") == "me" else None
+        act = act_for(s, shot, H or P)
         if H:
             img = H["reference_image"]; ratio = H["ratio"]; preset = H.get("voice_preset")
             prompt = H["prompt_template"].format(ref="<IMAGE_0>", purpose=purpose, act=act, voice=voice_text(preset, H["voice"]), language=lang, line=s["t"])
@@ -81,6 +82,18 @@ def main():
         print(f"{len(tasks)} 段 · 口播约 {secs:.0f} 秒 · ComfyUI 预估约 {mins:.0f} 分钟（10 秒一段实测约 186 秒，段越长越慢；不占 grok 额度）")
     else:
         print(f"{len(tasks)} 段 · 口播约 {secs} 秒 · 预估占 grok 每周额度 {lo:.0f}–{hi:.0f}%（720p 实测每秒 0.25–0.35%；480p 未实测，按 720p 估）")
+
+def act_for(s, shot, host):
+    """这一段的动作描述：写了 gesture 就用手势库那一种，没写的 full 段用手势库的 default，其他镜头沿用 acts。
+    persona 没有 gestures 一节（旧版 persona）就一律用 acts。手势里的 {hands_rest} 换成这位主播的手平时放在哪里。"""
+    G = P.get("gestures") or {}
+    name = s.get("gesture") or (G.get("default") if shot == "full" else None)
+    if not name:
+        return P["acts"].get(shot, P["acts"]["full"])
+    styles = G.get("styles", {})
+    if name not in styles:
+        sys.exit(f"{s['id']} 的 gesture「{name}」不在 persona.json 的 gestures.styles 里，可用：{', '.join(styles) or '（persona 没有手势库）'}")
+    return styles[name].format(hands_rest=host["hands_rest"])
 
 def mandarin_seconds(t):
     """普通话台词念多久：汉字和数字按 speed_cps 字/秒，夹杂的英文按词算，标点和省略号不算。
