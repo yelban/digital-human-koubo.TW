@@ -35,5 +35,13 @@
 
 Remotion 不用單獨裝：`scripts/new_edit.sh` 起工程時會先從本機已有的 Remotion 工程克隆，沒有才 `npm install`；npm 源連不上時換鏡像 `npm config set registry https://registry.npmmirror.com`。
 
-## 3. 數位人形象
+## 3. CosyVoice 3（comfy 後端配音用，裝在 GPU 機器上）
+tts_generate.py 經 ssh 呼叫，所以要能免密碼 ssh 到那台機器（`ssh 主機名 true` 不問密碼）。2026-10-29 在 Ubuntu + RTX 3090 Ti 裝好的做法：
+1. `git clone --recursive https://github.com/QwenAudio/CosyVoice`（Matcha-TTS 是子模組，要一起抓）。
+2. `uv venv --python 3.10`，再裝 `requirements.txt`，去掉 deepspeed、gradio、onnxruntime（CPU 版）和三個 tensorrt 包，只做推理用不到。torch 是 2.3.1 + cu121。
+3. `hf download FunAudioLLM/Fun-CosyVoice3-0.5B-2512 --local-dir pretrained_models/Fun-CosyVoice3-0.5B`，在 repo 目錄裡跑。
+4. 把 python、repo、模型路徑填進 persona.json 的 tts 那一節；gpu_lock 是任意一個鎖檔案路徑，flock 會自己建。
+- wetext 從 modelscope 下載失敗（HTTP 403）時只會用內建的基本文字正規化，試聽結果不受影響。
+
+## 4. 數位人形象
 persona.json 的 grok.reference_image（預設 assets/avatar_ref.jpg）檔案在 → 直接用。要換形象 → 按 references/new-avatar.md 用使用者自己的照片。
