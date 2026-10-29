@@ -53,7 +53,7 @@ description: 用固定的數位人形象（白背心數位人 / 使用者本人�
 - 它只開放 reference_to_video 一個工具；grok 升級後多出新工具會在生成前中止，照提示把工具名補進腳本的 DISALLOWED。
 - 報 ZDR 開著 → 請使用者在 grok 裡 /privacy 改成 Opt in 再跑。
 - 標 ⚠ 的段是 grok 實際傳的參數和任務不一致，先看那段再決定要不要重拍。
-- comfy 後端改跑 `python3 scripts/comfy_generate.py tasks.json`：參考圖當第一幀，鎖住每段的音軌，H3 只生成畫面，口型跟著音軌。ComfyUI 的 URL 和模型檔名在 persona.json 的 comfy 那一節（環境變數 COMFY_URL 優先），576×1024 的 10 秒段約 3 分鐘。
+- comfy 後端改跑 `python3 scripts/comfy_generate.py tasks.json`：參考圖當第一幀，鎖住每段的音軌，H3 只生成畫面，口型跟著音軌。ComfyUI 的 URL 和模型檔名在 persona.json 的 comfy 那一節（環境變數 COMFY_URL 優先），576×1024 的 10 秒段約 3 分鐘。每段音軌前會先墊 0.25 秒靜音、生成後剪掉（persona.json 的 comfy.lead_in_frames），避開 H3 開頭幾幀的臉部跳動，接縫不會閃。
 - 要進場景（直播間、門店、街景）時，先用 grok 的 image_edit 合成開場畫面（人物參考圖 + 場景描述），存進工程後在 script.json 那幾段寫 `"ref": "圖片路徑"`，build_tasks.py 就會拿它當參考圖。
 
 ### 4. 回聽 + 抽幀 + 拼接

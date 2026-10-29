@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """tasks.json（build_tasks.py --backend comfy 生成）→ ComfyUI 上的 MiniMax H3 逐段生成口播片段 → gen/<段 id>.mp4。
 
-用法：python3 comfy_generate.py tasks.json [--out gen] [--only s1,s3] [--url http://主机:8188] [--timeout 1200]
+用法：python3 comfy_generate.py tasks.json [--out gen] [--only s1,s3] [--url http://主机:8188] [--timeout 1200] [--lead-in 6]
 - 每段：参考图当第一帧，锁住这段的音轨（MiniMaxH3NativeAudioLock），H3 只生成画面、口型跟着音轨；片段的声音就是原音轨
+- 音轨前面先垫 lead_in_frames 帧静音（persona.json 的 comfy.lead_in_frames，--lead-in 改，0 = 不垫）：H3 开头 1–3 帧会从参考图跳成它自己画的脸，
+  段和段接起来时接缝处会闪一下。垫了静音，这段跳动就落在开口之前；下载后连同静音一起剪掉，gen/<id>.mp4 仍然从原音轨第 0 秒开始
 - ComfyUI 地址：--url > 环境变量 COMFY_URL > persona.json 的 comfy.url；模型文件名、步数、尺寸也在 persona.json 的 comfy 那一节
 - 前提：ComfyUI 有 MiniMax H3 原生节点和 ComfyUI-H3-NativeAudioLock 自定义节点，models 里有 persona.json 写的四个模型文件
 - 第一帧先居中裁成目标比例再上传：H3 的节点会把第一帧直接拉伸成目标尺寸，不裁会变形
@@ -27,6 +29,7 @@ def main():
     only = set(arg("--only", "").split(",")) - {""}
     url = (arg("--url") or os.environ.get("COMFY_URL") or C["url"]).rstrip("/")
     timeout = int(arg("--timeout", "1200"))
+    lead = int(arg("--lead-in", C.get("lead_in_frames", 0)))
     failed = []
     for t in tasks:
         if only and t["id"] not in only: continue
@@ -35,12 +38,17 @@ def main():
             print(f"  {t['id']:5s} 已有 {dst}，跳过"); continue
         w, h = C["sizes"][t["aspect_ratio"]]
         img = upload(url, first_frame(t["images"][0], w, h, work / f"{t['id']}.jpg"))
-        wav = upload(url, stereo_wav(t["audio"], work / f"{t['id']}.wav"))
+        wav = upload(url, stereo_wav(t["audio"], work / f"{t['id']}.wav", lead))
         start = time.time()
-        files, err = run(url, graph(t, img, wav, w, h), timeout)
+        files, err = run(url, graph({**t, "duration": t["duration"] + lead / C["fps"]}, img, wav, w, h), timeout)
         if err:
             failed.append(t["id"]); print(f"✗ {t['id']:5s} {err}"); continue
-        download(url, files[0], dst)
+        if lead:
+            raw = work / f"{t['id']}_raw.mp4"
+            download(url, files[0], raw)
+            drop_lead_in(raw, lead, dst)
+        else:
+            download(url, files[0], dst)
         print(f"  {t['id']:5s} {duration(dst):.2f} 秒（生成 {time.time() - start:.0f} 秒）→ {dst}")
     print("跑完了。" + (f" 失败的段：{', '.join(failed)}" if failed else ""))
     sys.exit(1 if failed else 0)
@@ -75,9 +83,17 @@ def first_frame(src, w, h, dst):
     ffmpeg("-i", src, "-vf", f"scale={w}:{h}:force_original_aspect_ratio=increase:flags=lanczos,crop={w}:{h}", "-q:v", "2", dst)
     return dst
 
-def stereo_wav(src, dst):
-    ffmpeg("-i", src, "-vn", "-ac", "2", "-ar", "48000", dst)
+def stereo_wav(src, dst, lead=0):
+    """转成 48 kHz 立体声；lead 帧静音垫在最前面（按 48000/fps 个采样算，帧数和静音长度完全对得上）"""
+    pad = [] if not lead else ["-af", f"aresample=48000,adelay=delays={lead * 48000 // C['fps']}S:all=1"]
+    ffmpeg("-i", src, "-vn", *pad, "-ac", "2", "-ar", "48000", dst)
     return dst
+
+def drop_lead_in(raw, lead, dst):
+    """剪掉开头垫的 lead 帧和同样长的静音，画面和声音一起剪，口型不会错位"""
+    ffmpeg("-i", raw, "-vf", f"trim=start_frame={lead},setpts=PTS-STARTPTS",
+           "-af", f"atrim=start={lead / C['fps']:.6f},asetpts=PTS-STARTPTS",
+           "-c:v", "libx264", "-crf", "16", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", dst)
 
 def ffmpeg(*a):
     subprocess.run(["ffmpeg", "-v", "error", "-y", *map(str, a)], check=True)
