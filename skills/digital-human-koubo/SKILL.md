@@ -45,7 +45,8 @@ description: 用固定的数字人形象（白背心数字人 / 用户本人数�
 ### 2. 切段 + 报价
 `python3 scripts/build_tasks.py script.json tasks.json --purpose "teaching a beginner tutorial step by step"`
 → 打印段数、秒数、预估占 grok 每周额度的百分比（720p 实测每秒 0.25–0.35%）。full 段 720p，pip 段 480p（480p 没实测，按 720p 估，偏高）。报给用户等确认。用户本人或动物主播用 persona.json → other_hosts 里的提示词模板和参考图。
-- 加 `--backend comfy` 就给 ComfyUI 上的 MiniMax H3 用：每段在 script.json 写 `"audio"`（这段的音轨，MiMo 克隆声或录音，见 references/voice.md），时长按音轨算，提示词用 h3_prompt_template（不写台词）。
+- 加 `--backend comfy` 就给 ComfyUI 上的 MiniMax H3 用：每段在 script.json 写 `"audio"`（这段的音轨），时长按音轨算，提示词用 h3_prompt_template（不写台词）。
+- comfy 后端先配音：`python3 scripts/tts_generate.py script.json`，经 ssh 在 GPU 机器上用 CosyVoice 3 克隆主播的参考音档（台湾腔），whisper 回听、字错率超标自动重配，再把 `"audio"` 写回 script.json。标 ⚠ 的段先给用户听。也可以改放 MiMo 克隆声或录音（见 references/voice.md）。
 
 ### 3. 生成
 `python3 scripts/grok_generate.py tasks.json`：逐段调 grok CLI 的 reference_to_video，存成 `gen/<段 id>.mp4`，每段约 1–1.5 分钟。已经存在的段跳过；重拍就删掉那个文件再跑，`--only s3` 只跑某段。
@@ -78,7 +79,7 @@ description: 用固定的数字人形象（白背心数字人 / 用户本人数�
 - references/packaging-presets.json：五种风格各自的默认包装
 - references/huazi.md：花字模板 edit.json 字段、九种卡片、三档强度、写法习惯
 - persona.json：白背心数字人 + 其他主播（用户本人、橘猫店长、柴犬主播）、提示词模板、动作库、多语言实测
-- references/voice.md：换声音（grok 内置音色 / MiMo 克隆 / 音色设计）
+- references/voice.md：换声音（grok 内置音色 / CosyVoice 3 台湾腔配音 / MiMo 克隆 / 音色设计）
 - references/new-avatar.md：从一张照片做新形象
 - references/edit-styles.md：各剪辑工程的入口文件和声音统一做法
 - assets/styles/：五种风格的预览图（给用户选的时候发）

@@ -11,7 +11,12 @@
   "preset": "luna",
   "preset_note": "可选：填 grok 内置音色名（如 \"eve\"），每段都用同一个声音，提示词改用 <AUDIO_0>、不再用 desc。可用的名字见 references/voice.md。null = 按 desc 由 grok 自己配音",
   "speed_cps": 5.4,
-  "alt_clone": "MiMo mimo-v2.5-tts-voiceclone，参照用 3 段 Grok 口播拼的 ≥12 秒干声（见 references/voice.md）"
+  "alt_clone": "MiMo mimo-v2.5-tts-voiceclone，参照用 3 段 Grok 口播拼的 ≥12 秒干声（见 references/voice.md）",
+  "tts_ref": {
+   "wav": "assets/voice/tank_ref.wav",
+   "text": "Right, What first is, I would say……两岸关系越紧张、越艰困，越需要沟通跟交流，so that's why…… 生生喝鲜奶、免费营养午餐",
+   "note": "comfy 后端配音（scripts/tts_generate.py）克隆的参考音档和它的逐字稿。仓库里没有这个文件：放 10–30 秒本人或明确授权的干净朗读。2026-10-29 测试用的是 grok luna 的 10 秒试拍音轨，拿 AI 成品当克隆参考是否合乎服务条款没查，正式发布前换成授权录音。"
+  }
  },
  "model": {
   "name": "grok-imagine-video-1.5",
@@ -41,6 +46,19 @@
   "sizes": {"9:16": [576, 1024], "16:9": [1024, 576]},
   "gen_sec_per_video_sec": 18.4
  },
+ "tts": {
+  "engine": "cosyvoice3",
+  "note": "comfy 后端的配音：scripts/tts_generate.py 经 ssh 到这台 GPU 机器跑 CosyVoice 3（Fun-CosyVoice3-0.5B-2512）零样本克隆，参考音档是各主播的 tts_ref。2026-10-29 在 aikol（RTX 3090 Ti）试听：比 VoxCPM2、IndexTTS-2.5、BlueMagpie-TTS 自然；用拼音强改平舌、本调反而刻意，所以台词照原文送。ssh_host 是内网 aikol，环境变量 TTS_SSH_HOST 优先（在外面用 aiko）。路径是那台机器上的，装法见 references/install.md。",
+  "ssh_host": "aikol",
+  "python": "~/zoo/tts_bakeoff/cosyvoice3/.venv/bin/python",
+  "repo": "~/zoo/tts_bakeoff/cosyvoice3/CosyVoice",
+  "model_dir": "pretrained_models/Fun-CosyVoice3-0.5B",
+  "work_dir": "~/zoo/koubo_tts",
+  "gpu_lock": "~/zoo/tts_bakeoff/gpu.lock",
+  "seed": 42,
+  "max_cer": 0.1,
+  "retries": 2
+ },
  "acts": {
   "full": "warm eye contact, expressive face, natural hand gestures",
   "pip": "calm explaining tone, small nods, occasionally glancing down as if reading a screen, small pointing gestures",
@@ -58,6 +76,11 @@
    "note": "用户本人照片，只给用户自己的片子用；横屏照直接出横屏口播。仓库里没有这张图，用前放入你本人的照片。",
    "voice": "warm, steady, confident male voice around 35 years old, natural pace",
    "voice_preset": null,
+   "tts_ref": {
+    "wav": "assets/voice/me_ref.wav",
+    "text": "上传现场图与初判表，AI 现场图判读，帮你把每一方可能涉及的道交、刑事、民事法条，一次整理清楚。知道自己站在哪里，也知道该怎么说。",
+    "note": "仓库里没有这个文件：放用户本人 10–30 秒的干净朗读，逐字稿改成录音内容。2026-10-29 测试用的是 Gemini Orus 的 13 秒成品，只能测试用。"
+   },
    "prompt_template": "The man in {ref} talks straight to the camera, same framing, gray studio backdrop, navy polo shirt, glasses and soft lighting as the reference, like a friendly tech blogger {purpose}: {act}. Locked-off camera, no zoom. He speaks {language}, clearly lip-synced, in {voice}:\n“{line}”\nSound: only his voice and quiet room tone, no music, no subtitles, no captions, no on-screen text of any kind.",
    "h3_prompt_template": "No captions, subtitles or any text appear in the frame at any time. The man in the first frame talks straight to the camera, same framing, gray studio backdrop, navy polo shirt, glasses and soft lighting as the first frame, like a friendly tech blogger {purpose}: {act}. Locked-off camera, no zoom. He is speaking {language}, his lips clearly synced to every syllable of his voice. Sound: only his voice and quiet room tone, no music."
   },

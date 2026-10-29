@@ -16,10 +16,17 @@ grok 按 desc 配音时，每段的声音可能有细微差别。要每段固定
 - 克隆声 2–5 kHz 偏弱，配完套 EQ+压缩（SKILL.md 里的人声链）。
 - 只克隆本人或明确授权的声音。
 
+## 台湾腔配音（CosyVoice 3，comfy 后端用）
+- `python3 scripts/tts_generate.py script.json`：经 ssh 到 GPU 机器（persona.json 的 tts 那一节，环境变量 TTS_SSH_HOST 优先）跑 CosyVoice 3 零样本克隆，存成 `audio/<段 id>.wav` 并写回 `"audio"`。机器上的环境怎么装见 references/install.md。
+- 克隆的是主播的参考音档：persona.json → voice.tts_ref（用户本人主播是 other_hosts.me.tts_ref），10–30 秒干净朗读加逐字稿。仓库里没有这些文件，只放在本机技能目录。只克隆本人或明确授权的声音；拿 AI 成品（grok、Gemini 的配音）当参考是否合乎服务条款没查过，只能测试用。
+- 2026-10-29 在 RTX 3090 Ti 试听：CosyVoice 3 比 VoxCPM2、IndexTTS-2.5、BlueMagpie-TTS 自然，3 段约 26 秒配完。用拼音强改平舌、轻声改本调，捲舌少了，但用户听起来太刻意，所以台词照原文送。
+- 个别词念错时，在那段加 `"tts_text"` 改送进 TTS 的文字，字幕和回听仍对照 `"t"`。
+- 和 comfy_generate.py 共用同一张显卡，配完音再生成画面，两个不要同时跑。
+
 ## 按文字设计音色
 - `mimo-v2.5-tts-voicedesign`：user 消息写音色描述（如「温柔知性的年轻女声，语速稍慢，咬字清楚」），不能为空。
 
 ## 让数字人用新声音开口
 Grok 只吃图片，不吃音频，口型跟的是它自己的配音。grok CLI 没有「音频驱动口型」的模式，所以要口型对上自己的声音：
-- 用 comfy 后端：ComfyUI 上的 MiniMax H3 锁住给定的音轨、只生成画面（scripts/comfy_generate.py）。先把每段配好音存成文件，在 script.json 那段写 `"audio"`，再 `build_tasks.py --backend comfy`。2026-10-27 用 grok luna 的音轨试拍，口型用户看过可以接受。
+- 用 comfy 后端：ComfyUI 上的 MiniMax H3 锁住给定的音轨、只生成画面（scripts/comfy_generate.py）。先把每段配好音（tts_generate.py，或自己放音轨），在 script.json 那段写 `"audio"`，再 `build_tasks.py --backend comfy`。2026-10-27 用 grok luna 的音轨试拍，口型用户看过可以接受。
 - 或者只在画中画、空镜段落用新声音做旁白，全屏出镜段保留 Grok 原声。

@@ -8,3 +8,5 @@ __pycache__/
 public/main*.mp4
 public/voice*.wav
 bin/
+# 配音参考音档（本人或授权录音）只放本机，不进仓库
+skills/digital-human-koubo/assets/voice/
