@@ -67,6 +67,18 @@
   "vlog": "relaxed lifestyle vlogger sharing a favorite tool, natural small head tilts and nods, one hand comes up briefly in a casual gesture",
   "depth": "medium shot with generous headroom and plain background visible on both sides of the head and shoulders (for text-behind-subject graphics), calm confident delivery"
  },
+ "hands_rest": "below the bottom edge of the frame, out of view",
+ "gestures": {
+  "default": "liyifan",
+  "note": "手势库：script.json 每段可以写 \"gesture\" 指定一种，没写的 full 段用 default，pip / vlog / depth 段沿用 acts。{hands_rest} 换成主播的 hands_rest（手平时放在哪里，每位主播各写一句）。来源是 awesome-talking-head-skills（MIT）拆的五位口播博主：liyifan = 李一帆 L1 低位摊手、qiuzhi = 秋芝 Q1 挥手、muzi = 木子 M1 外摊、xiaolin = 小Lin说 X4 侧掌、dashi = 大师 D1 抬手。qiuzhi / muzi / xiaolin 要双手在画面内的参考图（例如坐在主播台后的中景），自拍构图只用 liyifan / dashi。2026-10-30 H3 实拍（新闻棚中景，手放在桌上）：五种都没崩手；放在段首的手势时间点准，片中某一刻的手势次数和长度不准（xiaolin 做了两次，dashi 停 2 秒左右），所以一段只放一种，挥手、外摊放在开场段。",
+  "styles": {
+   "liyifan": "warm smile and steady eye contact, the emotion carried by the face: eyebrows lift on questions, a brief squint on the last word of each sentence, small nods. Both hands are {hands_rest} the whole time. Only once, on a question or a key point, one hand lifts a little, palm up, for about half a second, then lowers again so both hands are {hands_rest}. No other hand gestures, no pointing",
+   "qiuzhi": "big warm smile and steady eye contact, small nods. At the start both hands rise beside the shoulders, palms facing the camera, fingers relaxed and together, and gently wave side to side twice as a greeting, then lower so both hands are {hands_rest}. After that both hands stay {hands_rest} with the elbows close to the body. No other hand gestures, no pointing",
+   "muzi": "smiling with raised eyebrows and steady eye contact. At the start both hands open outward from the chest to the sides, palms up and facing out, fingers naturally spread, wrists turning gently with the words for about two seconds, then lower so both hands are {hands_rest}. After that only a slight nod at the end of each phrase while both hands stay {hands_rest}. No other hand gestures, no pointing",
+   "xiaolin": "expressive face, eyebrows lift and eyes widen on key words, leaning slightly forward. The left hand stays {hands_rest} the whole time. Once, while explaining, the right hand rises at the right side to chest height, palm facing inward and fingers together, moves in a small arc with the sentence for about one second, then lowers again so both hands are {hands_rest}. No other hand gestures, no pointing",
+   "dashi": "eyebrows raised high and eyes wide with a pleasantly surprised look, clear mouth shapes, leaning slightly forward. Both hands are {hands_rest}. Once, on a key point, one hand rises to chest height, palm up, fingers relaxed and slightly curved, holds there for about half a second, then lowers again so both hands are {hands_rest}. No other hand gestures, no pointing"
+  }
+ },
  "prompt_template": "The young woman in {ref} talks straight into her phone's front camera, same selfie framing, lighting and outfit as the reference, like a friendly Chinese tech vlogger {purpose}: {act}. Handheld selfie feel with only a very slight natural sway. She speaks Mandarin Chinese, clearly lip-synced, in {voice}:\n“{line}”\nSound: only her voice and quiet room tone, no music, no subtitles, no on-screen text.",
  "h3_prompt_template": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nintegrated_multimodal_description: [Shot 1] Live-action, a vertical selfie close-up frames the young woman shown in <Picture 1>, preserving her face, eye shape, long black hair with loose strands beside her face, white ribbed tank top, the selfie angle, the natural indoor light and the room behind her. She holds the phone at arm's length and the camera shakes slightly at slow speed, keeping the same selfie framing. Like a friendly Taiwanese tech vlogger {purpose}, she looks straight into the lens: {act}. The young woman with a friendly, clear and lively voice (S1) speaks {language} directly into the phone camera, her lips moving in sync with every syllable of her voice.\n\noverall_soundscape: Quiet indoor room tone continues softly underneath her voice.\n\nnon_diegetic_music: N/A",
  "h3_prompt_note": "2026-10-30 照 MiniMax 官方指南（MiniMaxAI/MiniMax-H3 的 docs/VIDEO_PROMPT_WRITING_GUIDE_base_en.md）改写，other_hosts 里的 h3_prompt_template 也一样：第一行 I2VA 指令、三个字段（integrated_multimodal_description / overall_soundscape / non_diegetic_music）、说话的人标 (S1)、不写否定句。画面上的文字只在英文双引号里才会生成，所以台词不放进模板。",
@@ -79,6 +91,7 @@
    "note": "用户本人照片，只给用户自己的片子用；横屏照直接出横屏口播。仓库里没有这张图，用前放入你本人的照片。",
    "voice": "warm, steady, confident male voice around 35 years old, natural pace",
    "voice_preset": null,
+   "hands_rest": "below the bottom edge of the frame, out of view",
    "tts_ref": {
     "wav": "assets/voice/me_ref.wav",
     "text": "上传现场图与初判表，AI 现场图判读，帮你把每一方可能涉及的道交、刑事、民事法条，一次整理清楚。知道自己站在哪里，也知道该怎么说。",
