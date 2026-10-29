@@ -53,7 +53,7 @@ description: 用固定的数字人形象（白背心数字人 / 用户本人数�
 - 它只开放 reference_to_video 一个工具；grok 升级后多出新工具会在生成前中止，照提示把工具名补进脚本的 DISALLOWED。
 - 报 ZDR 开着 → 请用户在 grok 里 /privacy 改成 Opt in 再跑。
 - 标 ⚠ 的段是 grok 实际传的参数和任务不一致，先看那段再决定要不要重拍。
-- comfy 后端改跑 `python3 scripts/comfy_generate.py tasks.json`：参考图当第一帧，锁住每段的音轨，H3 只生成画面，口型跟着音轨。ComfyUI 的 URL 和模型文件名在 persona.json 的 comfy 那一节（环境变量 COMFY_URL 优先），576×1024 的 10 秒段约 3 分钟。
+- comfy 后端改跑 `python3 scripts/comfy_generate.py tasks.json`：参考图当第一帧，锁住每段的音轨，H3 只生成画面，口型跟着音轨。ComfyUI 的 URL 和模型文件名在 persona.json 的 comfy 那一节（环境变量 COMFY_URL 优先），576×1024 的 10 秒段约 3 分钟。每段音轨前会先垫 0.25 秒静音、生成后剪掉（persona.json 的 comfy.lead_in_frames），避开 H3 开头几帧的脸部跳动，接缝不会闪。
 - 要进场景（直播间、门店、街景）时，先用 grok 的 image_edit 合成开场画面（人物参考图 + 场景描述），存进工程后在 script.json 那几段写 `"ref": "图片路径"`，build_tasks.py 就会拿它当参考图。
 
 ### 4. 回听 + 抽帧 + 拼接
