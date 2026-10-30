@@ -3,6 +3,8 @@
 用法：python3 assemble.py script.json [--out 成片_完整版.mp4] [--lang zh] [--size 宽x高（默认保持源尺寸）]
 - script.json：[{"id","t",...}]（和 build_tasks.py 同一份）；生成的片段在 gen/<段 id>.mp4（grok_generate.py 的输出）
 - 每段：whisper 转写（中性提示，不用 --prompt 原文，免得漏前半句）→ 和文稿比准确率 → 只保留到说完后 0.25 秒
+- comfy 锚点段（gen/<id>.meta.json 写了 anchors）整段保留：最后一帧才是锚点，剪掉接缝就接不上
+- 全部是 comfy 段时，拼完再跑 warp_eyes.py 缩眼高（persona.json 的 comfy.eye_warp，1 = 不缩；要装 uv）。有 grok 段就不缩，免得连 grok 的眼睛一起缩
 - 比准确率前两边都繁转简（要装 opencc）、中文数字转阿拉伯数字，所以繁体稿、「八秒」和「8 秒」都不会被误判
 - 输出 cut/<id>.mp4（30fps、48k 立体声）、cut/<id>.json（逐字时间，align.py 用）、cut/qa.json、拼接好的 --out（-16 LUFS）
 - 准确率 < 85% 的段打 ⚠，先人工听；真念错就单独重拍那段"""
@@ -35,9 +37,11 @@ def clean(s):
     s = re.sub(r'(\d)点(\d)', r'\1.\2', s)
     return re.sub(r'[\s，。、：；！？,.:;!?“”「」]', '', s).lower()
 
-Path('cut').mkdir(exist_ok=True); rep = []
+Path('cut').mkdir(exist_ok=True); rep, metas = [], []
 for s in S:
     sid = s['id']; src = f"gen/{sid}.mp4"; wav = f'cut/{sid}.wav'
+    meta = json.load(open(f'gen/{sid}.meta.json')) if os.path.exists(f'gen/{sid}.meta.json') else {}   # comfy_generate.py 写的
+    metas.append(meta)
     lg = s.get('lang_code', lang)
     subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', src, '-ar', '16000', '-ac', '1', wav], check=True)
     cmd = ['whisper-cli', '-m', WM, '-l', lg] + (['--prompt', '以下是普通话的句子。', '-ml', '1'] if lg == 'zh' else []) + ['-oj', '-of', f'cut/{sid}', '-f', wav]
@@ -49,13 +53,27 @@ for s in S:
     w, h = map(int, subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', src], capture_output=True, text=True).stdout.split(','))
     sz = size or f'{w - w % 2}x{h - h % 2}'          # 保持源尺寸（Grok 9:16 720p 是 720×1280，别拉成 720×1440）
     acc = difflib.SequenceMatcher(None, clean(s['t']), clean(heard)).ratio()
-    keep = min(dur, en + 0.25)
+    keep = dur if meta.get('anchors') else min(dur, en + 0.25)
     subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', src, '-t', f'{keep:.3f}', '-vf', f'scale={sz.replace("x", ":")}:flags=lanczos,fps=30,format=yuv420p',
                     '-af', f'aresample=48000,afade=t=out:st={max(0, keep - 0.12):.3f}:d=0.12', '-ac', '2', '-c:v', 'libx264', '-crf', '17', '-preset', 'medium', '-c:a', 'aac', '-b:a', '192k', f'cut/{sid}.mp4'], check=True)
     rep.append(dict(id=sid, acc=round(acc, 3), speech=[round(st, 2), round(en, 2)], keep=round(keep, 2), src_dur=round(dur, 2), heard=heard))
-    print(f"{'⚠' if acc < 0.85 else ' '}{sid:5s} 准确率 {acc:.0%}  说话 {st:.2f}–{en:.2f}s  保留 {keep:.2f}/{dur:.2f}s  听到：{heard}")
+    print(f"{'⚠' if acc < 0.85 else ' '}{sid:5s} 准确率 {acc:.0%}  说话 {st:.2f}–{en:.2f}s  保留 {keep:.2f}/{dur:.2f}s{'（锚点段整段保留）' if meta.get('anchors') else ''}  听到：{heard}")
 json.dump(rep, open('cut/qa.json', 'w'), ensure_ascii=False, indent=1)
 open('cut/list.txt', 'w').write(''.join(f"file '{s['id']}.mp4'\n" for s in S))
 subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', 'cut/list.txt', '-c', 'copy', 'cut/joined.mp4'], check=True)
 subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', 'cut/joined.mp4', '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', out_name], check=True)
 print('拼接完成', out_name, round(sum(r['keep'] for r in rep), 2), '秒')
+
+warp = json.load(open(Path(__file__).resolve().parent.parent / 'persona.json')).get('comfy', {}).get('eye_warp', 1)
+comfy = [m.get('backend') == 'comfy' for m in metas]
+if warp < 1 and all(comfy):
+    if shutil.which('uv'):
+        tmp = str(Path(out_name).with_suffix('.warp.mp4'))
+        subprocess.run(['uv', 'run', '--no-project', '--with', 'mediapipe', '--with', 'opencv-python-headless', 'python', '-I',
+                        str(Path(__file__).with_name('warp_eyes.py')), out_name, tmp, str(warp)], check=True)
+        os.replace(tmp, out_name)
+        print(f'缩眼高 {warp}（H3 会把眼睛画大，persona.json 的 comfy.eye_warp）')
+    else:
+        print('没装 uv，跳过缩眼高：装好 uv 后跑 scripts/warp_eyes.py', out_name)
+elif warp < 1 and any(comfy):
+    print('有 grok 段也有 H3 段，没缩眼高（会连 grok 段一起缩）')

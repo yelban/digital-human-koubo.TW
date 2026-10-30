@@ -62,11 +62,15 @@ description: 用固定的数字人形象（白背心数字人 / 用户本人数�
 - 它只开放 reference_to_video 一个工具；grok 升级后多出新工具会在生成前中止，照提示把工具名补进脚本的 DISALLOWED。
 - 报 ZDR 开着 → 请用户在 grok 里 /privacy 改成 Opt in 再跑。
 - 标 ⚠ 的段是 grok 实际传的参数和任务不一致，先看那段再决定要不要重拍。
-- comfy 后端改跑 `python3 scripts/comfy_generate.py tasks.json`：参考图当第一帧，锁住每段的音轨，H3 只生成画面，口型跟着音轨。ComfyUI 的 URL 和模型文件名在 persona.json 的 comfy 那一节（环境变量 COMFY_URL 优先），576×1024 的 10 秒段约 3 分钟。每段音轨前会先垫 0.25 秒静音、生成后剪掉（persona.json 的 comfy.lead_in_frames），避开 H3 开头几帧的脸部跳动，接缝不会闪。
+- comfy 后端改跑 `python3 scripts/comfy_generate.py tasks.json`：锁住每段的音轨，H3 只生成画面，口型跟着音轨。ComfyUI 的 URL 和模型文件名在 persona.json 的 comfy 那一节（环境变量 COMFY_URL 优先），576×1024 的 10 秒段约 3 分钟。
+  - 锚点模式（主播有锚点库 `assets/anchors/<参考图文件名>/` 就自动用）：每段的第一帧和最后一帧都是库里的帧，接缝两边同一张、每个接缝换一张，接起来头的位置和亮度都连续，停顿时的姿势也不会每次一样。锚点段整段保留，短句（不到 5 秒）说完后会停将近 1 秒。
+  - 这位主播第一次用 H3（还没有锚点库）：先 `python3 scripts/comfy_generate.py tasks.json --no-anchors --out gen_bootstrap`（普通模式：参考图当第一帧、每段前垫 0.25 秒静音），再 `uv run --no-project --with mediapipe --with opencv-python-headless python scripts/make_anchors.py tasks.json --gen gen_bootstrap` 建库，把它印出的 `sheet.jpg` 给用户看（嘴闭着、手放好、几张姿势不同），用户确认后再跑正式生成。这一次 GPU 时间多一倍，之后的片子直接用同一个库。不要的锚点在正式生成前删掉那张 `aN.png`；要整个重挑加 `--force`。
+  - 单段重拍（删掉 `gen/<id>.mp4` 再 `--only <id>`）会用回当初那两张锚点，接缝照样接得上。
 - 要进场景（直播间、门店、街景）时，先用 grok 的 image_edit 合成开场画面（人物参考图 + 场景描述），存进工程后在 script.json 那几段写 `"ref": "图片路径"`，build_tasks.py 就会拿它当参考图。
 
 ### 4. 回听 + 抽帧 + 拼接
 `python3 scripts/assemble.py script.json --out 成片_完整版.mp4`（读 gen/<段 id>.mp4）：whisper 逐段转写比对文稿、只保留到说完后 0.25 秒、拼接、loudnorm -16。
+- comfy 锚点段整段保留（剪掉就接不上）。全部是 H3 段时，拼完自动逐帧缩眼高（`scripts/warp_eyes.py`，persona.json 的 `comfy.eye_warp`，0.8；要装 uv）：H3 会把眼睛画圆，改提示词和参考图都压不住。
 - whisper `--prompt 原文` 会让个别段漏掉前半句，用中性提示「以下是普通话的句子。」。外语段按语言转写；日韩阿拉伯语不要加 `-ml 1`（会把多字节字符截断成乱码）。
 - **每段抽 4 帧看一眼**：Grok 横屏口播偶尔自己烧字幕（提示词写了也挡不住），有就重拍那段。
 - Grok 有时漏念开头的语气词：没影响意思就按实际口播改字幕，别为这个重拍。

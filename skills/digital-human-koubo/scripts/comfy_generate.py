@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 """tasks.json（build_tasks.py --backend comfy 生成）→ ComfyUI 上的 MiniMax H3 逐段生成口播片段 → gen/<段 id>.mp4。
 
-用法：python3 comfy_generate.py tasks.json [--out gen] [--only s1,s3] [--url http://主机:8188] [--timeout 1200] [--lead-in 6]
-- 每段：参考图当第一帧，锁住这段的音轨（MiniMaxH3NativeAudioLock），H3 只生成画面、口型跟着音轨；片段的声音就是原音轨
-- 音轨前面先垫 lead_in_frames 帧静音（persona.json 的 comfy.lead_in_frames，--lead-in 改，0 = 不垫）：H3 开头 1–3 帧会从参考图跳成它自己画的脸，
+用法：python3 comfy_generate.py tasks.json [--out gen] [--only s1,s3] [--url http://主机:8188] [--timeout 1200] [--lead-in 6] [--no-anchors]
+- 每段：锁住这段的音轨（MiniMaxH3NativeAudioLock），H3 只生成画面、口型跟着音轨；片段的声音就是原音轨
+- 锚点模式（这位主播有锚点库 assets/anchors/<参考图文件名>/ 就自动用，--no-anchors 关掉）：每段的第一帧和最后一帧都是锚点库里的帧，
+  接缝两边同一张，接起来位置、亮度都连续；每个接缝轮流用不同的锚点，停顿时的姿势不会每次一样。不垫静音，生成多长就保留多长（最后一帧才是锚点），
+  每段写 gen/<id>.meta.json，assemble.py 看到就整段保留。锚点库用 make_anchors.py 从一次普通模式的结果建
+- 普通模式（没有锚点库）：参考图当第一帧，每段之间头的位置会跳 4–20 px
+- 普通模式的音轨前面先垫 lead_in_frames 帧静音（persona.json 的 comfy.lead_in_frames，--lead-in 改，0 = 不垫）：H3 开头 1–3 帧会从参考图跳成它自己画的脸，
   段和段接起来时接缝处会闪一下。垫了静音，这段跳动就落在开口之前；下载后连同静音一起剪掉，gen/<id>.mp4 仍然从原音轨第 0 秒开始
 - ComfyUI 地址：--url > 环境变量 COMFY_URL > persona.json 的 comfy.url；模型文件名、步数、尺寸也在 persona.json 的 comfy 那一节
 - 前提：ComfyUI 有 MiniMax H3 原生节点和 ComfyUI-H3-NativeAudioLock 自定义节点，models 里有 persona.json 写的四个模型文件
 - 第一帧先居中裁成目标比例再上传：H3 的节点会把第一帧直接拉伸成目标尺寸，不裁会变形
 - 音轨先转成 48 kHz 立体声 wav（试拍验证过的格式）；帧数 = 音轨秒数 × 24，向上取到 H3 的 17k+5 格点，至少 124 帧
-- 串行生成，576×1024 的 10 秒段约 3 分钟；gen/<id>.mp4 已存在且能解码就跳过，要重拍就删掉那个文件
+- 串行生成，576×1024 的 10 秒段约 3 分钟；gen/<id>.mp4 已存在且能解码就跳过，要重拍就删掉那个文件（锚点模式下单段重拍会用回同样的两张锚点）
 - 不占 grok 额度，占的是那台机器的 GPU
 """
 import hashlib, json, math, os, subprocess, sys, time, urllib.error, urllib.parse, urllib.request, uuid
@@ -30,28 +34,56 @@ def main():
     url = (arg("--url") or os.environ.get("COMFY_URL") or C["url"]).rstrip("/")
     timeout = int(arg("--timeout", "1200"))
     lead = int(arg("--lead-in", C.get("lead_in_frames", 0)))
+    use_anchors = "--no-anchors" not in sys.argv
     failed = []
-    for t in tasks:
+    for i, t in enumerate(tasks):
         if only and t["id"] not in only: continue
         dst = out / f"{t['id']}.mp4"
         if dst.exists() and decodes(dst):
             print(f"  {t['id']:5s} 已有 {dst}，跳过"); continue
         w, h = C["sizes"][t["aspect_ratio"]]
-        img = upload(url, first_frame(t["images"][0], w, h, work / f"{t['id']}.jpg"))
-        wav = upload(url, stereo_wav(t["audio"], work / f"{t['id']}.wav", lead))
+        pair = anchor_pair(tasks, i, w, h) if use_anchors else None
         start = time.time()
-        files, err = run(url, graph({**t, "duration": t["duration"] + lead / C["fps"]}, img, wav, w, h), timeout)
+        if pair:
+            first, last = (upload(url, a) for a in pair)
+            wav = upload(url, stereo_wav(t["audio"], work / f"{t['id']}.wav"))
+            g = graph(t, first, wav, w, h)
+            g["31"] = {"class_type": "LoadImage", "inputs": {"image": last}}
+            g["7"]["inputs"]["last_frame"] = ["31", 0]
+            files, err = run(url, g, timeout)
+        else:
+            img = upload(url, first_frame(t["images"][0], w, h, work / f"{t['id']}.jpg"))
+            wav = upload(url, stereo_wav(t["audio"], work / f"{t['id']}.wav", lead))
+            files, err = run(url, graph({**t, "duration": t["duration"] + lead / C["fps"]}, img, wav, w, h), timeout)
         if err:
             failed.append(t["id"]); print(f"✗ {t['id']:5s} {err}"); continue
-        if lead:
+        if lead and not pair:
             raw = work / f"{t['id']}_raw.mp4"
             download(url, files[0], raw)
             drop_lead_in(raw, lead, dst)
         else:
             download(url, files[0], dst)
-        print(f"  {t['id']:5s} {duration(dst):.2f} 秒（生成 {time.time() - start:.0f} 秒）→ {dst}")
+        (out / f"{t['id']}.meta.json").write_text(json.dumps({"backend": "comfy", "anchors": [f"{a.parent.name}/{a.name}" for a in pair] if pair else None}))
+        print(f"  {t['id']:5s} {duration(dst):.2f} 秒（生成 {time.time() - start:.0f} 秒）→ {dst}" + (f"，锚点 {pair[0].stem} → {pair[1].stem}" if pair else ""))
     print("跑完了。" + (f" 失败的段：{', '.join(failed)}" if failed else ""))
     sys.exit(1 if failed else 0)
+
+def anchor_pair(tasks, i, w, h):
+    """锚点模式这段的 (第一帧, 最后一帧)。接缝两边是同一位主播就共用一张，按接缝在整份 tasks 里的位置轮流用 a1、a2…，
+    所以 --only 单段重拍取到的跟当初一样；片头、片尾、换主播的地方用 home。没有锚点库、或锚点尺寸跟这段不同，回 None（改用普通模式）"""
+    bank = anchor_bank(tasks[i]["images"][0])
+    if not bank: return None
+    size = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "stream=width,height", "-of", "csv=p=0", str(bank[0])], capture_output=True, text=True).stdout.strip()
+    if size != f"{w},{h}":
+        print(f"  {tasks[i]['id']:5s} 锚点是 {size.replace(',', '×')}，这段要 {w}×{h}，改用普通模式"); return None
+    def seam(k):   # 第 k 段和第 k+1 段之间
+        same = 0 <= k < len(tasks) - 1 and tasks[k]["images"][0] == tasks[k + 1]["images"][0]
+        return bank[1 + k % (len(bank) - 1)] if same and len(bank) > 1 else bank[0]
+    return seam(i - 1), seam(i)
+
+def anchor_bank(ref):
+    d = HERE / "assets" / "anchors" / Path(ref).stem
+    return [d / "home.png", *sorted(d.glob("a*.png"), key=lambda p: int(p.stem[1:]))] if (d / "home.png").exists() else []
 
 def graph(t, img, wav, w, h):
     """ComfyUI API 格式的工作流：首帧图生视频 + 锁音轨，只对画面去噪。节点编号沿用 2026-10-27 试拍的工作流，方便对照。"""
@@ -75,7 +107,7 @@ def graph(t, img, wav, w, h):
     }
 
 def frames(sec):
-    """音轨秒数 → H3 的帧数：向上取到 17k+5 格点，至少 124 帧（H3 训练范围约 124–362 帧）。音轨比画面短的部分是静音，assemble.py 会剪掉。"""
+    """音轨秒数 → H3 的帧数：向上取到 17k+5 格点，至少 124 帧（H3 训练范围约 124–362 帧）。音轨比画面短的部分是静音，assemble.py 会剪掉（锚点段整段保留，短句说完后会停将近 1 秒）。"""
     n = math.ceil(sec * C["fps"])
     return max(124, 5 + 17 * math.ceil((n - 5) / 17))
 
