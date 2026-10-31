@@ -61,7 +61,8 @@ for s in S:
 json.dump(rep, open('cut/qa.json', 'w'), ensure_ascii=False, indent=1)
 open('cut/list.txt', 'w').write(''.join(f"file '{s['id']}.mp4'\n" for s in S))
 subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', 'cut/list.txt', '-c', 'copy', 'cut/joined.mp4'], check=True)
-subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', 'cut/joined.mp4', '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', out_name], check=True)
+# loudnorm 内部升到 192 kHz 输出，不接 aresample 的话 AAC 会编成 96 kHz，LINE 等手机端放不出来
+subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', 'cut/joined.mp4', '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', out_name], check=True)
 print('拼接完成', out_name, round(sum(r['keep'] for r in rep), 2), '秒')
 
 warp = json.load(open(Path(__file__).resolve().parent.parent / 'persona.json')).get('comfy', {}).get('eye_warp', 1)
