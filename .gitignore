@@ -12,3 +12,5 @@ bin/
 skills/digital-human-koubo/assets/voice/
 # H3 锚点库是用户自己的生成结果，只放本机
 skills/digital-human-koubo/assets/anchors/
+# Colab 用的自定义节点是从用户自己的 ComfyUI 复制的，只放本机
+skills/digital-human-koubo/assets/colab_nodes/
