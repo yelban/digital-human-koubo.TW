@@ -43,5 +43,13 @@ tts_generate.py 经 ssh 调用，所以要能免密码 ssh 到那台机器（`ss
 4. 把 python、repo、模型路径填进 persona.json 的 tts 那一节；gpu_lock 是任意一个锁文件路径，flock 会自己建。
 - wetext 从 modelscope 下载失败（HTTP 403）时只会用内置的基本文字正规化，试听结果不受影响。
 
-## 4. 数字人形象
+## 4. Google Colab G4（可选，没有自己的 GPU 时跑 comfy 后端）
+1. `uv tool install google-colab-cli`，在自己的终端跑 `colab usage`：它印出一个网址，浏览器登录有 Colab 算力的 Google 账号、把代码贴回去。只做一次，之后 scripts/colab_h3.py 直接用。
+2. 要有 `~/.ssh/id_ed25519`（colab ssh 只收 ed25519 / ecdsa）。
+3. 把 ComfyUI 的自定义节点 `ComfyUI-H3-NativeAudioLock/`（目前没有 git 来源，从自己跑 H3 的 ComfyUI 的 custom_nodes/ 复制）放到 `assets/colab_nodes/ComfyUI-H3-NativeAudioLock/__init__.py`。这个目录不进仓库。
+4. persona.json 的 comfy.colab 写 ComfyUI 的 commit、模型下载地址（HF 公开地址）、启动参数。换模型时四个文件名都要有地址。
+- 费用：G4 每小时约 10 CCU（2026-10-31 实测 10.05）；开机加装环境约 3 分钟，之后每段 1024×576 约 45 秒。
+- 一台 runtime 同时只能有一条 colab ssh；看守进程到 max_minutes 会强制 colab stop，跑长片先调高。
+
+## 5. 数字人形象
 persona.json 的 grok.reference_image（默认 assets/avatar_ref.jpg）文件在 → 直接用。要换形象 → 按 references/new-avatar.md 用用户自己的照片。

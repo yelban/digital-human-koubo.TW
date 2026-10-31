@@ -66,6 +66,7 @@ description: 用固定的数字人形象（白背心数字人 / 用户本人数�
   - 锚点模式（主播有锚点库 `assets/anchors/<参考图文件名>/` 就自动用）：每段的第一帧和最后一帧都是库里的帧，接缝两边同一张、每个接缝换一张，接起来头的位置和亮度都连续，停顿时的姿势也不会每次一样。锚点段整段保留，短句（不到 5 秒）说完后会停将近 1 秒。
   - 这位主播第一次用 H3（还没有锚点库）：先 `python3 scripts/comfy_generate.py tasks.json --no-anchors --out gen_bootstrap`（普通模式：参考图当第一帧、每段前垫 0.25 秒静音），再 `uv run --no-project --with mediapipe --with opencv-python-headless python scripts/make_anchors.py tasks.json --gen gen_bootstrap` 建库，把它印出的 `sheet.jpg` 给用户看（嘴闭着、手放好、几张姿势不同），用户确认后再跑正式生成。这一次 GPU 时间多一倍，之后的片子直接用同一个库。不要的锚点在正式生成前删掉那张 `aN.png`；要整个重挑加 `--force`。
   - 单段重拍（删掉 `gen/<id>.mp4` 再 `--only <id>`）会用回当初那两张锚点，接缝照样接得上。
+  - 没有自己的 GPU：`python3 scripts/colab_h3.py tasks.json`（参数同 comfy_generate.py，另有 `--session` / `--keep` / `--max-minutes`），在 Google Colab 的 G4 上开机、装环境、生成、关机一条龙，带看守进程强制关机。要先装 google-colab-cli 并登录，节点文件放 assets/colab_nodes/，见 references/install.md。花的是 Colab 的 CCU：开机约 0.5 CCU，每段约 0.15 CCU（费率约 10 CCU/h），跟 grok 额度一样先报预估、等用户确认再跑。
 - 要进场景（直播间、门店、街景）时，先用 grok 的 image_edit 合成开场画面（人物参考图 + 场景描述），存进工程后在 script.json 那几段写 `"ref": "图片路径"`，build_tasks.py 就会拿它当参考图。
 
 ### 4. 回听 + 抽帧 + 拼接
