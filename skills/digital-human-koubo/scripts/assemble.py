@@ -60,9 +60,14 @@ for s in S:
     print(f"{'⚠' if acc < 0.85 else ' '}{sid:5s} 准确率 {acc:.0%}  说话 {st:.2f}–{en:.2f}s  保留 {keep:.2f}/{dur:.2f}s{'（锚点段整段保留）' if meta.get('anchors') else ''}  听到：{heard}")
 json.dump(rep, open('cut/qa.json', 'w'), ensure_ascii=False, indent=1)
 open('cut/list.txt', 'w').write(''.join(f"file '{s['id']}.mp4'\n" for s in S))
-subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', 'cut/list.txt', '-c', 'copy', 'cut/joined.mp4'], check=True)
+subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', 'cut/list.txt', '-an', '-c', 'copy', 'cut/joined.mp4'], check=True)
+# 音频每段先补静音到该段画面的长度再接：锚点段画面比声音长，-c copy 拼接会把这段空当吃掉，后面每段的声音都提前，越接越多
+vdur = [float(subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=duration', '-of', 'csv=p=0', f"cut/{s['id']}.mp4"], capture_output=True, text=True).stdout) for s in S]
+fc = ''.join(f'[{k + 1}:a]apad,atrim=0:{d:.6f},asetpts=N/SR/TB[a{k}];' for k, d in enumerate(vdur))
 # loudnorm 内部升到 192 kHz 输出，不接 aresample 的话 AAC 会编成 96 kHz，LINE 等手机端放不出来
-subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', 'cut/joined.mp4', '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', out_name], check=True)
+fc += ''.join(f'[a{k}]' for k in range(len(S))) + f'concat=n={len(S)}:v=0:a=1,loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000[a]'
+subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', 'cut/joined.mp4', *[a for s in S for a in ('-i', f"cut/{s['id']}.mp4")], '-filter_complex', fc,
+                '-map', '0:v', '-map', '[a]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', out_name], check=True)
 print('拼接完成', out_name, round(sum(r['keep'] for r in rep), 2), '秒')
 
 warp = json.load(open(Path(__file__).resolve().parent.parent / 'persona.json')).get('comfy', {}).get('eye_warp', 1)
